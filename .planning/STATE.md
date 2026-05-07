@@ -2,10 +2,18 @@
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-05-07 — Milestone v1.0 started
+Phase: 1 complete (Cluster Bootstrap + Runner Skeleton) — **pending user on-cluster verification**
+Plan: 01-02-PLAN executed; static checks green
+Status: Ready to start Phase 2 (Trap Framework + Assertion Library)
+Last activity: 2026-05-07 — Phase 1 code shipped (13 bash files under cka-sim/)
+
+### Outstanding verification (requires user to run on CP node)
+
+1. `cka-sim bootstrap` on a clean CP — expect all green; ssh-copy-id may prompt for password once per worker
+2. Re-run `cka-sim bootstrap` — expect no duplicate sentinel blocks in ~/.bashrc or ~/.ssh/config
+3. `cka-sim doctor` — expect exit 0 (all 8 checks green)
+
+See `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-SUMMARY.md` for the full 10-minute verification procedure.
 
 ## Accumulated Context
 
