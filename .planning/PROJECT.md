@@ -8,6 +8,22 @@ A complete, automated CKA (Certified Kubernetes Administrator) exam simulator th
 
 **A candidate can take a 2-hour timed mock exam against their own cluster and get an honest, trap-aware score telling them exactly which CKA domains and which classes of mistake they need to drill before sitting the real exam.** Everything else in this project (domain packs, ssh-node scaffolding, individual graders) exists to feed that one experience.
 
+## Current Milestone: v1.0 — CKA Exam Simulator MVP
+
+**Goal:** Ship a trap-aware, bash-only CKA exam simulator that runs a 2-hour timed mock against the learner's own 1+2 kubeadm cluster.
+
+**Target features:**
+- Cluster bootstrap script for the existing 1+2 Ubuntu 22.04 GCP cluster (SSH `node-01`/`node-02`, aliases, vimrc, `ETCDCTL_API`, kubeconfig)
+- Domain coverage map — every v1.35 Study Progress Tracker checkbox → ≥1 exam-sim question
+- Five domain packs (Storage 10%, Troubleshooting 30%, Workloads & Scheduling 15%, Cluster Architecture 25%, Services & Networking 20%) — may reference existing `exercises/NN/` as prior art, never copy
+- Per-question runtime triplet (`setup.sh` / `grade.sh` / `reset.sh`), idempotent, bash-only
+- Trap-aware grader with named `Trap N: <description>` diagnostics; trap catalog encodes content-bug traps (PSS wording, kubelet flag file, hostPath `nodeAffinity`, `--as=` format) so the simulator teaches the correct mental model
+- **Two** mock-exam packs — each 17 questions / 2 hours, weighted to the v1.35 CKA blueprint (30/25/20/15/10), composed by reference from the five domain packs
+- Runner CLI (`cka-sim`) with `drill` + `exam` modes (flag/skip/pause, end-of-exam batch grading)
+- Score report — Markdown: total, per-domain %, trap frequencies, suggested next drills
+- Existing-content banner labelling `exercises/`, `mock-exams/`, root README as superseded (no deletion)
+- Documentation — runner/cluster/trap docs + `CONTRIBUTING.md` question-authoring section
+
 ## Requirements
 
 ### Validated
@@ -32,7 +48,7 @@ A complete, automated CKA (Certified Kubernetes Administrator) exam simulator th
 - [ ] **Domain packs** — one pack per CKA domain (Storage 10%, Troubleshooting 30%, Workloads & Scheduling 15%, Cluster Architecture 25%, Services & Networking 20%) for targeted drilling.
 - [ ] **Per-question runtime triplet** — every question ships `setup.sh` (idempotent, creates the lab namespace + any broken state + required SSH context), `grade.sh` (kubectl-driven pass/fail + named trap diagnostics), `reset.sh` (cleanup back to baseline). Pure bash, runnable in isolation against a clean cluster.
 - [ ] **Trap-aware grader** — `grade.sh` actively detects top common mistakes per question (wrong namespace, missing DNS egress, wrong `--as=` form, default ServiceAccount used, RBAC scope wrong, hostPath without `nodeAffinity`, etc.) and prints `Trap N: <description>` so the candidate learns the *class* of mistake, not just pass/fail.
-- [ ] **Mock-exam packs** — multiple realistic 17-question / 2-hour exam packs that mix domains by exam-weighting (matching the real CKA blueprint), reusing question content from the domain packs.
+- [ ] **Mock-exam packs** — two realistic 17-question / 2-hour exam packs that mix domains by exam-weighting (matching the real CKA blueprint), reusing question content from the domain packs.
 - [ ] **Runner CLI (`cka-sim`)** — `cka-sim drill <pack> [<n>]` for single-question practice and `cka-sim exam <pack>` for timed full-mock with flag/skip, end-of-exam grading, 100-point score, per-domain breakdown, and per-trap aggregation.
 - [ ] **Score report** — at exam end, prints a Markdown summary: total score, per-domain percentage, list of traps hit (with frequencies), suggested domain packs to drill next.
 - [ ] **Existing-content banner** — `exercises/`, `mock-exams/`, and the README get a "superseded — see exam-sim/" pointer that doesn't delete the prose but routes new learners to the simulator.
@@ -89,6 +105,8 @@ A complete, automated CKA (Certified Kubernetes Administrator) exam simulator th
 | Build both domain packs AND multiple full mock-exam packs | Domain packs serve drilling; mock-exam packs reuse domain questions in a weighted blueprint mix for full mocks | — Pending |
 | SSH topology: candidate works from the control-plane node | Common killer.sh-style topology; no need to provision a 4th "student" VM; SSH key generated on CP, authorised on workers | — Pending |
 | Existing 31 exercises kept and labelled "superseded", not deleted | Preserves the existing "What tripped me up" war stories as reference; avoids rewriting prose that already works for study | — Pending |
+| Bootstrap does NOT inject shell aliases or modify `~/.vimrc` | Candidate practices full `kubectl`/`crictl`/`etcdctl` commands to build muscle memory; opt-in shortcuts are documented but not default. The real exam provides minimal pre-configuration, so practice should match | — Pending |
+| All K8s resource names conform to RFC 1123 (`[a-z0-9-]`, ≤63 chars) | Kubernetes rejects non-compliant names; CI-enforced to prevent silent admission failures during question authoring. Also applies to trap IDs, pack IDs, blueprint IDs for consistency | — Pending |
 
 ## Evolution
 
@@ -108,4 +126,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-07 after initialization*
+*Last updated: 2026-05-07 — milestone v1.0 started*
