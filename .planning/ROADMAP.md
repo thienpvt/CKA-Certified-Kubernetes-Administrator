@@ -38,6 +38,15 @@
 
 **Depends on:** Phase 1 (runner skeleton and `cka-sim` dispatch must exist to run the test harness).
 
+**Plans:** 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Library scaffold: `lib/grade.sh` (7 assertion helpers + record_trap + emit_result + 5 accumulator globals) and `lib/traps.sh` (catalog parser scaffolding + RFC 1123 validator)
+- [ ] 02-02-PLAN.md — Catalog + 8 detectors: `traps/catalog.yaml` seeded with all 8 GRADE-05 entries (D-13/D-14 schema), 8 `detect_<id>` functions appended to `lib/traps.sh`
+- [ ] 02-03-PLAN.md — Test harness skeleton: PATH-shadowed `kubectl` stub, `expect_*` helpers, `tests/run.sh`, `scripts/test.sh` orchestrator, `scripts/lint-traps.sh` (D-15 schema/naming/path/seed lint), `.gitattributes` extension
+- [ ] 02-04-PLAN.md — Fixtures + cases: 22 fixture files (9 detector hit/miss/benign + 13 helper pass/fail) + 15 test cases (8 `traps_*` + 7 `grade_*`); end-to-end `test.sh` runs green with all 15 cases passing
+- [ ] 02-05-PLAN.md — CI integration: extend `.github/workflows/validate.yml` `paths:` filter (`cka-sim/**`, `**.sh`) and add `bash-tests` job invoking `cka-sim/scripts/test.sh`
+
 ---
 
 ## Phase 3: Runtime Contract + Drill Mode
