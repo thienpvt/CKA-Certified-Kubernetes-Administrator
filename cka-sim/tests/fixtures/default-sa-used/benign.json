@@ -1,0 +1,6 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {"name": "other-pod", "namespace": "cka-sim-test"},
+  "spec": {"serviceAccountName": "monitoring-sa", "containers": [{"name": "exporter", "image": "busybox:1.37"}]}
+}
