@@ -1,0 +1,1 @@
+{"kind": "Pod", "apiVersion": "v1", "metadata": {"name": "exists", "namespace": "cka-sim-test"}}
