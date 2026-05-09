@@ -151,4 +151,153 @@ cka_sim::trap::format_line() {
   printf 'Trap %d: %s: %s\n' "$ord" "${CKA_SIM_TRAP_NAME[$id]}" "${CKA_SIM_TRAP_DESC[$id]}"
 }
 
-# Detectors land in plan 02-02; see traps/catalog.yaml for the seed list.
+# ---------- Detectors ----------
+# Contract (per CONTEXT D-02): positional args; stdout = trap-id on hit, EMPTY on miss.
+# No global state, no side effects, idempotent.
+#
+# 8 seeded detectors — one per id in traps/catalog.yaml.
+# kubectl-based detectors: kubectl stderr is suppressed (2>/dev/null) so a
+# missing resource looks like a miss, not an error — the PATH-shadowed kubectl
+# stub in cka-sim/tests/bin/ exits 1 when no fixture matches, and we treat
+# that as "resource not present -> no hit".
+# Text-based detectors take a single <text> arg (typically a candidate's
+# submitted solution snippet or a captured kubectl error message) and use
+# grep/regex to spot the wrong wording. They MUST NOT require kubectl.
+
+# cka_sim::trap::detect_default_sa_used <namespace> <pod-name>
+#   Echoes "default-sa-used" if the pod's .spec.serviceAccountName is unset
+#   or equals "default" (pod inherits the default SA with auto-mounted token).
+cka_sim::trap::detect_default_sa_used() {
+  local ns="${1:?detect_default_sa_used: namespace required}"
+  local pod="${2:?detect_default_sa_used: pod name required}"
+  local sa
+  sa=$(kubectl get pod "$pod" -n "$ns" -o jsonpath='{.spec.serviceAccountName}' 2>/dev/null)
+  if [[ -z "$sa" || "$sa" == "default" ]]; then
+    echo "default-sa-used"
+  fi
+}
+
+# cka_sim::trap::detect_missing_dns_egress <namespace> <netpol-name>
+#   Echoes "missing-dns-egress" if the NetworkPolicy restricts egress
+#   (policyTypes includes "Egress" AND egress rules are present) but none of
+#   those rules permit UDP/53. An egress-deny-all policy (policyTypes has
+#   "Egress" but .spec.egress is empty/missing) is NOT a hit — the author
+#   may intend to block everything.
+cka_sim::trap::detect_missing_dns_egress() {
+  local ns="${1:?detect_missing_dns_egress: namespace required}"
+  local np="${2:?detect_missing_dns_egress: netpol name required}"
+  local json
+  json=$(kubectl get networkpolicy "$np" -n "$ns" -o json 2>/dev/null) || return 0
+  [[ -n "$json" ]] || return 0
+  local has_egress
+  has_egress=$(echo "$json" | jq -r '.spec.policyTypes // [] | index("Egress") != null' 2>/dev/null)
+  [[ "$has_egress" == "true" ]] || return 0
+  local egress_rules
+  egress_rules=$(echo "$json" | jq -r '(.spec.egress // []) | length' 2>/dev/null)
+  [[ "$egress_rules" =~ ^[0-9]+$ ]] || return 0
+  (( egress_rules > 0 )) || return 0
+  local has_dns
+  has_dns=$(echo "$json" | jq -r '
+    [.spec.egress[]?.ports[]?
+     | select((.protocol // "TCP") == "UDP")
+     | select((.port // 0) == 53 or (.port // "") == "53")
+    ] | length > 0' 2>/dev/null)
+  if [[ "$has_dns" != "true" ]]; then
+    echo "missing-dns-egress"
+  fi
+}
+
+# cka_sim::trap::detect_hostpath_pv_without_nodeaffinity <pv-name>
+#   Echoes "hostpath-pv-without-nodeaffinity" if the PV has .spec.hostPath
+#   set AND .spec.nodeAffinity is missing/null. Single-node clusters mask
+#   the problem; multi-node clusters hit it the first time the pod reschedules.
+cka_sim::trap::detect_hostpath_pv_without_nodeaffinity() {
+  local pv="${1:?detect_hostpath_pv_without_nodeaffinity: pv name required}"
+  local json
+  json=$(kubectl get pv "$pv" -o json 2>/dev/null) || return 0
+  [[ -n "$json" ]] || return 0
+  local has_hostpath has_nodeaffinity
+  has_hostpath=$(echo "$json" | jq -r '.spec.hostPath != null' 2>/dev/null)
+  has_nodeaffinity=$(echo "$json" | jq -r '.spec.nodeAffinity != null' 2>/dev/null)
+  if [[ "$has_hostpath" == "true" && "$has_nodeaffinity" != "true" ]]; then
+    echo "hostpath-pv-without-nodeaffinity"
+  fi
+}
+
+# cka_sim::trap::detect_pss_error_string_mismatch <text>
+#   Echoes "pss-error-string-mismatch" if <text> contains the legacy
+#   "PodSecurityPolicy" wording AND does NOT contain the v1.25+ wording
+#   `violates PodSecurity "`. Operates on the candidate's submitted text
+#   (no kubectl call) — Phase 3 graders pipe in the candidate's answer.
+cka_sim::trap::detect_pss_error_string_mismatch() {
+  local text="${1:-}"
+  [[ -n "$text" ]] || return 0
+  if grep -qF 'PodSecurityPolicy' <<<"$text" \
+     && ! grep -qE 'violates PodSecurity "' <<<"$text"; then
+    echo "pss-error-string-mismatch"
+  fi
+}
+
+# cka_sim::trap::detect_psp_fictional_pod_label_exemption <text>
+#   Echoes "psp-fictional-pod-label-exemption" if <text> uses the fictional
+#   pod-level label key pod-security.kubernetes.io/exempt: (no such label
+#   bypasses PSS — exemptions are AdmissionConfiguration-level).
+cka_sim::trap::detect_psp_fictional_pod_label_exemption() {
+  local text="${1:-}"
+  [[ -n "$text" ]] || return 0
+  if grep -qE 'pod-security\.kubernetes\.io/exempt[: ]' <<<"$text"; then
+    echo "psp-fictional-pod-label-exemption"
+  fi
+}
+
+# cka_sim::trap::detect_kubelet_runtime_flag_in_kubeconfig <text>
+#   Echoes "kubelet-runtime-flag-in-kubeconfig" if <text> edits
+#   /etc/kubernetes/kubelet.conf (the kubeconfig) AND adds a --container-runtime
+#   flag. Kubelet runtime flags belong in /var/lib/kubelet/kubeadm-flags.env,
+#   not the kubeconfig file.
+cka_sim::trap::detect_kubelet_runtime_flag_in_kubeconfig() {
+  local text="${1:-}"
+  [[ -n "$text" ]] || return 0
+  if grep -qE '/etc/kubernetes/kubelet\.conf' <<<"$text" \
+     && grep -qE -- '--container-runtime' <<<"$text"; then
+    echo "kubelet-runtime-flag-in-kubeconfig"
+  fi
+}
+
+# cka_sim::trap::detect_removed_container_runtime_flag <text>
+#   Echoes "removed-container-runtime-flag" if <text> contains the removed
+#   --container-runtime=<value> flag (any value). Only --container-runtime-endpoint=
+#   remains in 1.27+; the bare --container-runtime= flag was removed.
+cka_sim::trap::detect_removed_container_runtime_flag() {
+  local text="${1:-}"
+  [[ -n "$text" ]] || return 0
+  # Match --container-runtime=<word-char> but NOT --container-runtime-endpoint=
+  # (the leading-char class excludes the hyphen that starts "-endpoint").
+  if grep -qE -- '--container-runtime=[a-z]' <<<"$text"; then
+    echo "removed-container-runtime-flag"
+  fi
+}
+
+# cka_sim::trap::detect_as_flag_format_wrong <text>
+#   Echoes "as-flag-format-wrong" if <text> contains a kubectl --as=VALUE
+#   or --as VALUE where VALUE contains a colon AND does NOT start with
+#   "system:serviceaccount:". Plain usernames (no colon) are allowed;
+#   system:serviceaccount:<ns>:<name> is allowed; "my-sa" bare name is
+#   allowed at the regex level (no colon) because it doesn't fit the
+#   "wrong subject" fingerprint — the trap specifically catches the
+#   half-remembered "system:serviceaccount:foo" or "sa:foo" typos.
+cka_sim::trap::detect_as_flag_format_wrong() {
+  local text="${1:-}"
+  [[ -n "$text" ]] || return 0
+  local v
+  while IFS= read -r v; do
+    [[ -n "$v" ]] || continue
+    # Allowed: bare username (no colon) OR system:serviceaccount:NS:NAME.
+    # Hit: any other colon-containing shape (e.g. "foo:bar", "sa:foo").
+    if [[ "$v" == *:* ]] && [[ "$v" != system:serviceaccount:*:* ]]; then
+      echo "as-flag-format-wrong"
+      return 0
+    fi
+  done < <(grep -oE -- '--as[ =][^[:space:]]+' <<<"$text" \
+            | sed -E 's/^--as[ =]//')
+}
