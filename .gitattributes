@@ -13,3 +13,7 @@
 *.jpg binary
 *.gif binary
 *.ico binary
+
+# cka-sim test harness — extension-less bin scripts and JSON fixtures
+cka-sim/tests/bin/* text eol=lf
+cka-sim/tests/fixtures/**/*.json text eol=lf

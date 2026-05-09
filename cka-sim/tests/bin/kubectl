@@ -1,0 +1,114 @@
+#!/bin/bash
+# cka-sim/tests/bin/kubectl — PATH-shadow stub for unit tests.
+#
+# Reads argv, fingerprints into a fixture path, and cats the matching JSON file.
+# Real kubectl is silent on the happy path; we mirror that.
+#
+# Inputs:
+#   $CKA_SIM_TEST_FIXTURES_DIR   — base dir (set by tests/run.sh)
+#   $CKA_SIM_TEST_CURRENT        — current case fixture sub-dir (set by case files)
+# Output:
+#   stdout = fixture file contents (raw JSON)
+#   stderr = errors only (unsupported argv shape, missing fixture)
+# Exit: 0 on success, 1 on missing fixture, 64 on unsupported verb.
+
+set -euo pipefail
+
+: "${CKA_SIM_TEST_FIXTURES_DIR:?CKA_SIM_TEST_FIXTURES_DIR must be set by tests/run.sh}"
+: "${CKA_SIM_TEST_CURRENT:?CKA_SIM_TEST_CURRENT must be set by the test case (e.g. default-sa-used/hit)}"
+
+fixture_path="$CKA_SIM_TEST_FIXTURES_DIR/$CKA_SIM_TEST_CURRENT.json"
+
+verb="${1:-}"
+case "$verb" in
+  get)
+    # kubectl get <resource> [<name>] [-n <ns>] [-o json|jsonpath=...]
+    # Simple dispatcher: cat the fixture; tests pre-set CKA_SIM_TEST_CURRENT to point
+    # at the right hit/miss/benign file.
+    if [[ ! -f "$fixture_path" ]]; then
+      printf 'kubectl-stub: fixture not found: %s\n' "$fixture_path" >&2
+      exit 1
+    fi
+    # If args contain `-o jsonpath=...`, evaluate against the fixture JSON via jq;
+    # otherwise dump the raw JSON.
+    local_jsonpath=""
+    local_use_name_only=0
+    for arg in "$@"; do
+      case "$arg" in
+        -o)
+          ;;
+        jsonpath=*)
+          local_jsonpath="${arg#jsonpath=}"
+          ;;
+        -o=jsonpath=*)
+          local_jsonpath="${arg#-o=jsonpath=}"
+          ;;
+        json|-o=json)
+          ;;
+        name|-o=name)
+          local_use_name_only=1
+          ;;
+      esac
+    done
+    if [[ -n "$local_jsonpath" ]]; then
+      # Translate kubectl jsonpath {.foo.bar} → jq '.foo.bar // ""'.
+      # Strip leading/trailing braces; handle the common shapes used by detectors:
+      #   {.spec.serviceAccountName}
+      #   {.status.phase}
+      #   {.status.conditions[?(@.type=="Ready")].status}
+      #   {.subsets[*].addresses[*].ip}
+      jpath="${local_jsonpath#\{}"
+      jpath="${jpath%\}}"
+      # The conditions[?()] selector is the only kubectl-specific shape we need to translate.
+      # Convert kubectl's [?(@.type=="Ready")] → [(.type=="Ready")].
+      jq_expr=$(echo "$jpath" | sed -E '
+        s/\[\?\(@\.([a-zA-Z]+)=="([^"]+)"\)\]/[] | select(.\1=="\2")/g
+        s/\[\*\]/[]/g
+      ')
+      # Compose: . then jq_expr; default empty string when null.
+      # `|| true` protects the stub's `set -euo pipefail` from aborting when jq exits non-zero
+      # on a malformed/unsupported jsonpath — an empty stdout is the desired "field not found" signal.
+      { jq -r "$jq_expr // \"\"" "$fixture_path" 2>/dev/null | tr '\n' ' ' | sed 's/[[:space:]]*$//'; } || true
+      printf '\n'
+    elif (( local_use_name_only == 1 )); then
+      # `-o name` returns one resource per line, like "<kind>/<name>"
+      jq -r '.kind + "/" + .metadata.name' "$fixture_path" 2>/dev/null
+    else
+      cat "$fixture_path"
+    fi
+    ;;
+  auth)
+    # kubectl auth can-i <verb> <resource> [-n <ns>] [--as <user>]
+    if [[ "${2:-}" != "can-i" ]]; then
+      printf 'kubectl-stub: unsupported auth subcommand: %s\n' "${2:-}" >&2
+      exit 64
+    fi
+    # Fixture: a single token "yes" or "no" on stdout.
+    if [[ ! -f "$fixture_path" ]]; then
+      printf 'kubectl-stub: fixture not found: %s\n' "$fixture_path" >&2
+      exit 1
+    fi
+    cat "$fixture_path"
+    ;;
+  exec)
+    # kubectl exec -n NS POD -- CMD ... — fixture decides exit code via filename suffix.
+    # Convention: fixture file content = exit code (e.g. "0\n" for success, "1\n" for fail).
+    if [[ ! -f "$fixture_path" ]]; then
+      printf 'kubectl-stub: fixture not found: %s\n' "$fixture_path" >&2
+      exit 1
+    fi
+    rc=$(head -1 "$fixture_path")
+    exit "${rc:-0}"
+    ;;
+  describe)
+    if [[ ! -f "$fixture_path" ]]; then
+      printf 'kubectl-stub: fixture not found: %s\n' "$fixture_path" >&2
+      exit 1
+    fi
+    cat "$fixture_path"
+    ;;
+  *)
+    printf 'kubectl-stub: unsupported verb %q (set CKA_SIM_TEST_CURRENT to a fixture; see tests/fixtures/)\n' "$verb" >&2
+    exit 64
+    ;;
+esac
