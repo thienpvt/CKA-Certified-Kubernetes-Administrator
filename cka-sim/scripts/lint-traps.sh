@@ -128,10 +128,13 @@ while IFS= read -r line; do
 
   # New entry: "  - id: <id>"
   if [[ "$line" =~ ^[[:space:]]{2}-[[:space:]]+id:[[:space:]]+(.+)$ ]]; then
+    # IMPORTANT: capture BASH_REMATCH[1] BEFORE calling _validate_entry — that helper invokes
+    # cka_sim::trap::is_valid_id which does its own `[[ =~ ]]` and clobbers BASH_REMATCH.
+    new_id="$(_strip_quotes "${BASH_REMATCH[1]}")"
     # Validate previous entry (if any) before starting a new one
     _validate_entry
     # Reset state
-    current_id="$(_strip_quotes "${BASH_REMATCH[1]}")"
+    current_id="$new_id"
     unset current_fields current_ref_kinds current_ref_targets
     declare -A current_fields=()
     declare -a current_ref_kinds=()
