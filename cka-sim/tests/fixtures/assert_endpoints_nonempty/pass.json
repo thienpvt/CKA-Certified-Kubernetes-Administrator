@@ -1,0 +1,6 @@
+{
+  "kind": "Endpoints",
+  "apiVersion": "v1",
+  "metadata": {"name": "web", "namespace": "cka-sim-test"},
+  "subsets": [{"addresses": [{"ip": "10.244.1.5"}, {"ip": "10.244.2.7"}], "ports": [{"port": 80, "protocol": "TCP"}]}]
+}

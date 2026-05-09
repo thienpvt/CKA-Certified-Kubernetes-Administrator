@@ -1,0 +1,6 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {"name": "web", "namespace": "cka-sim-test"},
+  "status": {"conditions": [{"type": "Ready", "status": "True"}, {"type": "ContainersReady", "status": "True"}]}
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {"name": "webapp", "namespace": "cka-sim-test"},
+  "spec": {"containers": [{"name": "main", "image": "nginx:1.28"}]}
+}
