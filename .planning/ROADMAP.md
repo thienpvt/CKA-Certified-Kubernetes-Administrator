@@ -45,7 +45,7 @@ Plans:
 - [x] 02-02-PLAN.md — Catalog + 8 detectors: `traps/catalog.yaml` seeded with all 8 GRADE-05 entries (D-13/D-14 schema), 8 `detect_<id>` functions appended to `lib/traps.sh`
 - [x] 02-03-PLAN.md — Test harness skeleton: PATH-shadowed `kubectl` stub, `expect_*` helpers, `tests/run.sh`, `scripts/test.sh` orchestrator, `scripts/lint-traps.sh` (D-15 schema/naming/path/seed lint), `.gitattributes` extension
 - [x] 02-04-PLAN.md — Fixtures + cases: 22 fixture files (9 detector hit/miss/benign + 13 helper pass/fail) + 15 test cases (8 `traps_*` + 7 `grade_*`); end-to-end `test.sh` runs green with all 15 cases passing
-- [ ] 02-05-PLAN.md — CI integration: extend `.github/workflows/validate.yml` `paths:` filter (`cka-sim/**`, `**.sh`) and add `bash-tests` job invoking `cka-sim/scripts/test.sh`
+- [x] 02-05-PLAN.md — CI integration: extend `.github/workflows/validate.yml` `paths:` filter (`cka-sim/**`, `**.sh`) and add `bash-tests` job invoking `cka-sim/scripts/test.sh`
 
 ---
 
