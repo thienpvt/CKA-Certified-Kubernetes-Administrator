@@ -18,7 +18,7 @@ echo "=== YAML Validation ==="
 echo ""
 
 # --- Python YAML syntax check ---
-for dir in skeletons exercises; do
+for dir in skeletons exercises cka-sim; do
   target="$REPO_ROOT/$dir"
   if [ ! -d "$target" ]; then
     continue
@@ -48,6 +48,18 @@ if command -v yamllint &>/dev/null; then
 else
   echo ""
   echo "Tip: install yamllint (pip install yamllint) for stricter checks."
+fi
+
+# --- cka-sim coverage + trap lints ---
+if [ -x "$REPO_ROOT/cka-sim/scripts/lint-coverage.sh" ]; then
+  echo ""
+  echo "=== cka-sim coverage lint ==="
+  if bash "$REPO_ROOT/cka-sim/scripts/lint-coverage.sh"; then
+    echo -e "${GREEN}cka-sim coverage lint passed${NC}"
+  else
+    echo -e "${RED}cka-sim coverage lint failed${NC}"
+    errors=$((errors + 1))
+  fi
 fi
 
 echo ""

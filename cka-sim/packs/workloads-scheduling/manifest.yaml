@@ -2,8 +2,29 @@ pack:
   id: workloads-scheduling
   domain: workloads-scheduling
   weight: 15
-  description: "Workloads & Scheduling 15% pack — Phase 3 reference question only; full pack in Phase 4 (PACK-02)."
+  description: "Workloads & Scheduling 15% domain pack (PACK-02) -- full v1.35 Tracker coverage including CG-06 + CG-08."
 questions:
   - id: workloads-deployment-requests
     path: 01-deployment-requests
     estimatedMinutes: 7
+  - id: workloads-rolling-update-rollback
+    path: 02-rolling-update-rollback
+    estimatedMinutes: 7
+  - id: workloads-configmap-secret-env-volume
+    path: 03-configmap-secret-env-volume
+    estimatedMinutes: 8
+  - id: workloads-hpa-metrics-server
+    path: 04-hpa-metrics-server
+    estimatedMinutes: 9
+  - id: workloads-daemonset
+    path: 05-daemonset
+    estimatedMinutes: 7
+  - id: workloads-static-pod
+    path: 06-static-pod
+    estimatedMinutes: 8
+  - id: workloads-native-sidecar
+    path: 07-native-sidecar
+    estimatedMinutes: 8
+  - id: workloads-nodeselector-affinity-taints
+    path: 08-nodeselector-affinity-taints
+    estimatedMinutes: 9
