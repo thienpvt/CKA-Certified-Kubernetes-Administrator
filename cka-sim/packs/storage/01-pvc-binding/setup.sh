@@ -1,43 +1,18 @@
 #!/bin/bash
 # storage/01-pvc-binding/setup.sh — seeds hostPath PV WITHOUT nodeAffinity (trap) + PVC.
+# Retrofitted Phase 4 Plan 04: sources shared cka-sim/lib/setup.sh helpers.
 set -euo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"
+: "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set (drill runner exports it)}"
 
-# 1. Idempotent ns create
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: storage
-    cka-sim/question-id: storage-pvc-binding
-EOF
+# shellcheck source=../../../lib/setup.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/setup.sh"
 
-# 2. Wait up to 120s for ns Active (handles prior reset --wait=false leaving Terminating;
-#    if ns disappears mid-wait we re-apply the namespace definition)
-phase=""
-for i in $(seq 1 24); do
-  phase=$(kubectl get ns "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-  if [[ "$phase" == "Active" ]]; then
-    break
-  fi
-  if [[ -z "$phase" ]]; then
-    kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: storage
-    cka-sim/question-id: storage-pvc-binding
-EOF
-  fi
-  sleep 5
-done
-[[ "$phase" == "Active" ]] || { echo "ns $CKA_SIM_LAB_NS not Active after 50s (phase=$phase)" >&2; exit 1; }
+# 1. Idempotent ns create + 120s Active wait (helper absorbs the --wait=false race).
+cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" storage storage-pvc-binding
+cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" storage storage-pvc-binding 120
 
-# 3. Apply hostPath PV — INTENTIONALLY MISSING nodeAffinity (the trap).
+# 2. Apply hostPath PV — INTENTIONALLY MISSING nodeAffinity (the trap).
 # Cluster-scoped -> q01- prefix per TRIP-03.
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -59,7 +34,7 @@ spec:
     type: DirectoryOrCreate
 EOF
 
-# 4. Apply PVC (will stay Pending until candidate fixes the PV's nodeAffinity).
+# 3. Apply PVC (will stay Pending until candidate fixes the PV's nodeAffinity).
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: PersistentVolumeClaim
