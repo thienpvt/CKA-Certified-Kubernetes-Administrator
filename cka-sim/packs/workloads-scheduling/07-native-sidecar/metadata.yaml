@@ -1,0 +1,15 @@
+id: workloads-native-sidecar
+domain: workloads-scheduling
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - sidecar-not-native-restartpolicy-always
+  - default-sa-used
+  - deployment-missing-requests
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/"
+    note: Native sidecar containers (initContainers[].restartPolicy=Always, GA in 1.29+)
+  - kind: k8s-doc
+    target: "https://kubernetes.io/blog/2023/08/25/native-sidecar-containers/"
+    note: SidecarContainers feature blog (background + 1.35 default)
