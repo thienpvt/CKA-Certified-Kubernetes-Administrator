@@ -126,25 +126,29 @@ passes. Phase 3 enforces this as a **human-verification step** on the
 CP node — a live kubectl-backed CI fixture (a kind cluster job) is
 explicitly deferred (DF-12, revisit in v1.x).
 
-Procedure (runs in ~2 minutes per question on a healthy cluster):
+Procedure (runs in ~2 minutes per question on a healthy cluster). Use a
+**fresh namespace per round** — `reset.sh` uses `kubectl delete ns
+--wait=false`, so re-using the same namespace across rounds can collide
+with a still-`Terminating` ns and time out `setup.sh`'s 50s Active-wait:
 
 ```bash
 export CKA_SIM_ROOT=$(pwd)/cka-sim
-export CKA_SIM_LAB_NS=verify-$(date +%s)
-
 cd cka-sim/packs/<domain>/<NN>-<slug>
 
-# 1. Round-trip FAIL path
+# 1. Round-trip FAIL path (fresh ns)
+export CKA_SIM_LAB_NS=verify-fail-$(date +%s%N)
 bash reset.sh >/dev/null
 bash setup.sh
 bash grade.sh ; fail_rc=$?     # expect non-zero (assertions fail, trap recorded)
 bash reset.sh >/dev/null
 
-# 2. Round-trip PASS path
+# 2. Round-trip PASS path (fresh ns)
+export CKA_SIM_LAB_NS=verify-pass-$(date +%s%N)
+bash reset.sh >/dev/null
 bash setup.sh
 bash ref-solution.sh
 bash grade.sh ; pass_rc=$?     # expect zero (all assertions pass, no unresolved trap)
-bash reset.sh
+bash reset.sh >/dev/null
 
 [[ $fail_rc -ne 0 && $pass_rc -eq 0 ]] && echo "round-trip OK" || echo "BROKEN"
 ```

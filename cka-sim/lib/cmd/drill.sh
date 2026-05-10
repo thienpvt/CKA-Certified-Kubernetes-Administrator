@@ -196,6 +196,27 @@ cka_sim::drill::prompt_ready() {
   esac
 }
 
+# ---------- Namespace-gone wait ----------
+#
+# Polls until `kubectl get ns <name>` reports NotFound, or until <timeout_s>
+# elapses. Returns 0 in both cases (best-effort) — setup.sh has its own 50s
+# Active-wait, so a slow deletion still surfaces there. This helper exists
+# only to absorb the common case where reset.sh's --wait=false (D-08) leaves
+# the ns Terminating across a back-to-back drill (TRIP-02).
+cka_sim::drill::_wait_ns_gone() {
+  local ns="${1:?_wait_ns_gone: namespace required}"
+  local timeout_s="${2:-60}"
+  local elapsed=0
+  while (( elapsed < timeout_s )); do
+    if ! kubectl get ns "$ns" -o name >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 2
+    elapsed=$(( elapsed + 2 ))
+  done
+  return 0
+}
+
 # ---------- EXIT-trap cleanup ----------
 #
 # Registered as the EXIT trap from main() (NOT from inside this function —
@@ -272,6 +293,11 @@ main() {
 
   info "step 1/4: reset"
   bash "$CKA_SIM_QUESTION_DIR/reset.sh"
+
+  # reset.sh uses --wait=false (D-08). Absorb the deletion latency here so a
+  # back-to-back drill (TRIP-02) doesn't race setup.sh's apply against a still-
+  # Terminating namespace and time out the 50s Active-wait.
+  cka_sim::drill::_wait_ns_gone "$CKA_SIM_LAB_NS" 60
 
   info "step 2/4: setup"
   bash "$CKA_SIM_QUESTION_DIR/setup.sh"
