@@ -1,38 +1,16 @@
 #!/bin/bash
 # workloads-scheduling/01-deployment-requests/setup.sh — Deployment WITH default SA, NO requests (the traps).
+# Retrofitted Phase 4 Plan 05: sources shared cka-sim/lib/setup.sh helpers.
 set -euo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"
+: "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set (drill runner exports it)}"
 
-# 1. Idempotent ns + Active wait
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: workloads-scheduling
-    cka-sim/question-id: workloads-deployment-requests
-EOF
-phase=""
-for i in $(seq 1 24); do
-  phase=$(kubectl get ns "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-  if [[ "$phase" == "Active" ]]; then
-    break
-  fi
-  if [[ -z "$phase" ]]; then
-    kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: workloads-scheduling
-    cka-sim/question-id: workloads-deployment-requests
-EOF
-  fi
-  sleep 5
-done
-[[ "$phase" == "Active" ]] || { echo "ns not Active (phase=$phase)" >&2; exit 1; }
+# shellcheck source=../../../lib/setup.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/setup.sh"
+
+# 1. Idempotent ns create + 120s Active wait.
+cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" workloads-scheduling workloads-deployment-requests
+cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" workloads-scheduling workloads-deployment-requests 120
 
 # 2. Deployment with NO resources.requests AND NO serviceAccountName (defaults to "default" SA — the trap).
 kubectl apply -f - <<EOF
