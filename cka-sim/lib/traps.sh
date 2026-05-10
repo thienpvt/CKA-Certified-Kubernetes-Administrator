@@ -301,3 +301,61 @@ cka_sim::trap::detect_as_flag_format_wrong() {
   done < <(grep -oE -- '--as[ =][^[:space:]]+' <<<"$text" \
             | sed -E 's/^--as[ =]//')
 }
+
+# cka_sim::trap::detect_rbac_viewer_role_mismatch <namespace> <role-name>
+#   Echoes "rbac-viewer-role-mismatch" if the Role has at least one rule
+#   that targets pods (apiGroups includes "" and resources includes "pods")
+#   BUT that rule's verbs do NOT include both "get" AND "list". Intended
+#   for questions where a candidate Role is supposed to grant viewer-level
+#   pod access; this detector fires when the verbs are wrong (e.g., only
+#   "watch", or missing altogether).
+cka_sim::trap::detect_rbac_viewer_role_mismatch() {
+  local ns="${1:?detect_rbac_viewer_role_mismatch: namespace required}"
+  local role="${2:?detect_rbac_viewer_role_mismatch: role name required}"
+  local json
+  json=$(kubectl get role "$role" -n "$ns" -o json 2>/dev/null) || return 0
+  [[ -n "$json" ]] || return 0
+  local pod_rule_verbs
+  pod_rule_verbs=$(echo "$json" | jq -r '
+    [.rules[]?
+     | select(((.apiGroups // []) | index("")) != null)
+     | select(((.resources // []) | index("pods")) != null)
+     | (.verbs // [])
+    ] | add // []
+    | @csv' 2>/dev/null)
+  # No rule targets pods at all -> trap (viewer cannot list pods)
+  if [[ -z "$pod_rule_verbs" || "$pod_rule_verbs" == "null" ]]; then
+    echo "rbac-viewer-role-mismatch"
+    return 0
+  fi
+  # Pod-targeting rule(s) exist; check for get AND list verbs
+  local has_get has_list
+  has_get=$(echo "$pod_rule_verbs" | grep -cE '"(get|\*)"' || true)
+  has_list=$(echo "$pod_rule_verbs" | grep -cE '"(list|\*)"' || true)
+  if (( has_get == 0 )) || (( has_list == 0 )); then
+    echo "rbac-viewer-role-mismatch"
+  fi
+}
+
+# cka_sim::trap::detect_service_label_mismatch <namespace> <service-name>
+#   Echoes "service-label-mismatch" if the Service exists but its Endpoints
+#   object has no ready addresses. Intended for questions where a Service
+#   selector doesn't match any pod's labels — Endpoints stays empty
+#   regardless of pod Ready state.
+cka_sim::trap::detect_service_label_mismatch() {
+  local ns="${1:?detect_service_label_mismatch: namespace required}"
+  local svc="${2:?detect_service_label_mismatch: service name required}"
+  # Service must exist for the detector to fire (otherwise different problem)
+  kubectl get service "$svc" -n "$ns" -o name >/dev/null 2>&1 || return 0
+  local ep_json
+  ep_json=$(kubectl get endpoints "$svc" -n "$ns" -o json 2>/dev/null) || return 0
+  [[ -n "$ep_json" ]] || { echo "service-label-mismatch"; return 0; }
+  local addr_count
+  addr_count=$(echo "$ep_json" | jq -r '
+    [.subsets[]? .addresses[]?] | length
+  ' 2>/dev/null)
+  [[ "$addr_count" =~ ^[0-9]+$ ]] || addr_count=0
+  if (( addr_count == 0 )); then
+    echo "service-label-mismatch"
+  fi
+}
