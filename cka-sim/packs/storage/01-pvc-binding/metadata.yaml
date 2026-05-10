@@ -1,0 +1,15 @@
+id: storage-pvc-binding
+domain: storage
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - hostpath-pv-without-nodeaffinity
+  - pvc-wrong-storageclass
+  - pv-accessmodes-mismatch
+references:
+  - kind: prior-art-exercise
+    target: exercises/12-storage-pv-pvc/
+    note: Prior prose version
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+    note: PV/PVC concepts
