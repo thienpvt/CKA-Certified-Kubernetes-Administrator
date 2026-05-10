@@ -315,48 +315,58 @@ cka_sim::trap::detect_rbac_viewer_role_mismatch() {
   local json
   json=$(kubectl get role "$role" -n "$ns" -o json 2>/dev/null) || return 0
   [[ -n "$json" ]] || return 0
-  local pod_rule_verbs
-  pod_rule_verbs=$(echo "$json" | jq -r '
+
+  # Stage 1 — count pod-targeting rules. Zero rules = trap.
+  local pod_rule_count
+  pod_rule_count=$(echo "$json" | jq -r '
     [.rules[]?
      | select(((.apiGroups // []) | index("")) != null)
      | select(((.resources // []) | index("pods")) != null)
-     | (.verbs // [])
-    ] | add // []
-    | @csv' 2>/dev/null)
-  # No rule targets pods at all -> trap (viewer cannot list pods)
-  if [[ -z "$pod_rule_verbs" || "$pod_rule_verbs" == "null" ]]; then
+    ] | length' 2>/dev/null)
+  if [[ ! "$pod_rule_count" =~ ^[0-9]+$ ]] || (( pod_rule_count == 0 )); then
     echo "rbac-viewer-role-mismatch"
     return 0
   fi
-  # Pod-targeting rule(s) exist; check for get AND list verbs
-  local has_get has_list
-  has_get=$(echo "$pod_rule_verbs" | grep -cE '"(get|\*)"' || true)
-  has_list=$(echo "$pod_rule_verbs" | grep -cE '"(list|\*)"' || true)
+
+  # Stage 2 — pod rule(s) exist; collect their verbs and require get AND list.
+  local verbs_csv
+  verbs_csv=$(echo "$json" | jq -r '
+    [.rules[]?
+     | select(((.apiGroups // []) | index("")) != null)
+     | select(((.resources // []) | index("pods")) != null)
+     | .verbs[]?
+    ] | unique | @csv' 2>/dev/null)
+  local has_get=0 has_list=0
+  grep -qE '"(get|\*)"'  <<<"$verbs_csv" && has_get=1
+  grep -qE '"(list|\*)"' <<<"$verbs_csv" && has_list=1
   if (( has_get == 0 )) || (( has_list == 0 )); then
     echo "rbac-viewer-role-mismatch"
   fi
 }
 
 # cka_sim::trap::detect_service_label_mismatch <namespace> <service-name>
-#   Echoes "service-selector-empty-endpoints" if the Service exists but its
-#   Endpoints object has no ready addresses. Intended for questions where a
-#   Service selector doesn't match any pod's labels — Endpoints stays empty
-#   regardless of pod Ready state. The echoed id MUST match the catalog
-#   entry (see cka-sim/traps/catalog.yaml); lint-traps.sh + lint-packs.sh
-#   both enforce that every id emitted by a detector is registered.
+#   Echoes "service-selector-empty-endpoints" if the Service exists but no
+#   EndpointSlice has any ready addresses for it. Queries EndpointSlice (the
+#   authoritative resource on k8s 1.21+; pack target is 1.35) via the
+#   `kubernetes.io/service-name=<svc>` label selector — NOT the legacy
+#   Endpoints object, which can be suppressed on managed clusters.
+#   Cannot-determine paths (Service missing, kubectl/jq parse failure) return
+#   without echoing — they are NOT misclassified as hits. The echoed id MUST
+#   match the catalog entry (see cka-sim/traps/catalog.yaml); lint-traps.sh
+#   + lint-packs.sh both enforce that every id emitted is registered.
 cka_sim::trap::detect_service_label_mismatch() {
   local ns="${1:?detect_service_label_mismatch: namespace required}"
   local svc="${2:?detect_service_label_mismatch: service name required}"
   # Service must exist for the detector to fire (otherwise different problem)
   kubectl get service "$svc" -n "$ns" -o name >/dev/null 2>&1 || return 0
-  local ep_json
-  ep_json=$(kubectl get endpoints "$svc" -n "$ns" -o json 2>/dev/null) || return 0
-  [[ -n "$ep_json" ]] || { echo "service-selector-empty-endpoints"; return 0; }
   local addr_count
-  addr_count=$(echo "$ep_json" | jq -r '
-    [.subsets[]? .addresses[]?] | length
-  ' 2>/dev/null)
-  [[ "$addr_count" =~ ^[0-9]+$ ]] || addr_count=0
+  addr_count=$(kubectl get endpointslice -n "$ns" \
+                 -l "kubernetes.io/service-name=$svc" -o json 2>/dev/null \
+               | jq -r '[.items[]?.endpoints[]?.addresses[]?] | length' 2>/dev/null)
+  # Cannot-determine -> miss (do NOT misreport as hit). EndpointSlice fetch
+  # failures (RBAC deny, transient API error) and jq parse failures both
+  # leave $addr_count non-numeric, which we silently treat as "no signal".
+  [[ "$addr_count" =~ ^[0-9]+$ ]] || return 0
   if (( addr_count == 0 )); then
     echo "service-selector-empty-endpoints"
   fi
