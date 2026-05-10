@@ -1,0 +1,15 @@
+id: workloads-daemonset
+domain: workloads-scheduling
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - default-sa-used
+  - deployment-missing-requests
+  - daemonset-missing-control-plane-toleration
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/"
+    note: DaemonSet concepts
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/"
+    note: Tolerations for control-plane taint
