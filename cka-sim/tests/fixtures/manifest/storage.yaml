@@ -1,0 +1,9 @@
+pack:
+  id: storage
+  domain: storage
+  weight: 10
+  description: "Storage fixture"
+questions:
+  - id: storage-pvc-binding
+    path: 01-pvc-binding
+    estimatedMinutes: 8
