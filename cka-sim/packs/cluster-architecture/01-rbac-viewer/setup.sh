@@ -14,7 +14,7 @@ metadata:
     cka-sim/question-id: cluster-architecture-rbac-viewer
 EOF
 phase=""
-for i in $(seq 1 10); do
+for i in $(seq 1 24); do
   phase=$(kubectl get ns "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
   if [[ "$phase" == "Active" ]]; then
     break

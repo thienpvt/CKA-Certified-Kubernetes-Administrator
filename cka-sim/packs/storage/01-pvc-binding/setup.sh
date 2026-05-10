@@ -14,9 +14,10 @@ metadata:
     cka-sim/question-id: storage-pvc-binding
 EOF
 
-# 2. Wait up to 50s for ns Active (handles prior reset --wait=false leaving Terminating)
+# 2. Wait up to 120s for ns Active (handles prior reset --wait=false leaving Terminating;
+#    if ns disappears mid-wait we re-apply the namespace definition)
 phase=""
-for i in $(seq 1 10); do
+for i in $(seq 1 24); do
   phase=$(kubectl get ns "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
   if [[ "$phase" == "Active" ]]; then
     break
