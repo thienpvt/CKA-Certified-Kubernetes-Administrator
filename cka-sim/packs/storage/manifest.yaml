@@ -7,3 +7,6 @@ questions:
   - id: storage-pvc-binding
     path: 01-pvc-binding
     estimatedMinutes: 8
+  - id: storage-wait-for-first-consumer
+    path: 05-wait-for-first-consumer
+    estimatedMinutes: 7
