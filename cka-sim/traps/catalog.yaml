@@ -146,3 +146,63 @@ traps:
       - kind: k8s-doc
         target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
         note: NetworkPolicy docs
+
+  - id: pvc-wrong-storageclass
+    name: PVC requests a StorageClass not present on the cluster
+    description: "PVC stays Pending because spec.storageClassName references a StorageClass that no provisioner serves."
+    remediation_hint: "Update PVC.spec.storageClassName to a class that exists, or create the missing StorageClass."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/storage-classes/"
+        note: StorageClass concepts
+
+  - id: pv-accessmodes-mismatch
+    name: PV and PVC accessModes do not match
+    description: "Binder skips a PV whose accessModes don't include every mode the PVC requests."
+    remediation_hint: "Align PV.spec.accessModes with PVC.spec.accessModes (PVC requesting RWO needs PV listing RWO)."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
+        note: accessModes matching rules
+
+  - id: deployment-missing-requests
+    name: Deployment containers omit resources.requests
+    description: "Without resources.requests, HPA cannot compute CPU utilisation and the scheduler treats the pod as best-effort QoS."
+    remediation_hint: "Add resources.requests.cpu and resources.requests.memory to every container in the Deployment template."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/"
+        note: container resource requests
+
+  - id: service-selector-empty-endpoints
+    name: Service selector matches no Ready pods so endpoints are empty
+    description: "Service.spec.selector labels do not match any Ready pod's labels; Endpoints/EndpointSlices contain no addresses."
+    remediation_hint: "Diff Service.spec.selector against the Deployment template's pod labels and align them (label keys AND values)."
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service"
+        note: selector / endpoints
+
+  - id: rbac-viewer-role-mismatch
+    name: RBAC Role or RoleBinding does not grant the required viewer permissions
+    description: "Candidate created a Role/RoleBinding pair but the Role's rules omit the required verb-resource (e.g., 'list pods') OR the RoleBinding subject does not name the expected ServiceAccount; kubectl auth can-i returns 'no' for the requested impersonation."
+    remediation_hint: "Ensure the Role grants verbs ['get','list','watch'] on resources ['pods'] in apiGroups ['']; ensure the RoleBinding subject is kind=ServiceAccount, name=<expected-sa>, namespace=<lab-ns>."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
+        note: RBAC Role/RoleBinding semantics
