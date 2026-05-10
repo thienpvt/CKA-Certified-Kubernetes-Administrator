@@ -1,0 +1,1 @@
+{"kind":"PersistentVolume","metadata":{"name":"q-test-pv"},"spec":{"hostPath":{"path":"/tmp/q-test-pv"}}}
