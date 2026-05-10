@@ -1,0 +1,9 @@
+pack:
+  id: services-networking
+  domain: services-networking
+  weight: 20
+  description: "Services & Networking 20% pack — Phase 3 reference question only; full pack in Phase 5 (PACK-03)."
+questions:
+  - id: services-networkpolicy-egress
+    path: 01-networkpolicy-egress
+    estimatedMinutes: 9
