@@ -1,0 +1,15 @@
+id: storage-pvc-mount-pod
+domain: storage
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - hostpath-pv-without-nodeaffinity
+  - default-sa-used
+  - deployment-missing-requests
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+    note: PVC mount in pod spec
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+    note: Deployment pod template volumes
