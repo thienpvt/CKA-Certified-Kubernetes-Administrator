@@ -1,0 +1,15 @@
+id: cluster-architecture-rbac-viewer
+domain: cluster-architecture
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - rbac-viewer-role-mismatch
+  - default-sa-used
+  - missing-dns-egress
+references:
+  - kind: prior-art-exercise
+    target: exercises/04-rbac/
+    note: Prior RBAC exercise
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+    note: RBAC reference

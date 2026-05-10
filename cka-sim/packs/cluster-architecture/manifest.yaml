@@ -1,0 +1,9 @@
+pack:
+  id: cluster-architecture
+  domain: cluster-architecture
+  weight: 25
+  description: "Cluster Architecture 25% pack — Phase 3 reference question only; full pack in Phase 5 (PACK-04)."
+questions:
+  - id: cluster-architecture-rbac-viewer
+    path: 01-rbac-viewer
+    estimatedMinutes: 8
