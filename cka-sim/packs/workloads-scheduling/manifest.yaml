@@ -1,0 +1,9 @@
+pack:
+  id: workloads-scheduling
+  domain: workloads-scheduling
+  weight: 15
+  description: "Workloads & Scheduling 15% pack — Phase 3 reference question only; full pack in Phase 4 (PACK-02)."
+questions:
+  - id: workloads-deployment-requests
+    path: 01-deployment-requests
+    estimatedMinutes: 7
