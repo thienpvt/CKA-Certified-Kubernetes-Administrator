@@ -16,7 +16,20 @@ EOF
 phase=""
 for i in $(seq 1 10); do
   phase=$(kubectl get ns "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-  [[ "$phase" == "Active" ]] && break
+  if [[ "$phase" == "Active" ]]; then
+    break
+  fi
+  if [[ -z "$phase" ]]; then
+    kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${CKA_SIM_LAB_NS}
+  labels:
+    cka-sim/pack: troubleshooting
+    cka-sim/question-id: troubleshooting-deploy-svc-mismatch
+EOF
+  fi
   sleep 5
 done
 [[ "$phase" == "Active" ]] || { echo "ns $CKA_SIM_LAB_NS not Active after 50s (phase=$phase)" >&2; exit 1; }
