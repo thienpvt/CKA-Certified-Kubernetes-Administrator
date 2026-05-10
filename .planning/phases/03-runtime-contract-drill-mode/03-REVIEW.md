@@ -53,7 +53,23 @@ findings:
   warning: 6
   info: 6
   total: 14
-status: issues_found
+status: partial-fix
+fixed:
+  - CR-01
+  - CR-02
+deferred:
+  - WR-01
+  - WR-02
+  - WR-03
+  - WR-04
+  - WR-05
+  - WR-06
+  - IN-01
+  - IN-02
+  - IN-03
+  - IN-04
+  - IN-05
+  - IN-06
 ---
 
 # Phase 3: Code Review Report
@@ -259,3 +275,23 @@ This tests "running four scripts in this order produces this log", which is taut
 _Reviewed: 2026-05-10T00:00:00Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
+
+---
+
+## Fix log
+
+| Finding | Status | Resolution |
+|---------|--------|------------|
+| CR-01 | fixed | `32fdd6a` — split `detect_rbac_viewer_role_mismatch` into stage-1 pod-rule presence + stage-2 verb collection. Drops dead `"null"` branch and accidental-emit jq collapse. |
+| CR-02 | fixed | `32fdd6a` — `detect_service_label_mismatch` now queries `EndpointSlice` (k8s 1.21+, pack target 1.35) via `kubernetes.io/service-name=<svc>` selector. Fetch/parse failure no longer misclassified as hit. |
+| WR-01 | deferred | Heredoc + line-continuation regex gap in lint-packs Pass A. Single-line convention is established; revisit if a multi-line `kubectl get \| grep` ever lands. |
+| WR-02 | deferred | Same as WR-01 for Pass B mutating verbs (flag-between-binary-and-verb gap). Pack convention bans flags between `kubectl` and verb in graders. |
+| WR-03 | deferred | `drill_orchestration_order.sh` is a smoke test of script ordering, not the EXIT trap. Real EXIT-trap coverage is integration-level (Phase 8 scope). |
+| WR-04 | deferred | Pack `traps:` arrays list aspirational ids the grader doesn't detect. Needs a coordinated change: relax lint Pass E from `≥3` to `≥1`, add detector-parity check, prune all 5 metadata.yaml + update AUTHORING.md §5. Touches lint fixtures — needs its own session. |
+| WR-05 | deferred | `for i` → `for _` in 5 setup.sh files. Trivial, but bundle with WR-04 since both touch all 5 packs. |
+| WR-06 | deferred | Manifest parser regex `^\ \ ([a-z]+):` drops snake/camelCase keys. No current manifest needs them; widen if Phase 4 PACK-* requirements add fields. |
+| IN-01..06 | deferred | Style/comment items, no behavior change. |
+
+**Test status after fixes:** `bash cka-sim/scripts/test.sh` → 23 cases green (unchanged).
+
+**Deferred work to next session:** WR-04 (the highest-leverage warning — silent GRADE-04 downgrade). Bundle WR-05 with it (same 5 packs).
