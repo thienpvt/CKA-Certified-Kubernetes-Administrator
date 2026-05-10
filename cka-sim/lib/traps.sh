@@ -338,10 +338,12 @@ cka_sim::trap::detect_rbac_viewer_role_mismatch() {
 }
 
 # cka_sim::trap::detect_service_label_mismatch <namespace> <service-name>
-#   Echoes "service-label-mismatch" if the Service exists but its Endpoints
-#   object has no ready addresses. Intended for questions where a Service
-#   selector doesn't match any pod's labels — Endpoints stays empty
-#   regardless of pod Ready state.
+#   Echoes "service-selector-empty-endpoints" if the Service exists but its
+#   Endpoints object has no ready addresses. Intended for questions where a
+#   Service selector doesn't match any pod's labels — Endpoints stays empty
+#   regardless of pod Ready state. The echoed id MUST match the catalog
+#   entry (see cka-sim/traps/catalog.yaml); lint-traps.sh + lint-packs.sh
+#   both enforce that every id emitted by a detector is registered.
 cka_sim::trap::detect_service_label_mismatch() {
   local ns="${1:?detect_service_label_mismatch: namespace required}"
   local svc="${2:?detect_service_label_mismatch: service name required}"
@@ -349,13 +351,13 @@ cka_sim::trap::detect_service_label_mismatch() {
   kubectl get service "$svc" -n "$ns" -o name >/dev/null 2>&1 || return 0
   local ep_json
   ep_json=$(kubectl get endpoints "$svc" -n "$ns" -o json 2>/dev/null) || return 0
-  [[ -n "$ep_json" ]] || { echo "service-label-mismatch"; return 0; }
+  [[ -n "$ep_json" ]] || { echo "service-selector-empty-endpoints"; return 0; }
   local addr_count
   addr_count=$(echo "$ep_json" | jq -r '
     [.subsets[]? .addresses[]?] | length
   ' 2>/dev/null)
   [[ "$addr_count" =~ ^[0-9]+$ ]] || addr_count=0
   if (( addr_count == 0 )); then
-    echo "service-label-mismatch"
+    echo "service-selector-empty-endpoints"
   fi
 }

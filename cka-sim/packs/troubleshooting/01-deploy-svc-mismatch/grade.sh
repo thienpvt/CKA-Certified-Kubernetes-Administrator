@@ -21,9 +21,7 @@ cka_sim::grade::assert_resource_exists service web-svc -n "$CKA_SIM_LAB_NS"
 cka_sim::grade::assert_endpoints_nonempty "$CKA_SIM_LAB_NS" "web-svc"
 
 # Trap detector: Service.spec.selector matches no pod (or endpoints empty despite pods).
-# The detector echoes "service-label-mismatch" on hit; that synthetic id is NOT in the catalog,
-# so we record the registered catalog id ("service-selector-empty-endpoints") instead.
 tid=$(cka_sim::trap::detect_service_label_mismatch "$CKA_SIM_LAB_NS" "web-svc")
-[[ -n "$tid" ]] && cka_sim::grade::record_trap "service-selector-empty-endpoints"
+[[ -n "$tid" ]] && cka_sim::grade::record_trap "$tid"
 
 cka_sim::grade::emit_result
