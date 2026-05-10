@@ -1,0 +1,15 @@
+id: workloads-deployment-requests
+domain: workloads-scheduling
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - default-sa-used
+  - deployment-missing-requests
+  - hostpath-pv-without-nodeaffinity
+references:
+  - kind: prior-art-exercise
+    target: exercises/16-hpa/
+    note: HPA exercise mentions resources.requests prereq
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+    note: Container resource requests
