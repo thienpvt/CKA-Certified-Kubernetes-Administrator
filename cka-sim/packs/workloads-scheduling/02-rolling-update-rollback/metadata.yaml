@@ -1,0 +1,15 @@
+id: workloads-rolling-update-rollback
+domain: workloads-scheduling
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - deployment-missing-requests
+  - default-sa-used
+  - service-selector-empty-endpoints
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment"
+    note: Rolling back a Deployment
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment"
+    note: Rolling update strategy
