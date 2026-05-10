@@ -19,7 +19,11 @@ info "step 1: lint trap catalog"
 "$CKA_SIM_ROOT/scripts/lint-traps.sh"
 ok "catalog lint passed"
 
-info "step 2: run bash unit cases"
+info "step 2: lint packs"
+"$CKA_SIM_ROOT/scripts/lint-packs.sh"
+ok "pack lint passed"
+
+info "step 3: run bash unit cases"
 "$CKA_SIM_ROOT/tests/run.sh"
 ok "all unit cases passed"
 
