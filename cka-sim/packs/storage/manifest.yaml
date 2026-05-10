@@ -1,0 +1,9 @@
+pack:
+  id: storage
+  domain: storage
+  weight: 10
+  description: "Storage 10% domain pack — Phase 3 reference question only; full pack in Phase 4 (PACK-01)."
+questions:
+  - id: storage-pvc-binding
+    path: 01-pvc-binding
+    estimatedMinutes: 8
