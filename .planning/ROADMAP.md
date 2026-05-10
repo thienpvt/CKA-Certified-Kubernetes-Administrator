@@ -84,22 +84,22 @@ Plans:
 **Plans:** 16 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Shared setup helper library (`cka-sim/lib/setup.sh`) + 4 unit test cases (Wave 1)
-- [ ] 04-02-PLAN.md — Trap catalog extension (6 new entries) + 18 fixture files (Wave 1)
-- [ ] 04-03-PLAN.md — Per-pack `coverage.yaml` + `scripts/lint-coverage.sh` + 2 unit test cases (Wave 1)
-- [ ] 04-04-PLAN.md — Retrofit `storage/01-pvc-binding` to source `lib/setup.sh` (Wave 2)
-- [ ] 04-05-PLAN.md — Retrofit `workloads-scheduling/01-deployment-requests` to source `lib/setup.sh` (Wave 2)
-- [ ] 04-06-PLAN.md — Storage Q02 `02-storageclass-dynamic` (Wave 3)
-- [ ] 04-07-PLAN.md — Storage Q03 `03-access-modes-reclaim` (Wave 3)
-- [ ] 04-08-PLAN.md — Storage Q04 `04-csi-volumesnapshot` with hostpath-csi install (Wave 3)
-- [ ] 04-09-PLAN.md — Storage Q05 `05-wait-for-first-consumer` (Wave 3)
-- [ ] 04-10-PLAN.md — Storage Q06 `06-pvc-mount-pod` (Wave 3)
-- [ ] 04-11-PLAN.md — Workloads Q02 `02-rolling-update-rollback` (Wave 3)
-- [ ] 04-12-PLAN.md — Workloads Q03 `03-configmap-secret-env-volume` (Wave 3)
-- [ ] 04-13-PLAN.md — Workloads Q04 `04-hpa-metrics-server` with metrics-server install (Wave 3)
-- [ ] 04-14-PLAN.md — Workloads Q05 `05-daemonset` (Wave 3)
-- [ ] 04-15-PLAN.md — Workloads Q06+Q07+Q08 (`static-pod`, `native-sidecar`, `nodeselector-affinity-taints`) (Wave 3)
-- [ ] 04-16-PLAN.md — Final integration: pack manifests + `test.sh` chain + `validate-local.sh` coverage lint wiring (Wave 4)
+- [x] 04-01-PLAN.md — Shared setup helper library (`cka-sim/lib/setup.sh`) + 4 unit test cases (Wave 1)
+- [x] 04-02-PLAN.md — Trap catalog extension (6 new entries) + 18 fixture files (Wave 1)
+- [x] 04-03-PLAN.md — Per-pack `coverage.yaml` + `scripts/lint-coverage.sh` + 2 unit test cases (Wave 1)
+- [x] 04-04-PLAN.md — Retrofit `storage/01-pvc-binding` to source `lib/setup.sh` (Wave 2)
+- [x] 04-05-PLAN.md — Retrofit `workloads-scheduling/01-deployment-requests` to source `lib/setup.sh` (Wave 2)
+- [x] 04-06-PLAN.md — Storage Q02 `02-storageclass-dynamic` (Wave 3)
+- [x] 04-07-PLAN.md — Storage Q03 `03-access-modes-reclaim` (Wave 3)
+- [x] 04-08-PLAN.md — Storage Q04 `04-csi-volumesnapshot` with hostpath-csi install (Wave 3)
+- [x] 04-09-PLAN.md — Storage Q05 `05-wait-for-first-consumer` (Wave 3)
+- [x] 04-10-PLAN.md — Storage Q06 `06-pvc-mount-pod` (Wave 3)
+- [x] 04-11-PLAN.md — Workloads Q02 `02-rolling-update-rollback` (Wave 3)
+- [x] 04-12-PLAN.md — Workloads Q03 `03-configmap-secret-env-volume` (Wave 3)
+- [x] 04-13-PLAN.md — Workloads Q04 `04-hpa-metrics-server` with metrics-server install (Wave 3)
+- [x] 04-14-PLAN.md — Workloads Q05 `05-daemonset` (Wave 3)
+- [x] 04-15-PLAN.md — Workloads Q06+Q07+Q08 (`static-pod`, `native-sidecar`, `nodeselector-affinity-taints`) (Wave 3)
+- [x] 04-16-PLAN.md — Final integration: pack manifests + `test.sh` chain + `validate-local.sh` coverage lint wiring (Wave 4)
 
 ---
 
