@@ -1,0 +1,1 @@
+{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"name":"nfs-claim","namespace":"cka-sim-storage-03"},"spec":{"accessModes":["ReadWriteMany"],"storageClassName":"nfs-csi"},"status":{"phase":"Bound"}}

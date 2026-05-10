@@ -206,3 +206,96 @@ traps:
       - kind: k8s-doc
         target: "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
         note: RBAC Role/RoleBinding semantics
+
+  - id: csi-snapshot-wrong-driver
+    name: VolumeSnapshotClass references a driver not installed on the cluster
+    description: "VolumeSnapshot stays stuck without readyToUse=true because the VolumeSnapshotClass spec.driver names a CSI driver that is not installed or not serving snapshots on this cluster."
+    remediation_hint: "Install the correct CSI driver that matches the VolumeSnapshotClass spec.driver, or edit the VolumeSnapshotClass to point at an installed driver."
+    severity: error
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/volume-snapshots/"
+        note: VolumeSnapshot + VolumeSnapshotClass concepts
+
+  - id: pvc-pending-wffc-unscheduled-consumer
+    name: PVC with WaitForFirstConsumer stays Pending because no pod consumes it
+    description: "StorageClass has volumeBindingMode=WaitForFirstConsumer; the PVC will not bind until a pod that mounts it is scheduled. Candidates often deploy the PVC alone and conclude the cluster is broken."
+    remediation_hint: "Create a Pod (or Deployment/StatefulSet) that mounts the PVC via spec.volumes[].persistentVolumeClaim.claimName. Binding resolves as soon as the pod is scheduled."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode"
+        note: WaitForFirstConsumer binding semantics
+
+  - id: reclaim-policy-delete-data-loss
+    name: PV reclaim policy set to Delete destroys data when the PVC is deleted
+    description: "PersistentVolume reclaim policy is Delete; when the bound PVC is deleted, the underlying volume (and its data) is removed automatically. Retain preserves the volume for manual reclaim."
+    remediation_hint: "Set persistentVolumeReclaimPolicy: Retain on any PV whose data must survive PVC deletion. kubectl patch pv <name> -p '{\"spec\":{\"persistentVolumeReclaimPolicy\":\"Retain\"}}'"
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming"
+        note: Reclaim policy semantics
+
+  - id: pvc-accessmode-rwx-on-rwo-sc
+    name: PVC requests ReadWriteMany access from a StorageClass that only provides ReadWriteOnce
+    description: "PVC spec.accessModes contains ReadWriteMany but the matching StorageClass (or PV) only supports ReadWriteOnce; the PVC stays Pending forever. hostPath and most local-path provisioners are RWO-only."
+    remediation_hint: "Either request ReadWriteOnce on the PVC (matching what the StorageClass provides) or use a StorageClass whose provisioner supports RWX (NFS, CephFS, cloud file shares)."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
+        note: accessMode support matrix per volume plugin
+
+  - id: hpa-missing-metrics-server
+    name: HPA cannot scale because metrics-server is not installed
+    description: "HorizontalPodAutoscaler targets CPU/memory but metrics.k8s.io is unavailable; the HPA stays FailedGetResourceMetric and never scales. kubeadm clusters do not ship metrics-server by default."
+    remediation_hint: "Install metrics-server via the upstream manifest (https://github.com/kubernetes-sigs/metrics-server). On lab kubeadm clusters with self-signed kubelet certs, add --kubelet-insecure-tls to the metrics-server Deployment args."
+    severity: error
+    domain: workloads-scheduling
+    source: concerns-md
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "CG-06 — metrics-server bootstrap prerequisite for HPA"
+      - kind: k8s-doc
+        target: "https://github.com/kubernetes-sigs/metrics-server"
+        note: metrics-server upstream install manifest
+
+  - id: sidecar-not-native-restartpolicy-always
+    name: Sidecar added as peer container instead of v1.29+ native sidecar (initContainer with restartPolicy Always)
+    description: "Candidate adds a sidecar as a regular spec.containers entry instead of using the v1.29+ native sidecar shape: spec.initContainers[].restartPolicy: Always. Legacy peer-container sidecars do not get guaranteed ordering, lifecycle, or graceful shutdown."
+    remediation_hint: "Move the sidecar into spec.initContainers and set restartPolicy: Always on that init container. The SidecarContainers feature gate is GA on 1.29+ and enabled by default in 1.35."
+    severity: warn
+    domain: workloads-scheduling
+    source: concerns-md
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "CG-08 — native sidecar pattern is the 1.35 canonical shape"
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/"
+        note: Native sidecar containers
+
+  - id: daemonset-missing-control-plane-toleration
+    name: DaemonSet lacks control-plane NoSchedule toleration
+    description: "DaemonSet pod template omits a toleration for node-role.kubernetes.io/control-plane:NoSchedule, so the daemon pod is never scheduled onto the control-plane node. The DaemonSet reports fewer Ready nodes than the cluster actually has."
+    remediation_hint: "Add a toleration for node-role.kubernetes.io/control-plane with operator: Exists (and effect: NoSchedule, plus NoExecute if the node has that effect too). Verify status.desiredNumberScheduled matches the cluster's Ready node count after the change."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/"
+        note: Taints + tolerations — control-plane NoSchedule taint semantics
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#taints-and-tolerations"
+        note: DaemonSet taints + tolerations guidance
