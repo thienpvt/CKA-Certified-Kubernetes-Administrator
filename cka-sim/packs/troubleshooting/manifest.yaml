@@ -1,0 +1,9 @@
+pack:
+  id: troubleshooting
+  domain: troubleshooting
+  weight: 30
+  description: "Troubleshooting 30% pack — Phase 3 reference question only; full pack in Phase 6 (PACK-05)."
+questions:
+  - id: troubleshooting-deploy-svc-mismatch
+    path: 01-deploy-svc-mismatch
+    estimatedMinutes: 7
