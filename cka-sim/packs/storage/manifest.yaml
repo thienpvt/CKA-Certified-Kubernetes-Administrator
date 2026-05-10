@@ -2,11 +2,23 @@ pack:
   id: storage
   domain: storage
   weight: 10
-  description: "Storage 10% domain pack — Phase 3 reference question only; full pack in Phase 4 (PACK-01)."
+  description: "Storage 10% domain pack (PACK-01) -- full v1.35 Tracker coverage."
 questions:
   - id: storage-pvc-binding
     path: 01-pvc-binding
     estimatedMinutes: 8
+  - id: storage-storageclass-dynamic
+    path: 02-storageclass-dynamic
+    estimatedMinutes: 7
+  - id: storage-access-modes-reclaim
+    path: 03-access-modes-reclaim
+    estimatedMinutes: 9
+  - id: storage-csi-volumesnapshot
+    path: 04-csi-volumesnapshot
+    estimatedMinutes: 9
   - id: storage-wait-for-first-consumer
     path: 05-wait-for-first-consumer
+    estimatedMinutes: 7
+  - id: storage-pvc-mount-pod
+    path: 06-pvc-mount-pod
     estimatedMinutes: 7
