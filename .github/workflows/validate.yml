@@ -58,5 +58,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Coverage lint
+        run: bash cka-sim/scripts/lint-coverage.sh
+
       - name: Run cka-sim test suite
         run: bash cka-sim/scripts/test.sh

@@ -23,7 +23,11 @@ info "step 2: lint packs"
 "$CKA_SIM_ROOT/scripts/lint-packs.sh"
 ok "pack lint passed"
 
-info "step 3: run bash unit cases"
+info "step 3: lint coverage"
+"$CKA_SIM_ROOT/scripts/lint-coverage.sh"
+ok "coverage lint passed"
+
+info "step 4: run bash unit cases"
 "$CKA_SIM_ROOT/tests/run.sh"
 ok "all unit cases passed"
 
