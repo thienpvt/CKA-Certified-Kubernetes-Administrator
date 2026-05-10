@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T04:23:58.213Z"
-last_activity: 2026-05-10 -- Phase 3 planning complete
+last_updated: "2026-05-10T14:17:15.000Z"
+last_activity: 2026-05-10 -- Phase 3 verified (live 1+2 cluster round-trip green); ready to plan Phase 4
 progress:
   total_phases: 8
-  completed_phases: 1
+  completed_phases: 3
   total_plans: 16
-  completed_plans: 6
-  percent: 38
+  completed_plans: 15
+  percent: 50
 ---
 
 # State
 
 ## Current Position
 
-Phase: 3
+Phase: 4
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-05-10 -- Phase 3 planning complete
+Status: Ready to plan
+Last activity: 2026-05-10 -- Phase 3 verified on live cluster; all 5 reference questions round-trip green
 
 ### Phase 1 outstanding (carried forward)
 
@@ -52,6 +52,8 @@ See `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-SUMMARY.md` for th
 - 2026-05-09 — Phase 2 grader contract: failed assertions accumulate (no `die`); each assertion = 1 point; live `✓`/`✗` to stderr, `SCORE:`/`Trap N:` block to stdout; trap dedup by id.
 - 2026-05-09 — Phase 2 test harness: PATH-shadowed `kubectl` stub + plain-bash runner; lives at `cka-sim/scripts/test.sh`; new GHA `bash-tests` job; hit/miss/benign fixtures per detector.
 - 2026-05-09 — Phase 2 catalog schema: 8 fields per entry (id/name/description/remediation_hint/references/severity/domain/source); `references` is structured `{kind,target,note}`; `lint-traps.sh` enforces schema + paths + seed completeness; `record_trap` validates id at runtime.
+- 2026-05-10 — Phase 3 setup-script ns-Active wait extended to 120 s + re-apply if phase=empty; absorbs the `reset.sh --wait=false` race in both drill-driven and bash-driven round-trips. Commit `5c421c1`.
+- 2026-05-10 — Phase 3 verified passed on live 1+2 cluster: all 5 reference questions round-trip green (fail_rc!=0 under trap, pass_rc==0 under ref-solution); criterion 1 drill run and criterion 2 TRIP-02 idempotency both confirmed.
 
 ### Blockers
 
