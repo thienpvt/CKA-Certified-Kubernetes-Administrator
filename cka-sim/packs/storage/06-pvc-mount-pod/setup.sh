@@ -58,6 +58,11 @@ kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/q06-data \
 
 # 4. Writer pod: runs once, writes /data/marker, exits 0. restartPolicy=OnFailure
 #    keeps the pod from restarting after a successful write (terminal Succeeded).
+#    WR-10 (04-REVIEW.md): reset.sh uses async ns delete (--wait=false) + cluster-
+#    scoped PV delete, so the hostPath directory on the pinned node can retain a
+#    stale /data/marker from a prior run's writer until kubelet GC catches up. Add
+#    an initContainer that wipes /data before the writer populates it, so every
+#    setup run starts from a clean filesystem regardless of reset's async race.
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -69,6 +74,13 @@ metadata:
     cka-sim/question-id: storage-pvc-mount-pod
 spec:
   restartPolicy: OnFailure
+  initContainers:
+    - name: wipe
+      image: busybox:1.36
+      command: ["sh", "-c", "rm -rf /data/* /data/.[!.]* 2>/dev/null; true"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
   containers:
     - name: writer
       image: busybox:1.36
