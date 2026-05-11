@@ -57,14 +57,24 @@ if ! kubectl api-resources --api-group=snapshot.storage.k8s.io 2>/dev/null | gre
     || { echo "setup: snapshot-controller did not become Available within 120s" >&2; exit 1; }
 fi
 
-# 2. hostpath-csi driver — pinned v1.14.0 via kustomize ref.
-# Gated on the csi-hostpath namespace existing (the driver's canonical namespace).
-if ! kubectl get namespace csi-hostpath >/dev/null 2>&1; then
-  _q04_warn_unsigned_fetch "https://github.com/kubernetes-csi/csi-driver-host-path/deploy/kubernetes-latest/hostpath?ref=v1.14.0 (kustomize)"
-  kubectl apply -k 'https://github.com/kubernetes-csi/csi-driver-host-path/deploy/kubernetes-latest/hostpath?ref=v1.14.0'
-  # WR-12: same rule for the hostpath driver pods -- they are a hard
-  # prerequisite for PVC binding later in this script.
-  kubectl wait --for=condition=Ready pod -n csi-hostpath -l app.kubernetes.io/name=csi-hostpathplugin --timeout=180s 2>/dev/null \
+# 2. hostpath-csi driver — pinned v1.14.0 reference manifests.
+# BUG-4 fix (2026-05-11): upstream v1.14.0 has NO kustomize entrypoint at
+# deploy/kubernetes-latest/hostpath. Install the 3 required yamls under
+# deploy/kubernetes-1.27/hostpath individually. Manifests land in the
+# 'default' namespace (not 'csi-hostpath'); sentinel checks for the
+# StatefulSet instead of a namespace that never gets created.
+if ! kubectl get statefulset csi-hostpathplugin -n default >/dev/null 2>&1; then
+  for _q04_url in \
+    https://raw.githubusercontent.com/kubernetes-csi/csi-driver-host-path/v1.14.0/deploy/kubernetes-1.27/hostpath/csi-hostpath-driverinfo.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/csi-driver-host-path/v1.14.0/deploy/kubernetes-1.27/hostpath/csi-hostpath-plugin.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/csi-driver-host-path/v1.14.0/deploy/kubernetes-1.27/hostpath/csi-hostpath-snapshotclass.yaml; do
+    _q04_warn_unsigned_fetch "$_q04_url"
+    kubectl apply -f "$_q04_url"
+  done
+  # WR-12: fail loudly if plugin pods never come up.
+  kubectl wait --for=condition=Ready pod -n default \
+    -l app.kubernetes.io/name=csi-hostpathplugin \
+    --timeout=180s 2>/dev/null \
     || { echo "setup: csi-hostpathplugin pods did not reach Ready within 180s" >&2; exit 1; }
 fi
 
