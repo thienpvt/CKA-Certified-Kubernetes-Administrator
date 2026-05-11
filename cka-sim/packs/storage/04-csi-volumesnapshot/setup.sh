@@ -61,9 +61,24 @@ fi
 # BUG-4 fix (2026-05-11): upstream v1.14.0 has NO kustomize entrypoint at
 # deploy/kubernetes-latest/hostpath. Install the 3 required yamls under
 # deploy/kubernetes-1.27/hostpath individually. Manifests land in the
-# 'default' namespace (not 'csi-hostpath'); sentinel checks for the
-# StatefulSet instead of a namespace that never gets created.
+# 'default' namespace; sentinel checks for the StatefulSet.
+# BUG-6 fix (2026-05-11): v1.14.0 plugin.yaml defines ClusterRoleBindings
+# that reference 5 ClusterRoles living in external-sidecar repos. Apply
+# those RBAC manifests FIRST, then the 3 hostpath manifests; otherwise the
+# csi-provisioner sidecar gets "forbidden: listing storageclasses" and
+# PVC stays Pending with WaitForFirstConsumer forever.
 if ! kubectl get statefulset csi-hostpathplugin -n default >/dev/null 2>&1; then
+  # 2a. External sidecar ClusterRoles (required by plugin.yaml's ClusterRoleBindings).
+  for _q04_url in \
+    https://raw.githubusercontent.com/kubernetes-csi/external-provisioner/v4.0.0/deploy/kubernetes/rbac.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-attacher/v4.5.0/deploy/kubernetes/rbac.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-resizer/v1.10.0/deploy/kubernetes/rbac.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-health-monitor/v0.11.0/deploy/kubernetes/external-health-monitor-controller/rbac.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/deploy/kubernetes/csi-snapshotter/rbac-csi-snapshotter.yaml; do
+    _q04_warn_unsigned_fetch "$_q04_url"
+    kubectl apply -f "$_q04_url"
+  done
+  # 2b. hostpath driver manifests.
   for _q04_url in \
     https://raw.githubusercontent.com/kubernetes-csi/csi-driver-host-path/v1.14.0/deploy/kubernetes-1.27/hostpath/csi-hostpath-driverinfo.yaml \
     https://raw.githubusercontent.com/kubernetes-csi/csi-driver-host-path/v1.14.0/deploy/kubernetes-1.27/hostpath/csi-hostpath-plugin.yaml \
