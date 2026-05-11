@@ -19,6 +19,12 @@ cka_sim::setup::seed_pv_hostpath q03-retain-pv 1Gi ReadWriteOnce Retain /tmp/q03
 # 3. PV 2: starts RWO, Delete. Candidate patches accessModes to RWX so q03-rwx-pvc can bind.
 cka_sim::setup::seed_pv_hostpath q03-delete-pv 1Gi ReadWriteOnce Delete /tmp/q03-delete kubernetes.io/hostname
 
+# WR-04 (04-REVIEW.md): label both PVs so the grader's RWX-detector can scope its
+# kubectl get pv query to this question and avoid false negatives from RWX PVs
+# left on the cluster by concurrent labs or long-running workloads.
+kubectl label pv q03-retain-pv cka-sim/pack=storage cka-sim/question-id=storage-access-modes-reclaim --overwrite
+kubectl label pv q03-delete-pv cka-sim/pack=storage cka-sim/question-id=storage-access-modes-reclaim --overwrite
+
 # 4. PVC q03-rwo-pvc (RWO) — binds immediately to q03-retain-pv.
 kubectl apply -f - <<EOF
 apiVersion: v1

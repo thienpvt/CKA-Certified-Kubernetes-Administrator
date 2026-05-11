@@ -31,8 +31,12 @@ cka_sim::grade::assert_field_eq pv q03-delete-pv '{.spec.accessModes[0]}' 'ReadW
 # limitation and this question uses manual PV binding (storageClassName=manual),
 # not a dynamic RWO-only SC. The two traps have different root causes; collapsing
 # them onto one condition misled the learner.
+# WR-04 (04-REVIEW.md): scope the RWX scan to THIS question's PVs via the
+# cka-sim/question-id label so a RWX PV left over from another lab on the same
+# cluster cannot suppress the trap with a false negative.
 phase=$(kubectl get pvc q03-rwx-pvc -n "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-rwx_names=$(kubectl get pv -o jsonpath='{.items[?(@.spec.accessModes[0]=="ReadWriteMany")].metadata.name}' 2>/dev/null || echo "")
+rwx_names=$(kubectl get pv -l cka-sim/question-id=storage-access-modes-reclaim \
+  -o jsonpath='{.items[?(@.spec.accessModes[0]=="ReadWriteMany")].metadata.name}' 2>/dev/null || echo "")
 rwx_count=$(printf '%s' "$rwx_names" | wc -w | tr -d ' ')
 if [[ "$phase" == "Pending" && "${rwx_count:-0}" == "0" ]]; then
   cka_sim::grade::record_trap pv-accessmodes-mismatch
