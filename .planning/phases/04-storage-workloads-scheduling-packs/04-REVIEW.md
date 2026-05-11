@@ -96,6 +96,13 @@ findings:
   info: 4
   total: 19
 status: issues_found
+fixes_applied: 2026-05-11T00:37:00Z
+fixed:
+  critical: 3
+  warning: 12
+  info: 3
+deferred:
+  info: 1
 ---
 
 # Phase 4: Code Review Report
@@ -112,6 +119,9 @@ Phase 4 ships the Storage and Workloads-Scheduling packs, a shared `lib/setup.sh
 ## Critical Issues
 
 ### CR-01: hostPath PV `operator: Exists` does not pin to a single node, breaking storage/06 writer->reader data handoff
+
+**Status:** fixed
+**Fixed commit:** cd73836
 
 **File:** `cka-sim/lib/setup.sh:53-84` (helper) and `cka-sim/packs/storage/06-pvc-mount-pod/setup.sh:18` (caller)
 
@@ -154,6 +164,9 @@ Then in storage/06/setup.sh, pass a real pinning value — e.g. discover a worke
 
 ### CR-02: storage/03 records `reclaim-policy-delete-data-loss` on the INVERSE condition, showing the candidate a contradictory trap message
 
+**Status:** fixed
+**Fixed commit:** 7cca959
+
 **File:** `cka-sim/packs/storage/03-access-modes-reclaim/grade.sh:39-42`
 
 **Issue:** The grader records trap `reclaim-policy-delete-data-loss` when `q03-retain-pv.spec.persistentVolumeReclaimPolicy == "Retain"`. The catalog entry for that trap (`cka-sim/traps/catalog.yaml:234-244`) has `name: "PV reclaim policy set to Delete destroys data when the PVC is deleted"` and `description: "PersistentVolume reclaim policy is Delete; when the bound PVC is deleted, the underlying volume (and its data) is removed automatically. Retain preserves the volume for manual reclaim."` The grader's inline comment admits this is "inverse framing," but at runtime `cka_sim::trap::format_line` renders the catalog's canonical message, so a candidate who correctly leaves the PV on `Retain` sees: `Trap N: PV reclaim policy set to Delete destroys data ... : PersistentVolume reclaim policy is Delete; when the bound PVC is deleted, the underlying volume (and its data) is removed automatically.` — a message that directly contradicts what they did. This is actively misleading teaching feedback and undermines the phase-4 "traps as learning signal" contract.
@@ -161,6 +174,9 @@ Then in storage/06/setup.sh, pass a real pinning value — e.g. discover a worke
 **Fix:** Register a new catalog entry whose wording matches the detected condition (e.g., `reclaim-policy-retain-when-delete-required` with description "Business rule requires PV to delete underlying storage with its PVC, but reclaim policy is still Retain; the data will be orphaned instead of cleaned up"), reference it from the question's metadata.yaml traps list, and record THAT id in grade.sh. Keep the existing `reclaim-policy-delete-data-loss` entry for the usual direction (questions where Delete was chosen against a Retain-required rule).
 
 ### CR-03: storage/04 CSI driver refcount collapses kubectl failures to "0 users" and unconditionally tears down the shared driver
+
+**Status:** fixed
+**Fixed commit:** 469ced7
 
 **File:** `cka-sim/packs/storage/04-csi-volumesnapshot/reset.sh:16-24`
 
@@ -204,6 +220,10 @@ fi
 
 ### WR-01: Unsigned HTTPS manifest fetches in setup/ref-solution scripts (supply-chain)
 
+**Status:** fixed (partial — full vendoring deferred)
+**Fixed commit:** 34ef919
+**Note:** Immediate remediation landed (loud WARN per fetch + CKA_SIM_OFFLINE opt-out). Full vendoring under `cka-sim/vendor/` with recorded SHA256 deferred to a dedicated follow-up plan.
+
 **File:**
 - `cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh:25-37`
 - `cka-sim/packs/workloads-scheduling/04-hpa-metrics-server/ref-solution.sh:9`
@@ -214,6 +234,9 @@ fi
 
 ### WR-02: storage/02-storageclass-dynamic/ref-solution.sh depends on `rancher.io/local-path` without verification
 
+**Status:** fixed
+**Fixed commit:** 588af3e
+
 **File:** `cka-sim/packs/storage/02-storageclass-dynamic/ref-solution.sh:12-19`
 
 **Issue:** Ref-solution creates a StorageClass with `provisioner: rancher.io/local-path` and expects WaitForFirstConsumer binding to succeed. The provisioner is assumed pre-installed "per exercise 12" (comment), but there is no preflight in the question's setup and no lint that surfaces the dependency. If a candidate runs the drill on a fresh kubeadm cluster, the ref-solution-based round-trip and `cka-sim drill storage` both hang at PVC Bound wait until the 90s timeout.
@@ -221,6 +244,9 @@ fi
 **Fix:** Add an explicit preflight in setup.sh that fails loudly if no suitable dynamic provisioner is installed (check cluster-scope StorageClasses with a provisioner other than `kubernetes.io/no-provisioner`), mirroring storage/04's snapshotter preflight pattern.
 
 ### WR-03: metadata.yaml declares off-topic traps
+
+**Status:** fixed
+**Fixed commit:** 32a8b5c
 
 **File:**
 - `cka-sim/packs/workloads-scheduling/03-configmap-secret-env-volume/metadata.yaml:7` (`hostpath-pv-without-nodeaffinity`)
@@ -234,6 +260,9 @@ fi
 
 ### WR-04: storage/03-access-modes-reclaim trap detector scopes cluster-wide RWX PV count
 
+**Status:** fixed
+**Fixed commit:** 63d273a
+
 **File:** `cka-sim/packs/storage/03-access-modes-reclaim/grade.sh:28-33`
 
 **Issue:** `rwx_names=$(kubectl get pv -o jsonpath='{.items[?(@.spec.accessModes[0]=="ReadWriteMany")].metadata.name}')` counts RWX PVs cluster-wide. If any other question, user, or long-running workload left a RWX PV in the cluster, `rwx_count > 0` and the trap is suppressed even though this question's PVs still mismatch. Produces false negatives in trap detection.
@@ -241,6 +270,9 @@ fi
 **Fix:** Scope the query to this question's PVs by label selector — seed `cka-sim/question-id=storage-access-modes-reclaim` on q03-retain-pv and q03-delete-pv in setup (the helper already emits no labels, so either extend the helper or attach labels post-apply), then filter `kubectl get pv -l cka-sim/question-id=storage-access-modes-reclaim`.
 
 ### WR-05: storage/03 pairs `pv-accessmodes-mismatch` with `pvc-accessmode-rwx-on-rwo-sc` using a single detection condition
+
+**Status:** fixed
+**Fixed commit:** 41ec9eb
 
 **File:** `cka-sim/packs/storage/03-access-modes-reclaim/grade.sh:30-33`
 
@@ -250,6 +282,9 @@ fi
 
 ### WR-06: storage/02 reset tears down cluster-scoped StorageClass without refcount
 
+**Status:** fixed
+**Fixed commit:** 10bd509
+
 **File:** `cka-sim/packs/storage/02-storageclass-dynamic/reset.sh:10`
 
 **Issue:** `kubectl delete storageclass fast-ssd --ignore-not-found` is unconditional. If a candidate happened to name their own SC `fast-ssd` or another lab uses the same name (a real risk given how generic the name is), reset stomps it. Not catastrophic for a serialised single-user drill loop, but dangerous once multiple candidates share a cluster.
@@ -257,6 +292,9 @@ fi
 **Fix:** Label the SC in ref-solution/docs (`cka-sim/uses: storage-storageclass-dynamic`) and gate the delete on `kubectl get sc fast-ssd -l cka-sim/uses=storage-storageclass-dynamic -o name` returning a hit.
 
 ### WR-07: storage/05 and storage/03 helpers do not label PVs for pack-scoped cleanup
+
+**Status:** fixed
+**Fixed commit:** 659fefc
 
 **File:**
 - `cka-sim/packs/storage/03-access-modes-reclaim/setup.sh:17,20`
@@ -268,6 +306,9 @@ fi
 **Fix:** Extend the helper signature (or add an `_apply_labels` stage) to label every emitted PV with `cka-sim/pack` and `cka-sim/question-id` sourced from caller-exported env. Retrofit all callers.
 
 ### WR-08: workloads/02 patch uses `op: add` on template annotations, non-idempotent across re-runs
+
+**Status:** fixed
+**Fixed commit:** adf3247
 
 **File:** `cka-sim/packs/workloads-scheduling/02-rolling-update-rollback/setup.sh:59-60`
 
@@ -282,6 +323,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 
 ### WR-09: workloads/06-static-pod reset only cleans node-01
 
+**Status:** fixed
+**Fixed commit:** e3a3ae4
+
 **File:** `cka-sim/packs/workloads-scheduling/06-static-pod/reset.sh:11`
 
 **Issue:** `ssh ... node-01 'sudo rm -f /etc/kubernetes/manifests/q06-static-nginx.yaml'` runs only against node-01. If a candidate (correctly or otherwise) dropped the manifest on node-02 or the control plane, the mirror pod persists after reset and the next setup sees an unexpected mirror pod in `default`. Grade is in `default` ns, not the lab ns, so it escapes the ns-delete sweep.
@@ -289,6 +333,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 **Fix:** Iterate `kubectl get nodes -o name` and attempt the rm on each reachable node. Keep `2>/dev/null || true` for best-effort semantics.
 
 ### WR-10: storage/06 reset does not wait for ns-Terminating before returning, colliding with hostPath filesystem state
+
+**Status:** fixed
+**Fixed commit:** 911682d
 
 **File:** `cka-sim/packs/storage/06-pvc-mount-pod/reset.sh:7-10`
 
@@ -298,6 +345,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 
 ### WR-11: CI Coverage-lint step runs BEFORE pack lint, so a broken pack can mask a coverage error
 
+**Status:** fixed
+**Fixed commit:** b939ded
+
 **File:** `.github/workflows/validate.yml:59-65`
 
 **Issue:** In the `bash-tests` job, `bash cka-sim/scripts/lint-coverage.sh` runs before `bash cka-sim/scripts/test.sh` (which internally runs trap + pack lint before coverage). The ordering means if a pack manifest.yaml is malformed (e.g., missing `questions:`), the standalone coverage step fails with a confusing "manifest has no questions" message, obscuring the real pack-lint root cause that `test.sh` would surface.
@@ -305,6 +355,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 **Fix:** Drop the standalone `Coverage lint` step and rely on `test.sh` (which already runs all three lints in the right order). Or reorder so `bash cka-sim/scripts/lint-packs.sh` runs first.
 
 ### WR-12: storage/04 setup.sh treats `kubectl wait` failures as success
+
+**Status:** fixed
+**Fixed commit:** 30c5149
 
 **File:** `cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh:30,37,109`
 
@@ -316,6 +369,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 
 ### IN-01: `cka_sim::setup::wait_for_ns_active` integer truncation on non-5-multiple timeout
 
+**Status:** fixed
+**Fixed commit:** bc79e29
+
 **File:** `cka-sim/lib/setup.sh:33-47`
 
 **Issue:** `iterations=$(( timeout / 5 ))` truncates. timeout=12 yields 2 iterations ≈ 10s actual wait instead of 12s. All current callers pass 120, so not a live bug.
@@ -323,6 +379,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 **Fix:** Round up: `iterations=$(( (timeout + 4) / 5 ))`.
 
 ### IN-02: `seed_deployment` emits blank `spec:` line when `--sa` not passed
+
+**Status:** fixed
+**Fixed commit:** bc79e29
 
 **File:** `cka-sim/lib/setup.sh:101-102,130-131`
 
@@ -332,6 +391,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 
 ### IN-03: workloads/08 `kubectl label nodes ... gpu- --overwrite` overuses `--overwrite`
 
+**Status:** fixed
+**Fixed commit:** bc79e29
+
 **File:** `cka-sim/packs/workloads-scheduling/08-nodeselector-affinity-taints/reset.sh:15`
 
 **Issue:** `--overwrite` is only relevant when SETTING a label. For removal (`key-` syntax), the flag is a no-op; kubectl actually warns on newer versions that the flag is unnecessary. Not a correctness issue, just noise.
@@ -339,6 +401,9 @@ kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
 **Fix:** Drop `--overwrite` from the removal call.
 
 ### IN-04: Several grade.sh files inline `TOTAL/PASSED` accumulator updates instead of using helpers
+
+**Status:** deferred
+**Reason:** Scope -- retrofit touches 6 graders across two packs plus a new helper in `lib/grade.sh`. The review-fix pass is strict-surgical; this is a library API addition + 6-file refactor that warrants its own plan (candidate for Phase 8 polish). No correctness bug -- the inline math is correct.
 
 **File:**
 - `cka-sim/packs/storage/06-pvc-mount-pod/grade.sh:34-43`
