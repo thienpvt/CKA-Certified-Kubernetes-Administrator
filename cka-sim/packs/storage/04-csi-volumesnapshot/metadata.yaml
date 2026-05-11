@@ -5,11 +5,11 @@ verified_against: "1.35"
 traps:
   - csi-snapshot-wrong-driver
   - pvc-wrong-storageclass
-  - pvc-pending-wffc-unscheduled-consumer
+  - reclaim-policy-delete-data-loss
 references:
   - kind: k8s-doc
     target: "https://kubernetes.io/docs/concepts/storage/volume-snapshots/"
     note: VolumeSnapshot + VolumeSnapshotClass concepts
   - kind: k8s-doc
-    target: "https://github.com/kubernetes-csi/csi-driver-host-path"
-    note: hostpath-csi reference driver (pinned v1.14.0)
+    target: "https://github.com/rancher/local-path-provisioner"
+    note: local-path-provisioner StorageClass used by the lab PVC
