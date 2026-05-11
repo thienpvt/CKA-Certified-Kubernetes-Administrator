@@ -32,7 +32,9 @@ EOF
 #   Dies if ns is not Active after the full timeout.
 cka_sim::setup::wait_for_ns_active() {
   local ns="$1" pack="$2" qid="$3" timeout="${4:-120}"
-  local iterations=$(( timeout / 5 ))
+  # IN-01 (04-REVIEW.md): round up so a non-5-multiple timeout still covers
+  # its full second budget (e.g. timeout=12 -> 3 iterations = 15s wall, never 10s).
+  local iterations=$(( (timeout + 4) / 5 ))
   local phase=""
   local i
   for i in $(seq 1 "$iterations"); do
@@ -145,7 +147,13 @@ cka_sim::setup::seed_deployment() {
     esac
   done
   local sa_block=""
-  [[ -n "$sa" ]] && sa_block="      serviceAccountName: ${sa}"
+  # IN-02 (04-REVIEW.md): when --sa is not passed, emit NO line here -- the
+  # previous shape left a blank line between 'spec:' and 'containers:' which
+  # was YAML-valid but cosmetically noisy and tripped shellcheck SC2016 on
+  # any future rewrite. The leading newline lives inside sa_block so the
+  # heredoc below can splice it as '    spec:${sa_block}' without trailing
+  # whitespace on the empty branch.
+  [[ -n "$sa" ]] && sa_block=$'\n      serviceAccountName: '"${sa}"
   local resources_block=""
   if [[ -n "$cpu" || -n "$mem" ]]; then
     resources_block=$(cat <<RES
@@ -173,8 +181,7 @@ spec:
     metadata:
       labels:
         app: ${name}
-    spec:
-${sa_block}
+    spec:${sa_block}
       containers:
         - name: app
           image: ${image}

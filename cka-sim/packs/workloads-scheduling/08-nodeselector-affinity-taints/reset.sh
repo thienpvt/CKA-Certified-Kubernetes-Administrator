@@ -9,9 +9,11 @@ set -uo pipefail
 kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
 
 # Untaint node-02 (trailing dash on key = remove).
-kubectl taint nodes node-02 gpu- --overwrite 2>/dev/null || true
+kubectl taint nodes node-02 gpu- 2>/dev/null || true
 
 # Unlabel node-02 (trailing dash on key = remove).
-kubectl label nodes node-02 gpu- --overwrite 2>/dev/null || true
+# IN-03 (04-REVIEW.md): --overwrite is only meaningful when SETTING a label;
+# for 'key-' removal syntax the flag is a no-op and newer kubectl warns on it.
+kubectl label nodes node-02 gpu- 2>/dev/null || true
 
 exit 0
