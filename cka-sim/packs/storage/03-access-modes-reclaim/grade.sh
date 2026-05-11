@@ -2,7 +2,9 @@
 # storage/03-access-modes-reclaim/grade.sh — behavioural grader (GRADE-02).
 # Asserts: both PVCs Bound + q03-retain-pv reclaim=Delete + q03-delete-pv accessModes[0]=ReadWriteMany.
 # Records traps: pv-accessmodes-mismatch (RWX PVC still Pending AND no PV advertises RWX)
-# and reclaim-policy-delete-data-loss (q03-retain-pv still Retain).
+# and reclaim-policy-retain-when-delete-required (q03-retain-pv still Retain — the
+# business-rule direction; CR-02 realignment vs the old reclaim-policy-delete-data-loss
+# entry whose canonical message describes the inverse Delete direction).
 # No mutating verbs; no `kubectl get | grep`.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"
@@ -32,13 +34,15 @@ if [[ "$phase" == "Pending" && "${rwx_count:-0}" == "0" ]]; then
   cka_sim::grade::record_trap pvc-accessmode-rwx-on-rwo-sc
 fi
 
-# Trap: q03-retain-pv still Retain -> reclaim-policy-delete-data-loss (inverse framing:
-# the lesson is that Retain is the safe default; deleting data accidentally via Delete
-# reclaim is the catalogued risk. This trap fires so the candidate sees the warning
-# when they leave the PV on Retain against the business-rule change).
+# Trap: q03-retain-pv still Retain -> reclaim-policy-retain-when-delete-required.
+# The question's business rule says the PV must now delete its storage with the PVC;
+# leaving it on Retain orphans the volume. The catalog entry's wording matches the
+# detected condition directly (CR-02 fix: previously this path recorded
+# reclaim-policy-delete-data-loss, whose canonical message describes the Delete
+# direction and contradicted what the grader detected).
 retain=$(kubectl get pv q03-retain-pv -o jsonpath='{.spec.persistentVolumeReclaimPolicy}' 2>/dev/null || echo "")
 if [[ "$retain" == "Retain" ]]; then
-  cka_sim::grade::record_trap reclaim-policy-delete-data-loss
+  cka_sim::grade::record_trap reclaim-policy-retain-when-delete-required
 fi
 
 # Finalize — prints SCORE + Trap N: lines to stdout.

@@ -299,3 +299,15 @@ traps:
       - kind: k8s-doc
         target: "https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#taints-and-tolerations"
         note: DaemonSet taints + tolerations guidance
+
+  - id: reclaim-policy-retain-when-delete-required
+    name: PV reclaim policy still Retain when business rule requires Delete
+    description: "Business rule requires the PV to delete its underlying storage automatically when the bound PVC is deleted, but persistentVolumeReclaimPolicy is still Retain. The PVC-deletion path will orphan the volume and its backing storage instead of cleaning it up, leaving manual cleanup debt."
+    remediation_hint: "Patch the PV to reclaim: Delete. kubectl patch pv <name> -p '{\"spec\":{\"persistentVolumeReclaimPolicy\":\"Delete\"}}'. Verify with kubectl get pv <name> -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming"
+        note: Reclaim policy semantics (Retain vs Delete)
