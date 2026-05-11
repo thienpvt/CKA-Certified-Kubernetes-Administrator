@@ -27,14 +27,23 @@ if ! kubectl api-resources --api-group=snapshot.storage.k8s.io 2>/dev/null | gre
   kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
   kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml
   kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml
-  kubectl wait --for=condition=Available deployment/snapshot-controller -n kube-system --timeout=120s 2>/dev/null || true
+  # WR-12 (04-REVIEW.md): drop || true on this critical gate -- if
+  # snapshot-controller never becomes Available, setup must fail loudly so the
+  # runner distinguishes "setup broken" from "candidate broken" rather than
+  # silently entering an unusable state that grade.sh later reports as if the
+  # candidate caused it.
+  kubectl wait --for=condition=Available deployment/snapshot-controller -n kube-system --timeout=120s 2>/dev/null \
+    || { echo "setup: snapshot-controller did not become Available within 120s" >&2; exit 1; }
 fi
 
 # 2. hostpath-csi driver — pinned v1.14.0 via kustomize ref.
 # Gated on the csi-hostpath namespace existing (the driver's canonical namespace).
 if ! kubectl get namespace csi-hostpath >/dev/null 2>&1; then
   kubectl apply -k 'https://github.com/kubernetes-csi/csi-driver-host-path/deploy/kubernetes-latest/hostpath?ref=v1.14.0'
-  kubectl wait --for=condition=Ready pod -n csi-hostpath -l app.kubernetes.io/name=csi-hostpathplugin --timeout=180s 2>/dev/null || true
+  # WR-12: same rule for the hostpath driver pods -- they are a hard
+  # prerequisite for PVC binding later in this script.
+  kubectl wait --for=condition=Ready pod -n csi-hostpath -l app.kubernetes.io/name=csi-hostpathplugin --timeout=180s 2>/dev/null \
+    || { echo "setup: csi-hostpathplugin pods did not reach Ready within 180s" >&2; exit 1; }
 fi
 
 # 3. VolumeSnapshotClass + StorageClass. Labelled so reset.sh can refcount
@@ -106,6 +115,9 @@ spec:
 EOF
 
 # WaitForFirstConsumer: PVC only transitions to Bound once the writer pod is scheduled.
-kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/app-data -n "$CKA_SIM_LAB_NS" --timeout=180s 2>/dev/null || true
+# WR-12: fail loudly if the PVC never binds -- the question is unusable without it
+# and a silent failure would surface downstream as a candidate-error in grade.sh.
+kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/app-data -n "$CKA_SIM_LAB_NS" --timeout=180s 2>/dev/null \
+  || { echo "setup: pvc/app-data did not reach Bound within 180s (writer pod scheduling / csi-hostpath issue)" >&2; exit 1; }
 
 exit 0
