@@ -78,6 +78,22 @@ if ! kubectl get statefulset csi-hostpathplugin -n default >/dev/null 2>&1; then
     || { echo "setup: csi-hostpathplugin pods did not reach Ready within 180s" >&2; exit 1; }
 fi
 
+# BUG-5 fix (2026-05-11): the v1.14.0 csi-driver-host-path is a single-replica
+# StatefulSet (csi-hostpathplugin-0) that serves only the node it is scheduled
+# on -- hostpath storage is node-local. On a 1+2 kubeadm cluster, the plugin
+# lands on one worker while kube-scheduler can place q04-writer on any node;
+# when writer lands off-plugin-node, the PVC never binds (WaitForFirstConsumer
+# plus node-local driver). Pin q04-writer to the plugin's node explicitly.
+# Fail loud if discovery returns empty -- the Ready wait above should have
+# caught that, but double-guard so the failure mode is obvious.
+CSI_HOSTPATH_NODE=$(kubectl get pod csi-hostpathplugin-0 -n default \
+  -o jsonpath='{.spec.nodeName}' 2>/dev/null || echo "")
+if [[ -z "$CSI_HOSTPATH_NODE" ]]; then
+  echo "setup: could not discover csi-hostpathplugin-0 node -- driver install may be broken" >&2
+  exit 1
+fi
+echo "setup: storage/04 writer pod will be pinned to ${CSI_HOSTPATH_NODE} (hostpath-csi plugin node)"
+
 # 3. VolumeSnapshotClass + StorageClass. Labelled so reset.sh can refcount
 # other labs still using the driver before tearing it down.
 kubectl apply -f - <<EOF
@@ -130,6 +146,7 @@ metadata:
     cka-sim/question-id: storage-csi-volumesnapshot
 spec:
   restartPolicy: OnFailure
+  nodeName: ${CSI_HOSTPATH_NODE}
   containers:
     - name: writer
       image: busybox:1.36
