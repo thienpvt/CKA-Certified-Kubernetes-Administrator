@@ -13,6 +13,11 @@ source "$CKA_SIM_ROOT/lib/setup.sh"
 cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" storage storage-pvc-mount-pod
 cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" storage storage-pvc-mount-pod 120
 
+# WR-07 (04-REVIEW.md): stamp ownership labels on every cluster-scoped PV emitted
+# by seed_pv_hostpath so pack-scoped cleanup/coverage tooling can find them.
+export CKA_SIM_PACK="storage"
+export CKA_SIM_QUESTION_ID="storage-pvc-mount-pod"
+
 # 2. Seed hostPath PV pinned to ONE specific worker (CR-01 fix).
 #    Writer + reader (candidate's Deployment) will both be placed on that node
 #    because the scheduler honors PV nodeAffinity; guarantees the /data/marker

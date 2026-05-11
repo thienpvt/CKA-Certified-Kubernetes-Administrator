@@ -98,11 +98,23 @@ AFF
 )
     fi
   fi
+  # WR-07 (04-REVIEW.md): if CKA_SIM_PACK and/or CKA_SIM_QUESTION_ID are
+  # exported by the caller (every new setup.sh in Phase 4 does), stamp matching
+  # cka-sim/pack and cka-sim/question-id labels onto the PV so pack-scoped
+  # cleanup + coverage tooling can find it. Cluster-scoped resources without
+  # these labels are invisible to any lint/sweep that filters by pack.
+  local labels_block=""
+  if [[ -n "${CKA_SIM_PACK:-}" || -n "${CKA_SIM_QUESTION_ID:-}" ]]; then
+    labels_block="  labels:"
+    [[ -n "${CKA_SIM_PACK:-}" ]]        && labels_block+=$'\n'"    cka-sim/pack: ${CKA_SIM_PACK}"
+    [[ -n "${CKA_SIM_QUESTION_ID:-}" ]] && labels_block+=$'\n'"    cka-sim/question-id: ${CKA_SIM_QUESTION_ID}"
+  fi
   kubectl apply -f - <<EOF
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: ${name}
+${labels_block}
 spec:
   capacity:
     storage: ${size}

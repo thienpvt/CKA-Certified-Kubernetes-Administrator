@@ -13,17 +13,18 @@ source "$CKA_SIM_ROOT/lib/setup.sh"
 cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" storage storage-access-modes-reclaim
 cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" storage storage-access-modes-reclaim 120
 
+# WR-07 (04-REVIEW.md): export pack + question-id so seed_pv_hostpath stamps
+# ownership labels onto every cluster-scoped PV it emits. Enables pack-scoped
+# cleanup + coverage tooling to find these PVs, and supports WR-04's label-scoped
+# RWX scan in grade.sh.
+export CKA_SIM_PACK="storage"
+export CKA_SIM_QUESTION_ID="storage-access-modes-reclaim"
+
 # 2. PV 1: RWO, Retain — binds q03-rwo-pvc. Candidate flips reclaim to Delete.
 cka_sim::setup::seed_pv_hostpath q03-retain-pv 1Gi ReadWriteOnce Retain /tmp/q03-retain kubernetes.io/hostname
 
 # 3. PV 2: starts RWO, Delete. Candidate patches accessModes to RWX so q03-rwx-pvc can bind.
 cka_sim::setup::seed_pv_hostpath q03-delete-pv 1Gi ReadWriteOnce Delete /tmp/q03-delete kubernetes.io/hostname
-
-# WR-04 (04-REVIEW.md): label both PVs so the grader's RWX-detector can scope its
-# kubectl get pv query to this question and avoid false negatives from RWX PVs
-# left on the cluster by concurrent labs or long-running workloads.
-kubectl label pv q03-retain-pv cka-sim/pack=storage cka-sim/question-id=storage-access-modes-reclaim --overwrite
-kubectl label pv q03-delete-pv cka-sim/pack=storage cka-sim/question-id=storage-access-modes-reclaim --overwrite
 
 # 4. PVC q03-rwo-pvc (RWO) — binds immediately to q03-retain-pv.
 kubectl apply -f - <<EOF

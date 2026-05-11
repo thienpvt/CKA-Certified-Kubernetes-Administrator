@@ -13,6 +13,11 @@ source "$CKA_SIM_ROOT/lib/setup.sh"
 cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" storage storage-wait-for-first-consumer
 cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" storage storage-wait-for-first-consumer 120
 
+# WR-07 (04-REVIEW.md): stamp ownership labels on every cluster-scoped PV emitted
+# by seed_pv_hostpath so pack-scoped cleanup/coverage tooling can find them.
+export CKA_SIM_PACK="storage"
+export CKA_SIM_QUESTION_ID="storage-wait-for-first-consumer"
+
 # 2. StorageClass q05-wffc — no dynamic provisioner, WaitForFirstConsumer binding.
 # The binding mode is the crux: PVCs referring to this SC stay Pending until a pod
 # that mounts them is scheduled, at which point the binder picks a matching PV.
