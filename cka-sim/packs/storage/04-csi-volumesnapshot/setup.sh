@@ -21,12 +21,33 @@ cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" storage storage-csi-volumes
 # Gated on the VolumeSnapshot API kind so other questions / users that already
 # installed the CRDs via Helm or kustomize are not disturbed (RESEARCH §6.1 +
 # §9 risk: "VolumeSnapshot CRD install changes ownership over time").
+#
+# WR-01 (04-REVIEW.md): the manifests below are fetched live from
+# raw.githubusercontent.com without SHA256 verification. Emit a loud warning
+# so the supply-chain risk is visible, and provide CKA_SIM_OFFLINE=1 as an
+# opt-out that fails fast for air-gapped environments. A follow-up plan will
+# vendor the pinned release manifests under cka-sim/vendor/ with recorded
+# SHA256 and flip the default to offline-vendored-first.
+_q04_warn_unsigned_fetch() {
+  local url="$1"
+  echo "WARN: storage/04 fetching unsigned manifest from $url (WR-01 pending full vendoring)" >&2
+}
+if [[ "${CKA_SIM_OFFLINE:-0}" == "1" ]]; then
+  echo "setup: CKA_SIM_OFFLINE=1 set and storage/04 has no vendored manifests yet." >&2
+  echo "       Unset CKA_SIM_OFFLINE to allow network fetch, or wait for the" >&2
+  echo "       vendoring plan that addresses WR-01 in 04-REVIEW.md." >&2
+  exit 1
+fi
 if ! kubectl api-resources --api-group=snapshot.storage.k8s.io 2>/dev/null | grep -q volumesnapshots; then
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml
+  for _q04_url in \
+    https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml \
+    https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v7.0.2/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml; do
+    _q04_warn_unsigned_fetch "$_q04_url"
+    kubectl apply -f "$_q04_url"
+  done
   # WR-12 (04-REVIEW.md): drop || true on this critical gate -- if
   # snapshot-controller never becomes Available, setup must fail loudly so the
   # runner distinguishes "setup broken" from "candidate broken" rather than
@@ -39,6 +60,7 @@ fi
 # 2. hostpath-csi driver — pinned v1.14.0 via kustomize ref.
 # Gated on the csi-hostpath namespace existing (the driver's canonical namespace).
 if ! kubectl get namespace csi-hostpath >/dev/null 2>&1; then
+  _q04_warn_unsigned_fetch "https://github.com/kubernetes-csi/csi-driver-host-path/deploy/kubernetes-latest/hostpath?ref=v1.14.0 (kustomize)"
   kubectl apply -k 'https://github.com/kubernetes-csi/csi-driver-host-path/deploy/kubernetes-latest/hostpath?ref=v1.14.0'
   # WR-12: same rule for the hostpath driver pods -- they are a hard
   # prerequisite for PVC binding later in this script.
