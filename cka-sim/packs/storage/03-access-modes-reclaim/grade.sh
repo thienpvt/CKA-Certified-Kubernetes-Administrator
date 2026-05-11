@@ -26,12 +26,16 @@ cka_sim::grade::assert_field_eq pv q03-retain-pv '{.spec.persistentVolumeReclaim
 cka_sim::grade::assert_field_eq pv q03-delete-pv '{.spec.accessModes[0]}' 'ReadWriteMany'
 
 # Trap: RWX PVC still Pending AND no PV advertises RWX -> pv-accessmodes-mismatch.
+# WR-05 (04-REVIEW.md): previously also recorded pvc-accessmode-rwx-on-rwo-sc on
+# the same condition, but that catalog entry describes a StorageClass-level RWO
+# limitation and this question uses manual PV binding (storageClassName=manual),
+# not a dynamic RWO-only SC. The two traps have different root causes; collapsing
+# them onto one condition misled the learner.
 phase=$(kubectl get pvc q03-rwx-pvc -n "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
 rwx_names=$(kubectl get pv -o jsonpath='{.items[?(@.spec.accessModes[0]=="ReadWriteMany")].metadata.name}' 2>/dev/null || echo "")
 rwx_count=$(printf '%s' "$rwx_names" | wc -w | tr -d ' ')
 if [[ "$phase" == "Pending" && "${rwx_count:-0}" == "0" ]]; then
   cka_sim::grade::record_trap pv-accessmodes-mismatch
-  cka_sim::grade::record_trap pvc-accessmode-rwx-on-rwo-sc
 fi
 
 # Trap: q03-retain-pv still Retain -> reclaim-policy-retain-when-delete-required.
