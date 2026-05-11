@@ -311,3 +311,51 @@ traps:
       - kind: k8s-doc
         target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming"
         note: Reclaim policy semantics (Retain vs Delete)
+
+  - id: configmap-env-value-literal-hardcoded
+    name: ConfigMap value hardcoded into Pod env instead of valueFrom.configMapKeyRef
+    description: "Candidate wired a ConfigMap-sourced env var by pasting the literal value into env[].value instead of using env[].valueFrom.configMapKeyRef. The pod no longer reacts to ConfigMap edits and the coupling to the ConfigMap is broken; when the ConfigMap key rotates, the pod keeps the stale value."
+    remediation_hint: "Replace env[].value with env[].valueFrom.configMapKeyRef pointing at { name: <configmap>, key: <key> } so the binding is declarative. Restart the Pod (or let the controller do it) to pick up the reference."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#define-container-environment-variables-using-configmap-data"
+        note: configMapKeyRef env binding pattern
+
+  - id: pod-unschedulable-nodeselector-no-matching-node
+    name: Pod stays Pending because nodeSelector matches no Ready node
+    description: "Pod spec.nodeSelector (or required nodeAffinity matchExpressions) specifies a label that no cluster node carries, so the scheduler cannot place the pod and it stays Pending with a 'didn't match Pod's node affinity/selector' event."
+    remediation_hint: "Either label the intended node with the required key/value (kubectl label nodes <node> key=value) or relax the Pod's nodeSelector / nodeAffinity to a label that an existing node already carries. kubectl describe pod <name> shows the scheduler event for the specific label key that did not match."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/"
+        note: nodeSelector + node affinity matching semantics
+
+  - id: rollout-undo-without-prior-revision
+    name: kubectl rollout undo fails because Deployment has no prior revision
+    description: "Deployment has only a single revision recorded (revisionHistoryLimit=0 or setup never produced a second template hash), so kubectl rollout undo has nothing to return to. The command exits non-zero with 'no rollout history found'."
+    remediation_hint: "Ensure the Deployment carries revisionHistoryLimit >= 2 and that the template genuinely changed between revisions (image, annotation with a unique value, env var). kubectl rollout history deployment/<name> shows the recorded revisions; there must be >=2 for undo to succeed."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment"
+        note: Rolling back a Deployment requires prior revision history
+
+  - id: static-pod-applied-via-kubectl-apply
+    name: Static Pod manifest submitted via kubectl apply instead of kubelet manifest dir
+    description: "Candidate ran kubectl apply -f against the static-pod manifest instead of placing it in /etc/kubernetes/manifests/ on the target node. The resulting pod is API-server-managed, not kubelet-managed; no mirror pod is created and kubernetes.io/config.source is api, not file."
+    remediation_hint: "Delete the API-server-managed Pod (kubectl delete pod <name>) and copy the manifest to /etc/kubernetes/manifests/<name>.yaml on the intended node. Confirm with kubectl get pod <name>-<node> -o jsonpath='{.metadata.annotations.kubernetes\\.io/config\\.source}' returning 'file'."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
+        note: Static pods are kubelet-managed via --pod-manifest-path, not API-server-managed

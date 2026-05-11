@@ -5,7 +5,7 @@ verified_against: "1.35"
 traps:
   - default-sa-used
   - deployment-missing-requests
-  - hostpath-pv-without-nodeaffinity
+  - pod-unschedulable-nodeselector-no-matching-node
 references:
   - kind: k8s-doc
     target: "https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/"

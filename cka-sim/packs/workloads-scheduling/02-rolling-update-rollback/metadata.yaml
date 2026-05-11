@@ -5,7 +5,7 @@ verified_against: "1.35"
 traps:
   - deployment-missing-requests
   - default-sa-used
-  - service-selector-empty-endpoints
+  - rollout-undo-without-prior-revision
 references:
   - kind: k8s-doc
     target: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment"

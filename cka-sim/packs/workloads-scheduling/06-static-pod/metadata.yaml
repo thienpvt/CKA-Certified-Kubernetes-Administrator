@@ -3,7 +3,7 @@ domain: workloads-scheduling
 estimatedMinutes: 8
 verified_against: "1.35"
 traps:
-  - kubelet-runtime-flag-in-kubeconfig
+  - static-pod-applied-via-kubectl-apply
   - default-sa-used
   - deployment-missing-requests
 references:

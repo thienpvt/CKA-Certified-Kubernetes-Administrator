@@ -4,7 +4,7 @@ estimatedMinutes: 8
 verified_against: "1.35"
 traps:
   - default-sa-used
-  - hostpath-pv-without-nodeaffinity
+  - configmap-env-value-literal-hardcoded
   - deployment-missing-requests
 references:
   - kind: k8s-doc
