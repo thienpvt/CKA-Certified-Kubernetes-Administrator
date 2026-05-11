@@ -1,0 +1,495 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator# for n in 1 2 3 4 5 6; do
+    bash cka-sim/lib/cmd/drill.sh storage $n
+    # expect: FAIL→ref→PASS round-trip OR candidate solves→PASS
+  done
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: storage / storage-pvc-binding  (lab ns: cka-sim-storage-01)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-storage-01 created
+persistentvolume/q01-app-pv created
+persistentvolumeclaim/app-data created
+  step 3/4: prompt
+# storage/01-pvc-binding
+
+**Domain:** Storage  |  **Estimated time:** 8 minutes
+
+A `PersistentVolumeClaim` named `app-data` exists in your lab namespace and references a `PersistentVolume` named `q01-app-pv`. The PVC is stuck `Pending`.
+
+## Tasks
+
+1. Inspect the PVC `app-data` in `${CKA_SIM_LAB_NS}` and the PV `q01-app-pv` (cluster-scoped).
+2. Diagnose why the PVC is not binding. Read the PV spec and events carefully.
+3. Modify the PV in place so the PVC can bind successfully.
+
+## Constraints
+
+- Do NOT delete or recreate the PV — modify it in place.
+- Do NOT modify the PVC.
+- The lab cluster has 1 control-plane + 2 worker nodes. The PV must remain usable on any worker.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get pvc app-data -n ${CKA_SIM_LAB_NS}    # STATUS should be Bound
+kubectl get pv q01-app-pv                        # STATUS should be Bound
+```
+  Lab ns: cka-sim-storage-01
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✓ PVC 'app-data' is Bound
+✗ field {.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].key} on pv/q01-app-pv = '' (expected 'kubernetes.io/hostname')
+
+SCORE: 1/2
+Trap 1: hostPath PV without nodeAffinity: hostPath PV declared without spec.nodeAffinity; works on single-node but breaks silently on multi-node clusters.
+  report saved to: /root/.cka-sim/reports/20260511T113840Z-storage-storage-pvc-binding.md
+! cleaning up lab namespace cka-sim-storage-01
+namespace "cka-sim-storage-01" deleted
+persistentvolume "q01-app-pv" deleted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: storage / storage-storageclass-dynamic  (lab ns: cka-sim-storage-02)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-storage-02 created
+persistentvolumeclaim/app-cache created
+  step 3/4: prompt
+# storage/02-storageclass-dynamic
+
+**Domain:** Storage  |  **Estimated time:** 7 minutes
+
+A `PersistentVolumeClaim` named `app-cache` exists in your lab namespace. It requests a specific `StorageClass` that does not exist on the cluster, so the PVC is stuck `Pending`.
+
+## Tasks
+
+1. Inspect the PVC `app-cache` in `${CKA_SIM_LAB_NS}` and note the `storageClassName` it requires.
+2. Create a matching `StorageClass` that supports dynamic volume binding on this cluster.
+3. Wait for the PVC to reach `Bound`.
+
+## Constraints
+
+- Do NOT modify the PVC (its `storageClassName` is locked per the scenario).
+- Do NOT create the PV by hand — the StorageClass must bind dynamically.
+- The cluster is 1 control-plane + 2 workers; pick a backing plugin that actually runs here.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get sc
+kubectl get pvc app-cache -n ${CKA_SIM_LAB_NS}    # STATUS should be Bound
+```
+  Lab ns: cka-sim-storage-02
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✗ resource storageclass/fast-ssd not found in ns=<none>
+✗ PVC 'app-cache' not Bound (phase='Pending')
+✓ field {.spec.storageClassName} on pvc/app-cache == 'fast-ssd'
+
+SCORE: 1/3
+Trap 1: PVC requests a StorageClass not present on the cluster: PVC stays Pending because spec.storageClassName references a StorageClass that no provisioner serves.
+  report saved to: /root/.cka-sim/reports/20260511T113850Z-storage-storage-storageclass-dynamic.md
+! cleaning up lab namespace cka-sim-storage-02
+namespace "cka-sim-storage-02" deleted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: storage / storage-access-modes-reclaim  (lab ns: cka-sim-storage-03)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-storage-03 created
+persistentvolume/q03-retain-pv created
+persistentvolume/q03-delete-pv created
+persistentvolumeclaim/q03-rwo-pvc created
+persistentvolumeclaim/q03-rwx-pvc created
+  step 3/4: prompt
+# storage/03-access-modes-reclaim
+
+**Domain:** Storage  |  **Estimated time:** 9 minutes
+
+Two PersistentVolumes (`q03-retain-pv`, `q03-delete-pv`) and two PVCs (`q03-rwo-pvc`, `q03-rwx-pvc`) exist. One PVC is Bound; the other is stuck Pending. Separately, business rules have changed: volumes that were originally configured to survive PVC deletion must now be reclaimed automatically.
+
+## Tasks
+
+1. Inspect both PVs and both PVCs in `${CKA_SIM_LAB_NS}`.
+2. Fix the Pending PVC by modifying the PV(s) — not the PVC — so its access-mode request can be satisfied.
+3. Change the reclaim policy on `q03-retain-pv` so that deleting its PVC will also delete the underlying volume.
+
+## Constraints
+
+- Do NOT modify the PVCs.
+- Do NOT delete and recreate the PVs — patch them in place.
+
+## Verify yourself
+
+```
+kubectl get pvc -n ${CKA_SIM_LAB_NS}                                              # both STATUS=Bound
+kubectl get pv q03-retain-pv -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'  # Delete
+```
+  Lab ns: cka-sim-storage-03
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✓ PVC 'q03-rwo-pvc' is Bound
+✗ PVC 'q03-rwx-pvc' not Bound (phase='Pending')
+✗ field {.spec.persistentVolumeReclaimPolicy} on pv/q03-retain-pv = 'Retain' (expected 'Delete')
+✗ field {.spec.accessModes[0]} on pv/q03-delete-pv = 'ReadWriteOnce' (expected 'ReadWriteMany')
+
+SCORE: 1/4
+Trap 1: PV and PVC accessModes do not match: Binder skips a PV whose accessModes don't include every mode the PVC requests.
+Trap 2: PV reclaim policy still Retain when business rule requires Delete: Business rule requires the PV to delete its underlying storage automatically when the bound PVC is deleted, but persistentVolumeReclaimPolicy is still Retain. The PVC-deletion path will orphan the volume and its backing storage instead of cleaning it up, leaving manual cleanup debt.
+  report saved to: /root/.cka-sim/reports/20260511T113955Z-storage-storage-access-modes-reclaim.md
+! cleaning up lab namespace cka-sim-storage-03
+namespace "cka-sim-storage-03" deleted
+persistentvolume "q03-retain-pv" deleted
+persistentvolume "q03-delete-pv" deleted
+✗ /root/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh not executable
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: storage / storage-wait-for-first-consumer  (lab ns: cka-sim-storage-05)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-storage-05 created
+storageclass.storage.k8s.io/q05-wffc created
+persistentvolume/q05-wffc-pv created
+persistentvolume/q05-wffc-pv patched
+persistentvolumeclaim/q05-claim created
+  step 3/4: prompt
+# storage/05-wait-for-first-consumer
+
+**Domain:** Storage  |  **Estimated time:** 7 minutes
+
+A `PersistentVolumeClaim` named `q05-claim` in `${CKA_SIM_LAB_NS}` is stuck `Pending`. Events show
+`waiting for first consumer to be created before binding`. The `StorageClass` `q05-wffc` is intentional —
+you must work with it, not around it. A matching `PersistentVolume` `q05-wffc-pv` already exists and is
+pinned to a worker node via `nodeAffinity`.
+
+## Tasks
+
+1. Inspect `q05-claim` and the `StorageClass` `q05-wffc` to understand why binding is deferred.
+2. Get the PVC to `Bound` without modifying the `StorageClass` or the `PVC` itself.
+3. Follow ServiceAccount hygiene — do NOT rely on the `default` ServiceAccount.
+
+## Constraints
+
+- Do NOT change `q05-claim.spec.storageClassName`.
+- Do NOT delete or modify the `StorageClass` `q05-wffc`.
+- Do NOT modify the existing PV `q05-wffc-pv`.
+- The workload Pod you create MUST be named `q05-consumer`.
+- The Pod MUST mount `q05-claim` via `spec.volumes[0].persistentVolumeClaim.claimName`.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get pvc q05-claim  -n ${CKA_SIM_LAB_NS}    # STATUS should be Bound
+kubectl get pod q05-consumer -n ${CKA_SIM_LAB_NS}  # READY should be 1/1
+```
+  Lab ns: cka-sim-storage-05
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✗ pod 'q05-consumer' is not Ready (got: '<missing>')
+✗ PVC 'q05-claim' not Bound (phase='Pending')
+✗ field {.spec.volumes[0].persistentVolumeClaim.claimName} on pod/q05-consumer = '' (expected 'q05-claim')
+
+SCORE: 0/3
+Trap 1: PVC with WaitForFirstConsumer stays Pending because no pod consumes it: StorageClass has volumeBindingMode=WaitForFirstConsumer; the PVC will not bind until a pod that mounts it is scheduled. Candidates often deploy the PVC alone and conclude the cluster is broken.
+  report saved to: /root/.cka-sim/reports/20260511T114130Z-storage-storage-wait-for-first-consumer.md
+! cleaning up lab namespace cka-sim-storage-05
+namespace "cka-sim-storage-05" deleted
+persistentvolume "q05-wffc-pv" deleted
+storageclass.storage.k8s.io "q05-wffc" deleted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: storage / storage-pvc-mount-pod  (lab ns: cka-sim-storage-06)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-storage-06 created
+persistentvolume/q06-data-pv created
+persistentvolumeclaim/q06-data created
+persistentvolumeclaim/q06-data condition met
+pod/q06-writer created
+pod/q06-writer condition met
+  step 3/4: prompt
+# storage/06-pvc-mount-pod
+
+**Domain:** Storage  |  **Estimated time:** 7 minutes
+
+A `PersistentVolumeClaim` named `q06-data` is already Bound in `${CKA_SIM_LAB_NS}`. Its backing volume contains a pre-written file at `/data/marker`.
+
+## Tasks
+
+1. Create a `Deployment` named `q06-reader` in `${CKA_SIM_LAB_NS}`.
+2. Each pod in the Deployment must mount `q06-data` **read-only** under `/data`.
+3. Use image `nginx:1.27`, `replicas: 1`, and `resources.requests` set to a non-zero cpu + memory.
+4. Do NOT let pods run under the default ServiceAccount.
+
+## Constraints
+
+- Do NOT modify `q06-data` or its PV.
+- Do NOT set `readOnly: false` or omit it on the volumeMount.
+- The Deployment must survive a rollout — the PVC mount must be correct.
+
+## Verify yourself
+
+```
+kubectl get deploy q06-reader -n ${CKA_SIM_LAB_NS}
+kubectl exec -n ${CKA_SIM_LAB_NS} deploy/q06-reader -- cat /data/marker
+```
+
+The `cat` command should print `q06-marker`.
+  Lab ns: cka-sim-storage-06
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✗ resource deployment/q06-reader not found in ns=cka-sim-storage-06
+✗ field {.spec.template.spec.volumes[0].persistentVolumeClaim.claimName} on deployment/q06-reader = '' (expected 'q06-data')
+✗ field {.spec.template.spec.containers[0].volumeMounts[0].readOnly} on deployment/q06-reader = '' (expected 'true')
+✗ exec probe: deploy/q06-reader /data/marker = '' (expected 'q06-marker')
+
+SCORE: 0/4
+  report saved to: /root/.cka-sim/reports/20260511T114158Z-storage-storage-pvc-mount-pod.md
+! cleaning up lab namespace cka-sim-storage-06
+namespace "cka-sim-storage-06" deleted
+root@master:~/CKA-Certified-Kubernetes-Administrator# for n in 3 4 5 6 7 8; do
+    bash cka-sim/lib/cmd/drill.sh workloads-scheduling $n
+  done
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: workloads-scheduling / workloads-configmap-secret-env-volume  (lab ns: cka-sim-workloads-scheduling-03)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-workloads-scheduling-03 created
+configmap/q03-app-config created
+secret/q03-app-secret created
+  step 3/4: prompt
+# workloads-scheduling/03-configmap-secret-env-volume
+
+**Domain:** Workloads & Scheduling  |  **Estimated time:** 8 minutes
+
+The platform team wires application configuration via a `ConfigMap` and an `API_KEY` secret via a `Secret`. A `ConfigMap` named `q03-app-config` and a `Secret` named `q03-app-secret` already exist in `${CKA_SIM_LAB_NS}`. You must create a Pod that consumes both correctly.
+
+## Tasks
+
+1. Create a Pod named `q03-app` in `${CKA_SIM_LAB_NS}` running image `busybox:1.36` with a long-lived command (e.g. `sleep 3600`).
+2. Expose the ConfigMap key `APP_MODE` as an environment variable named `APP_MODE` using `valueFrom.configMapKeyRef` (do **not** hardcode the literal value into the Pod spec).
+3. Mount the Secret `q03-app-secret` as a **read-only** volume at `/etc/app-secrets`; the key `API_KEY` must be readable at the path `/etc/app-secrets/api-key`.
+
+## Constraints
+
+- Use `valueFrom.configMapKeyRef` for the env var; do NOT copy the literal value into the Pod spec.
+- The Secret volume mount must be read-only (`readOnly: true`).
+- Use the Secret `items` projection to rename key `API_KEY` -> file path `api-key` so the file is reachable at `/etc/app-secrets/api-key`.
+
+## Verify yourself
+
+```
+kubectl exec -n ${CKA_SIM_LAB_NS} q03-app -- printenv APP_MODE             # production
+kubectl exec -n ${CKA_SIM_LAB_NS} q03-app -- cat /etc/app-secrets/api-key  # q03-api-key-value
+```
+  Lab ns: cka-sim-workloads-scheduling-03
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✗ pod 'q03-app' is not Ready (got: '<missing>')
+✗ field {.spec.containers[0].env[?(@.name=="APP_MODE")].valueFrom.configMapKeyRef.name} on pod/q03-app = '' (expected 'q03-app-config')
+✗ field {.spec.containers[0].env[?(@.name=="APP_MODE")].valueFrom.configMapKeyRef.key} on pod/q03-app = '' (expected 'APP_MODE')
+✗ field {.spec.containers[0].volumeMounts[?(@.mountPath=="/etc/app-secrets")].readOnly} on pod/q03-app = '' (expected 'true')
+✗ env probe APP_MODE='' (expected production)
+✗ secret file probe /etc/app-secrets/api-key='' (expected q03-api-key-value)
+
+SCORE: 0/6
+Trap 1: Pod uses default ServiceAccount with auto-mounted token: Pod has no spec.serviceAccountName (or it is set to the default value), so it inherits the default SA with auto-mounted token.
+  report saved to: /root/.cka-sim/reports/20260511T114244Z-workloads-scheduling-workloads-configmap-secret-env-volume.md
+! cleaning up lab namespace cka-sim-workloads-scheduling-03
+namespace "cka-sim-workloads-scheduling-03" deleted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: workloads-scheduling / workloads-hpa-metrics-server  (lab ns: cka-sim-workloads-scheduling-04)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-workloads-scheduling-04 created
+serviceaccount/q04-load-sa created
+deployment.apps/q04-load created
+deployment.apps/q04-load condition met
+  step 3/4: prompt
+# workloads-scheduling/04-hpa-metrics-server
+
+**Domain:** Workloads & Scheduling  |  **Estimated time:** 9 minutes
+
+A Deployment `q04-load` exists in `${CKA_SIM_LAB_NS}` with CPU and memory requests already set. Platform ops wants it autoscaled. `kubectl top pod` currently fails on this cluster.
+
+## Tasks
+
+1. Make `kubectl top pod -n ${CKA_SIM_LAB_NS} -l app=q04-load` return readings.
+2. Create a HorizontalPodAutoscaler `q04-load` targeting Deployment `q04-load`:
+   - `minReplicas: 1`
+   - `maxReplicas: 5`
+   - CPU target: `averageUtilization: 50`
+   - `apiVersion: autoscaling/v2`
+
+## Constraints
+
+- Do NOT modify `q04-load` Deployment's resources.requests.
+- Installing metrics-server on a kubeadm cluster with self-signed kubelet certs requires extra flags — consult its upstream README.
+
+## Verify yourself
+
+```
+kubectl top pod -n ${CKA_SIM_LAB_NS} -l app=q04-load
+kubectl get hpa q04-load -n ${CKA_SIM_LAB_NS}
+```
+  Lab ns: cka-sim-workloads-scheduling-04
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✗ resource hpa/q04-load not found in ns=cka-sim-workloads-scheduling-04
+✗ field {.spec.minReplicas} on hpa/q04-load = '' (expected '1')
+✗ field {.spec.maxReplicas} on hpa/q04-load = '' (expected '5')
+✗ field {.spec.metrics[?(@.type=="Resource")].resource.name} on hpa/q04-load = '' (expected 'cpu')
+✗ kubectl top pod failed (metrics-server unreachable or not installed)
+
+SCORE: 0/5
+  report saved to: /root/.cka-sim/reports/20260511T114249Z-workloads-scheduling-workloads-hpa-metrics-server.md
+! cleaning up lab namespace cka-sim-workloads-scheduling-04
+namespace "cka-sim-workloads-scheduling-04" deleted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: workloads-scheduling / workloads-daemonset  (lab ns: cka-sim-workloads-scheduling-05)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-workloads-scheduling-05 created
+  step 3/4: prompt
+# workloads-scheduling/05-daemonset
+
+**Domain:** Workloads & Scheduling  |  **Estimated time:** 7 minutes
+
+Create a DaemonSet that runs a lightweight agent pod on **every** Ready node in the cluster — including the control-plane.
+
+## Tasks
+
+1. In `${CKA_SIM_LAB_NS}`, create a DaemonSet named `q05-node-agent`.
+2. Use image `busybox:1.36` with command `["sh", "-c", "sleep 3600"]`.
+3. Ensure the pod tolerates the taints on the control-plane node so it lands there too.
+4. Each container must declare non-zero `resources.requests` for CPU and memory.
+
+## Constraints
+
+- Exactly `status.desiredNumberScheduled` must equal the total number of Ready nodes.
+- Use a dedicated ServiceAccount (not `default`).
+- Do NOT label or taint any nodes.
+
+## Verify yourself
+
+```
+kubectl get ds q05-node-agent -n ${CKA_SIM_LAB_NS}
+kubectl get nodes -o name | wc -l      # compare with desiredNumberScheduled
+kubectl get ds q05-node-agent -n ${CKA_SIM_LAB_NS} \
+  -o jsonpath='{.spec.template.spec.tolerations[?(@.key=="node-role.kubernetes.io/control-plane")].operator}'
+```
+  Lab ns: cka-sim-workloads-scheduling-05
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✗ resource daemonset/q05-node-agent not found in ns=cka-sim-workloads-scheduling-05
+✗ field {.status.desiredNumberScheduled} on daemonset/q05-node-agent = '' (expected '3')
+✗ field {.spec.template.spec.tolerations[?(@.key=="node-role.kubernetes.io/control-plane")].operator} on daemonset/q05-node-agent = '' (expected 'Exists')
+✗ container[0].resources.requests.cpu empty or zero
+
+SCORE: 0/4
+Trap 1: DaemonSet lacks control-plane NoSchedule toleration: DaemonSet pod template omits a toleration for node-role.kubernetes.io/control-plane:NoSchedule, so the daemon pod is never scheduled onto the control-plane node. The DaemonSet reports fewer Ready nodes than the cluster actually has.
+  report saved to: /root/.cka-sim/reports/20260511T114252Z-workloads-scheduling-workloads-daemonset.md
+! cleaning up lab namespace cka-sim-workloads-scheduling-05
+namespace "cka-sim-workloads-scheduling-05" deleted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: workloads-scheduling / workloads-static-pod  (lab ns: cka-sim-workloads-scheduling-06)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+error: passwordless SSH to node-01 failed -- run 'cka-sim doctor' and re-run 'cka-sim bootstrap' if needed
+! cleaning up lab namespace cka-sim-workloads-scheduling-06
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: workloads-scheduling / workloads-native-sidecar  (lab ns: cka-sim-workloads-scheduling-07)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-workloads-scheduling-07 created
+deployment.apps/q07-app created
+  step 3/4: prompt
+# workloads-scheduling/07-native-sidecar
+
+**Domain:** Workloads & Scheduling  |  **Estimated time:** 8 minutes
+
+A Deployment `q07-app` in `${CKA_SIM_LAB_NS}` has a sidecar that tails a log file. The sidecar is currently declared in the wrong place for v1.35. Fix it.
+
+## Tasks
+
+1. Inspect `q07-app` pod spec and note how the `log-tailer` container is declared.
+2. Convert the sidecar to the v1.35 canonical form (native sidecar via `initContainers` with a specific `restartPolicy`).
+3. Keep the app container in `spec.containers` with image `nginx:1.27`. Keep the sidecar with image `busybox:1.36` running `tail -f /shared/app.log` (or the equivalent echo loop used at setup).
+
+## Constraints
+
+- After your change, `spec.containers` has exactly 1 entry (the app).
+- `spec.initContainers[log-tailer].restartPolicy` must be `Always` (native sidecar shape).
+
+## Verify yourself
+
+```
+kubectl get deploy q07-app -n ${CKA_SIM_LAB_NS} \
+  -o jsonpath='{.spec.template.spec.initContainers[?(@.name=="log-tailer")].restartPolicy}'   # Always
+kubectl get deploy q07-app -n ${CKA_SIM_LAB_NS} \
+  -o jsonpath='{.spec.template.spec.containers[*].name}'   # app  (exactly one name)
+```
+  Lab ns: cka-sim-workloads-scheduling-07
+
+Type "done" to grade, "skip" to abandon: done
+  step 4/4: grade
+✓ resource deployment/q07-app exists
+✗ field {.spec.template.spec.initContainers[?(@.name=="log-tailer")].restartPolicy} on deployment/q07-app = '' (expected 'Always')
+✗ spec.containers has 2 entries (expected 1)
+
+deployment.apps/q07-app condition met
+SCORE: 1/3
+Trap 1: Sidecar added as peer container instead of v1.29+ native sidecar (initContainer with restartPolicy Always): Candidate adds a sidecar as a regular spec.containers entry instead of using the v1.29+ native sidecar shape: spec.initContainers[].restartPolicy: Always. Legacy peer-container sidecars do not get guaranteed ordering, lifecycle, or graceful shutdown.
+  report saved to: /root/.cka-sim/reports/20260511T114259Z-workloads-scheduling-workloads-native-sidecar.md
+! cleaning up lab namespace cka-sim-workloads-scheduling-07
+namespace "cka-sim-workloads-scheduling-07" deleted
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill: workloads-scheduling / workloads-nodeselector-affinity-taints  (lab ns: cka-sim-workloads-scheduling-08)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1/4: reset
+  step 2/4: setup
+namespace/cka-sim-workloads-scheduling-08 created
+Error from server (NotFound): nodes "node-02" not found
+! cleaning up lab namespace cka-sim-workloads-scheduling-08
+namespace "cka-sim-workloads-scheduling-08" deleted
