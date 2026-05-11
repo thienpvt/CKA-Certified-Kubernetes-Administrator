@@ -1,17 +1,36 @@
 ---
 phase: 04
 verified: 2026-05-11
-status: human_needed
+status: gaps_found
 must_haves_passed: 6
 must_haves_total: 7
 human_verification_count: 1
-score: 6/7 must-haves verified programmatically (criterion 5 = live drill = human-only)
+live_drill_run: 2026-05-11T11:40Z
+live_drill_summary: "11/13 questions round-trip correctly; 2 bugs surfaced requiring gap closure"
+score: 6/7 must-haves verified programmatically (criterion 5 = live drill) + 2 live-drill bugs found
 re_verification:
-  previous_status: initial
-  previous_score: n/a
+  previous_status: human_needed
+  previous_score: 6/7
   gaps_closed: []
-  gaps_remaining: []
+  gaps_remaining:
+    - BUG-1
+    - BUG-3
   regressions: []
+gaps:
+  - id: BUG-1
+    severity: critical
+    file: cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh
+    evidence: "cka-sim/results.txt line 157: '✗ /root/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh not executable'"
+    description: "setup.sh not executable on live cluster. Windows git dropped the exec bit during the octopus merges even though Plan 04-08 committed it as 100755 via `git update-index --chmod=+x`."
+    fix: "git update-index --chmod=+x cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh; verify with `git ls-files -s cka-sim/packs/storage/04-csi-volumesnapshot/*.sh` shows all four scripts as `100755`."
+    must_have: MH-5
+  - id: BUG-3
+    severity: critical
+    file: cka-sim/packs/workloads-scheduling/08-nodeselector-affinity-taints/setup.sh
+    evidence: "cka-sim/results.txt line 493: 'Error from server (NotFound): nodes \"node-02\" not found'"
+    description: "setup.sh hardcodes K8s node name `node-02`. The SSH alias `node-01`/`node-02` (from Phase 1 BOOT-03) is distinct from the K8s node names visible to `kubectl get nodes`. The hardcoded label + taint operations fail on clusters where K8s node names differ from the SSH aliases."
+    fix: "setup.sh must discover a non-control-plane Ready worker dynamically via `kubectl get nodes -l '!node-role.kubernetes.io/control-plane' -o jsonpath='{.items[0].metadata.name}'` and use that node for label/taint operations. reset.sh must mirror the discovery for cleanup using the same selector. ref-solution.sh (if it references the node) must also use the same discovery pattern."
+    must_have: MH-5
 requirements_coverage:
   PACK-01: satisfied
   PACK-02: satisfied
