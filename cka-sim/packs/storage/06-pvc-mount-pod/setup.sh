@@ -13,9 +13,19 @@ source "$CKA_SIM_ROOT/lib/setup.sh"
 cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" storage storage-pvc-mount-pod
 cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" storage storage-pvc-mount-pod 120
 
-# 2. Seed hostPath PV with nodeAffinity (correctly pinned — not the trap here).
-#    storageClassName=manual matches the PVC below so the pair binds immediately.
-cka_sim::setup::seed_pv_hostpath q06-data-pv 1Gi ReadWriteOnce Retain /tmp/q06-data kubernetes.io/hostname
+# 2. Seed hostPath PV pinned to ONE specific worker (CR-01 fix).
+#    Writer + reader (candidate's Deployment) will both be placed on that node
+#    because the scheduler honors PV nodeAffinity; guarantees the /data/marker
+#    written by q06-writer is visible to q06-reader on the same hostPath fs.
+#    If no worker label is discoverable, pin to whichever node has the first
+#    kubernetes.io/hostname value -- single-node kind clusters still work.
+q06_pin_node=$(kubectl get nodes -l '!node-role.kubernetes.io/control-plane' \
+  -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+if [[ -z "$q06_pin_node" ]]; then
+  q06_pin_node=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+fi
+: "${q06_pin_node:?could not discover a node to pin q06-data-pv to}"
+cka_sim::setup::seed_pv_hostpath q06-data-pv 1Gi ReadWriteOnce Retain /tmp/q06-data "kubernetes.io/hostname=${q06_pin_node}"
 
 # 3. Apply PVC — binds against q06-data-pv via storageClassName=manual.
 kubectl apply -f - <<EOF

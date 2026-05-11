@@ -46,23 +46,57 @@ cka_sim::setup::wait_for_ns_active() {
   die "ns $ns not Active after ${timeout}s (phase=$phase)"
 }
 
-# cka_sim::setup::seed_pv_hostpath <pv-name> <size> <access-mode> <reclaim-policy> <host-path> [<node-affinity-key>]
-#   Create a hostPath PV with optional nodeAffinity. If <node-affinity-key> is
-#   empty, the PV is created WITHOUT nodeAffinity (seeds the
-#   hostpath-pv-without-nodeaffinity trap).
+# cka_sim::setup::seed_pv_hostpath <pv-name> <size> <access-mode> <reclaim-policy> <host-path> [<node-affinity-spec>]
+#   Create a hostPath PV with optional nodeAffinity. The 6th argument controls
+#   nodeAffinity emission:
+#     (a) omitted or empty        -> NO nodeAffinity block (seeds the
+#                                    hostpath-pv-without-nodeaffinity trap,
+#                                    e.g. storage/01-pvc-binding).
+#     (b) bare key (no '=')       -> operator: Exists against that key.
+#                                    Matches ANY node carrying the label
+#                                    regardless of value. Use only when
+#                                    every-node membership is the intent.
+#     (c) "key=value"             -> operator: In with values: [value].
+#                                    Pins the PV to the specific node(s)
+#                                    whose label matches. Required for
+#                                    questions whose behavioural oracle
+#                                    depends on same-node execution
+#                                    (e.g. storage/06-pvc-mount-pod's
+#                                    writer -> reader data handoff).
+#   Per CR-01 (04-REVIEW.md), shape (b)'s operator: Exists against
+#   kubernetes.io/hostname does NOT pin to a single node -- every node
+#   carries that label with some value, so Exists matches all nodes. Use
+#   shape (c) with a concrete hostname when single-node pinning is needed.
 cka_sim::setup::seed_pv_hostpath() {
-  local name="$1" size="$2" mode="$3" reclaim="$4" hp="$5" affinity_key="${6:-}"
+  local name="$1" size="$2" mode="$3" reclaim="$4" hp="$5" affinity_spec="${6:-}"
   local affinity_block=""
-  if [[ -n "$affinity_key" ]]; then
-    affinity_block=$(cat <<AFF
+  if [[ -n "$affinity_spec" ]]; then
+    if [[ "$affinity_spec" == *"="* ]]; then
+      # Shape (c): key=value -> In match on that specific value.
+      local k="${affinity_spec%%=*}"
+      local v="${affinity_spec#*=}"
+      affinity_block=$(cat <<AFF
   nodeAffinity:
     required:
       nodeSelectorTerms:
         - matchExpressions:
-            - key: ${affinity_key}
+            - key: ${k}
+              operator: In
+              values: ["${v}"]
+AFF
+)
+    else
+      # Shape (b): bare key -> Exists (legacy: any-node membership).
+      affinity_block=$(cat <<AFF
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: ${affinity_spec}
               operator: Exists
 AFF
 )
+    fi
   fi
   kubectl apply -f - <<EOF
 apiVersion: v1
