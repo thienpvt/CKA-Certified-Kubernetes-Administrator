@@ -8,11 +8,16 @@ set -euo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 
 # 1. StorageClass fast-ssd — WaitForFirstConsumer matches the upstream local-path default.
+#    WR-06 (04-REVIEW.md): carry cka-sim/uses=storage-storageclass-dynamic so
+#    reset.sh can refcount-gate its cluster-scoped delete and avoid stomping an
+#    unrelated 'fast-ssd' SC owned by another candidate or concurrent lab.
 kubectl apply -f - <<'EOF'
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: fast-ssd
+  labels:
+    cka-sim/uses: storage-storageclass-dynamic
 provisioner: rancher.io/local-path
 volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Delete
