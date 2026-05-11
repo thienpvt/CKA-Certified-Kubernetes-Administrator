@@ -53,9 +53,13 @@ EOF
 kubectl rollout status deployment/web -n "$CKA_SIM_LAB_NS" --timeout=120s 2>/dev/null || true
 
 # 3. Seed a second revision so `rollout undo` has something to go back to.
-#    Patch a harmless template annotation — this triggers a new rollout revision
-#    while keeping the image at nginx:1.25 (the candidate's post-rollback target).
+#    WR-08 (04-REVIEW.md): the previous JSON-patch used op=add on
+#    /spec/template/metadata/annotations with a fixed map value, which (a)
+#    REPLACED any existing annotations map on re-runs and (b) produced no
+#    template-hash change when the map already existed -- rollout undo then
+#    had no prior revision. Use strategic-merge with a timestamp so every
+#    setup run is a genuinely new template and a guaranteed new revision.
 kubectl annotate deployment web -n "$CKA_SIM_LAB_NS" --overwrite kubernetes.io/change-cause="revision 2 — annotation bump"
-kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=json \
-  -p='[{"op":"add","path":"/spec/template/metadata/annotations","value":{"cka-sim/rev":"2"}}]' 2>/dev/null || true
+kubectl patch deployment web -n "$CKA_SIM_LAB_NS" --type=strategic \
+  -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"cka-sim/seeded-at\":\"$(date -u +%s)\"}}}}}"
 kubectl rollout status deployment/web -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
