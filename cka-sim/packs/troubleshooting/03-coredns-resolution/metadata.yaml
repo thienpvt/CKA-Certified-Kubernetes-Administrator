@@ -1,0 +1,15 @@
+id: troubleshooting-coredns-resolution
+domain: troubleshooting
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - coredns-forward-to-invalid-upstream
+  - coredns-sandbox-configmap-mount
+  - missing-dns-egress
+references:
+  - kind: prior-art-exercise
+    target: cka-sim/packs/services-networking/03-coredns-resolution/
+    note: "Related prior-art: CoreDNS Pod dnsConfig + nslookup oracle"
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/administer-cluster/coredns/
+    note: CoreDNS Corefile + ConfigMap administration
