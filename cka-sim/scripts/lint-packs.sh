@@ -50,10 +50,14 @@ while IFS= read -r grade_sh; do
   fi
 done < <(find "$PACKS_DIR" -name 'grade.sh' -type f)
 
-info "pass B: mutating-verb rejection in grade.sh (graders are read-only)"
+info "pass B: mutating-verb rejection in grade.sh (graders are read-only; apply --dry-run=client allowed)"
 while IFS= read -r grade_sh; do
-  if grep -nE '^[[:space:]]*[^#]*kubectl[[:space:]]+(delete|create|apply|patch|edit|replace)([[:space:]]|$)' "$grade_sh" >/dev/null; then
-    err "MUTATING-VERB: $grade_sh contains forbidden mutating verb (delete|create|apply|patch|edit|replace) — graders must be read-only"
+  if grep -nE '^[[:space:]]*[^#]*kubectl[[:space:]]+(delete|create|patch|edit|replace)([[:space:]]|$)' "$grade_sh" >/dev/null; then
+    err "MUTATING-VERB: $grade_sh contains forbidden mutating verb (delete|create|patch|edit|replace) — graders must be read-only"
+    errors=$(( errors + 1 ))
+  fi
+  if grep -nE '^[[:space:]]*[^#]*kubectl[[:space:]]+apply[[:space:]]' "$grade_sh" | grep -v -- 'apply --dry-run=client' >/dev/null; then
+    err "MUTATING-VERB: $grade_sh contains kubectl apply without --dry-run=client"
     errors=$(( errors + 1 ))
   fi
 done < <(find "$PACKS_DIR" -name 'grade.sh' -type f)
