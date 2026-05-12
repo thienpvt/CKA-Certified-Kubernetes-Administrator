@@ -1,0 +1,14 @@
+# cka-sim/packs/cluster-architecture/coverage.yaml
+# PACK-07 coverage matrix for the Cluster Architecture domain (v1.35 Study Progress Tracker).
+# Each tracker.<slug>.questions lists the question-ids (from manifest.yaml) that
+# exercise that Tracker checkbox. Multiple questions may cover the same item.
+# Wave 2 plans (P09-P15) append new tracker slugs idempotently between the
+# sentinel markers below (sed -i pattern, grep-guarded per question-id).
+domain: cluster-architecture
+tracker:
+  rbac-viewer:
+    label: "RBAC Roles + RoleBindings for a viewer SA"
+    questions:
+      - cluster-architecture-rbac-viewer
+  # BEGIN phase-05 new questions (P09-P15 append below this line)
+  # END phase-05 new questions
