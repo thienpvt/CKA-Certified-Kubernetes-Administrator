@@ -1,40 +1,19 @@
 #!/bin/bash
-# troubleshooting/01-deploy-svc-mismatch/setup.sh — Deployment labels != Service selector (the trap).
+# troubleshooting/01-deploy-svc-mismatch/setup.sh — Phase 6 retrofit: lib sourcing + web-canary ImagePullBackOff trap.
 set -euo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
+: "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
 
-# 1. ns + Active wait (handles prior reset --wait=false leaving Terminating ns)
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: troubleshooting
-    cka-sim/question-id: troubleshooting-deploy-svc-mismatch
-EOF
-phase=""
-for i in $(seq 1 24); do
-  phase=$(kubectl get ns "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-  if [[ "$phase" == "Active" ]]; then
-    break
-  fi
-  if [[ -z "$phase" ]]; then
-    kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: troubleshooting
-    cka-sim/question-id: troubleshooting-deploy-svc-mismatch
-EOF
-  fi
-  sleep 5
-done
-[[ "$phase" == "Active" ]] || { echo "ns $CKA_SIM_LAB_NS not Active after 50s (phase=$phase)" >&2; exit 1; }
+# shellcheck source=../../../lib/setup.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/setup.sh"
 
-# 2. Deployment 'web' — pod labels app=web (pinned nginx:1.27-alpine for small/stable/readiness-friendly).
+CKA_SIM_PACK="troubleshooting"
+CKA_SIM_QUESTION_ID="troubleshooting-deploy-svc-mismatch"
+
+cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" "$CKA_SIM_PACK" "$CKA_SIM_QUESTION_ID"
+cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" "$CKA_SIM_PACK" "$CKA_SIM_QUESTION_ID" 120
+
+# 1. Deployment 'web' — pod labels app=web (pinned nginx:1.27-alpine for small/stable/readiness-friendly).
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -64,7 +43,7 @@ spec:
             periodSeconds: 3
 EOF
 
-# 3. Service 'web-svc' — INTENTIONAL TRAP: selector app=webserver does NOT match deployment pod label app=web.
+# 2. Service 'web-svc' — INTENTIONAL TRAP: selector app=webserver does NOT match deployment pod label app=web.
 #    Result: Endpoints for web-svc remain empty despite the Deployment's pods being Ready.
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -82,5 +61,28 @@ spec:
       targetPort: 80
 EOF
 
-# 4. Wait briefly for pods (best-effort — grade.sh re-checks).
+# 3. Deployment 'web-canary' — sibling workload for ImagePullBackOff trap.
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-canary
+  namespace: ${CKA_SIM_LAB_NS}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-canary
+  template:
+    metadata:
+      labels:
+        app: web-canary
+    spec:
+      containers:
+        - name: web-canary
+          # INTENTIONAL TRAP: image tag does not exist -> ImagePullBackOff
+          image: nginx:1.27-alpine-typoXYZ
+EOF
+
+# 4. Wait briefly for the healthy deployment (best-effort — the canary never becomes Available).
 kubectl wait --for=condition=Available deployment/web -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
