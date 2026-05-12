@@ -1,0 +1,10 @@
+{
+  "commands": [
+    {
+      "argv": ["kubectl", "apply", "--dry-run=client", "-f", "/tmp/q05-staticpod/manifest.yaml"],
+      "stdout": "pod/q05-cache configured (dry run)\n",
+      "stderr": "",
+      "exitCode": 0
+    }
+  ]
+}
