@@ -107,7 +107,7 @@ Plans:
 
 **Goal:** Complete the two mid-weight domain packs (Services & Networking 20%, Cluster Architecture 25%). Includes the questions that replace the CONCERNS.md-flagged content bugs (PSS replacement with correct error wording, CRI-dockerd with correct endpoint flag).
 
-**Requirements:** PACK-03, PACK-04, PACK-06 (Networking + Cluster-Arch subset), PACK-07 (Networking + Cluster-Arch subset)
+**Requirements:** PACK-03, PACK-04, PACK-06 (Networking + Cluster-Arch subset), PACK-07 (Networking + Cluster-Arch subset), CI-02 (initial: deprecated-strings lint lands in Phase 5; Phase 8 finalizes CI wiring)
 
 **Success criteria:**
 1. `packs/services-networking/` includes a kube-proxy mode inspection question and a NetworkPolicy `endPort` question, plus coverage of the remaining Networking Tracker checkboxes
@@ -116,6 +116,26 @@ Plans:
 4. CI deprecated-strings lint fails any content containing `PodSecurityPolicy`, `--container-runtime=remote`, `policy/v1beta1`, `gitRepo:`, or `dockershim` as Kubernetes API strings (comment references outside manifest blocks are allowed)
 
 **Depends on:** Phase 4 (authoring workflow proven on the smaller packs first).
+
+**Plans:** 16 plans
+
+Plans:
+- [ ] 05-01-PLAN.md -- Library extensions + catalog + lint-packs pass F + lint-deprecated-strings.sh (Wave 1)
+- [ ] 05-02-PLAN.md -- Services-Networking retrofit + pack shell (manifest/coverage/README) (Wave 1)
+- [ ] 05-03-PLAN.md -- S&N Q02 02-service-core (Wave 2)
+- [ ] 05-04-PLAN.md -- S&N Q03 03-coredns-resolution (Wave 2)
+- [ ] 05-05-PLAN.md -- S&N Q04 04-ingress-path-host (Wave 2)
+- [ ] 05-06-PLAN.md -- S&N Q05 05-kube-proxy-mode (Wave 2)
+- [ ] 05-07-PLAN.md -- S&N Q06 06-netpol-endport (Wave 2)
+- [ ] 05-08-PLAN.md -- Cluster-Architecture retrofit + pack shell (Wave 1)
+- [ ] 05-09-PLAN.md -- Cluster-Arch Q02 02-etcd-backup-restore (Wave 2)
+- [ ] 05-10-PLAN.md -- Cluster-Arch Q03 03-kubeadm-upgrade (Wave 2)
+- [ ] 05-11-PLAN.md -- Cluster-Arch Q04 04-pss-enforce (Wave 2)
+- [ ] 05-12-PLAN.md -- Cluster-Arch Q05 05-audit-policy (Wave 2)
+- [ ] 05-13-PLAN.md -- Cluster-Arch Q06 06-crd-basics (Wave 2)
+- [ ] 05-14-PLAN.md -- Cluster-Arch Q07 07-cri-dockerd-endpoint (Wave 2)
+- [ ] 05-15-PLAN.md -- Cluster-Arch Q08 08-priorityclass (Wave 2)
+- [ ] 05-16-PLAN.md -- Phase 5 VERIFICATION.md (Wave 3)
 
 ---
 
@@ -195,7 +215,7 @@ Plans:
 | TRIP-04 | 3 | DOC-03 | 8 |
 | TRIP-05 | 3 | DOC-04 | 8 |
 | TRIP-06 | 3 | CI-01 | 8 |
-| TRIP-07 | 2 | CI-02 | 8 |
+| TRIP-07 | 2 | CI-02 | 5, 8 (split) |
 | GRADE-01 | 2 | CI-03 | 8 |
 | GRADE-02 | 3 |  |  |
 | GRADE-03 | 3 |  |  |

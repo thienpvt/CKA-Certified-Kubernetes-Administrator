@@ -2,25 +2,25 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
+status: ready_to_plan
 last_updated: "2026-05-11T12:36:00.000Z"
 last_activity: 2026-05-11 -- Phase 04 gap-closure complete; BUG-1 + BUG-3 fixed; awaiting live-drill re-verification
 progress:
   total_phases: 8
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 34
   completed_plans: 33
-  percent: 97
+  percent: 38
 ---
 
 # State
 
 ## Current Position
 
-Phase: 04 (Storage + Workloads-Scheduling Packs) — CODE COMPLETE; GAPS CLOSED; AWAITING LIVE RE-VERIFY
-Plan: 18 of 18 shipped (16 original + 2 gap-closure: 04-17 BUG-1, 04-18 BUG-3)
-Status: Ready to re-drill MH-5 on the 1+2 cluster
-Last activity: 2026-05-11 -- Gap-closure plans 04-17 + 04-18 executed green; all 4 automated lint/test suites pass
+Phase: 05
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-12
 
 ### Phase 1 outstanding (carried forward)
 
