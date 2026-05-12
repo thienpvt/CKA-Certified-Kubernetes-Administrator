@@ -491,3 +491,135 @@ traps:
       - kind: k8s-doc
         target: "https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/"
         note: PriorityClass globalDefault semantics and uniqueness constraint
+
+  - id: imagepullbackoff-wrong-tag
+    name: ImagePullBackOff from typo'd image tag
+    description: "Deployment pod template image tag is typo'd; pods loop in ImagePullBackOff."
+    remediation_hint: Fix the pod template to use an existing image tag and restart the affected workload.
+    severity: warn
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/containers/images/"
+        note: image pull policy and backoff semantics
+
+  - id: netpol-label-key-drift
+    name: NetworkPolicy selector key does not match Pod label key
+    description: "Egress NetworkPolicy podSelector.matchLabels key drifted from the target Pod labels, so the policy selects no Pods."
+    remediation_hint: Align the NetworkPolicy podSelector label keys and values with the Pods that need the rule.
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+        note: NetworkPolicy podSelector matchLabels semantics
+
+  - id: netpol-default-deny-missing-allow
+    name: Default-deny NetworkPolicy with no allow path for required flow
+    description: Namespace has default-deny NetworkPolicy plus a policy granting the wrong namespace or port, leaving no allow path for the required flow.
+    remediation_hint: Add an explicit allow rule for the required namespace selector, pod selector, protocol, and port.
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+        note: default-deny + explicit allow composition
+
+  - id: coredns-sandbox-configmap-mount
+    name: Sandbox CoreDNS mounts ConfigMap with wrong volume name or key
+    description: CoreDNS Deployment in the lab namespace mounts the ConfigMap by wrong volume name or key, so Corefile is empty at runtime.
+    remediation_hint: Mount the ConfigMap key named Corefile at the path CoreDNS reads for its Corefile.
+    severity: warn
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/coredns/"
+        note: CoreDNS Corefile volume mount convention (key "Corefile")
+
+  - id: dnsconfig-policy-none-no-nameservers
+    name: Pod dnsPolicy None with empty dnsConfig.nameservers
+    description: "Pod uses dnsPolicy: None with empty dnsConfig.nameservers, leaving the resolver with no upstream nameserver."
+    remediation_hint: Provide at least one valid nameserver in dnsConfig.nameservers or use ClusterFirst when custom DNS is unnecessary.
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/"
+        note: dnsPolicy None requires non-empty dnsConfig.nameservers
+
+  - id: debug-pod-leaked-not-cleaned
+    name: kubectl debug pod left running after drill
+    description: Candidate leaves the kubectl debug Pod running after answering the node-debug drill.
+    remediation_hint: Delete debug Pods after collecting evidence so the lab has no leftover privileged inspection pods.
+    severity: warn
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/"
+        note: ephemeral debug pods require manual cleanup
+
+  - id: debug-node-missing-chroot-host
+    name: kubectl debug node without chroot /host reads debug-container rootfs
+    description: "kubectl debug node was invoked without chroot /host, so the candidate reads the debug container root filesystem instead of the node filesystem."
+    remediation_hint: Enter chroot /host inside the node debug container before reading host files.
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/"
+        note: chroot /host required to inspect the node's filesystem
+
+  - id: debug-ephemeral-vs-node-confusion
+    name: Candidate used kubectl debug <pod> when node debug was required
+    description: Candidate used an ephemeral container on an application Pod when the drill required kubectl debug node on the worker.
+    remediation_hint: Use node debugging for host-level evidence and ephemeral container debugging for Pod-level process inspection.
+    severity: warn
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/"
+        note: ephemeral container vs node debug decision tree
+
+  - id: static-pod-manifest-bad-yaml
+    name: Static pod manifest has YAML parse error
+    description: Static pod manifest contains a YAML parse error, so kubelet skips it and no mirror Pod appears.
+    remediation_hint: Fix the YAML syntax and validate the manifest before placing it in the static Pod manifest directory.
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
+        note: kubelet silently skips invalid static pod manifests
+
+  - id: static-pod-image-tag-typo
+    name: Static pod image tag does not exist
+    description: "Static pod manifest image value references a non-existent tag, causing ImagePullBackOff on the node."
+    remediation_hint: Use an existing image tag in the static Pod manifest before handing it to kubelet.
+    severity: warn
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/containers/images/"
+        note: kubelet-managed pod reaches ImagePullBackOff
+
+  - id: kubelet-flag-file-malformed-quoting
+    name: kubeadm-flags.env KUBELET_KUBEADM_ARGS value has stray quotes or CRLF line-endings
+    description: "kubeadm-flags.env KUBELET_KUBEADM_ARGS value has stray quotes, missing quotes, or CRLF line endings, so kubelet refuses to parse it."
+    remediation_hint: Rewrite KUBELET_KUBEADM_ARGS as one shell-parseable assignment with balanced quotes and Unix line endings.
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/"
+        note: kubelet refuses to parse malformed KUBELET_KUBEADM_ARGS
