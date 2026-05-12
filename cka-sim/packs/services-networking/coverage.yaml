@@ -13,6 +13,10 @@ tracker:
     label: "Service + Endpoints + selector matching"
     questions:
       - services-service-core
+  coredns-resolution:
+    label: "CoreDNS resolution + Pod dnsConfig"
+    questions:
+      - services-coredns-resolution
   netpol-endport:
     label: "NetworkPolicy endPort (CG-16)"
     questions:

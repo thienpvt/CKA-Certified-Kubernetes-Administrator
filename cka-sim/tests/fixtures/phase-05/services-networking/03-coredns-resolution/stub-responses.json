@@ -1,0 +1,20 @@
+{
+  "pod/q03-dnsclient": {
+    "exists": true,
+    "jsonpath": {
+      "{.spec.dnsPolicy}": "None"
+    }
+  },
+  "svc/kube-dns": {
+    "namespace": "kube-system",
+    "jsonpath": {
+      "{.spec.clusterIP}": "10.96.0.10"
+    }
+  },
+  "exec": {
+    "q03-dnsclient -- nslookup kubernetes.default.svc.cluster.local": {
+      "exit": 0,
+      "stdout": "Server: 10.96.0.10\nAddress: 10.96.0.10:53\nName: kubernetes.default.svc.cluster.local\nAddress: 10.96.0.1\n"
+    }
+  }
+}

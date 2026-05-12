@@ -1,0 +1,15 @@
+id: services-coredns-resolution
+domain: services-networking
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - coredns-forward-to-invalid-upstream
+  - missing-dns-egress
+  - default-sa-used
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+    note: DNS for Services and Pods
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/
+    note: Custom DNS nameservers in Pod dnsConfig

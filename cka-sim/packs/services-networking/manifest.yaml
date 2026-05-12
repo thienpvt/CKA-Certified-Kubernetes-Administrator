@@ -11,6 +11,9 @@ questions:
   - id: services-service-core
     path: 02-service-core
     estimatedMinutes: 7
+  - id: services-coredns-resolution
+    path: 03-coredns-resolution
+    estimatedMinutes: 7
   - id: services-netpol-endport
     path: 06-netpol-endport
     estimatedMinutes: 7
