@@ -24,4 +24,10 @@ cka_sim::grade::assert_endpoints_nonempty "$CKA_SIM_LAB_NS" "web-svc"
 tid=$(cka_sim::trap::detect_service_label_mismatch "$CKA_SIM_LAB_NS" "web-svc")
 [[ -n "$tid" ]] && cka_sim::grade::record_trap "$tid"
 
+# Trap detector: canary workload is stuck on a non-existent image tag.
+canary_reasons=$(kubectl get pods -n "$CKA_SIM_LAB_NS" -l app=web-canary -o jsonpath='{.items[*].status.containerStatuses[*].state.waiting.reason}' 2>/dev/null || echo "")
+if [[ " $canary_reasons " == *" ImagePullBackOff "* || " $canary_reasons " == *" ErrImagePull "* ]]; then
+  cka_sim::grade::record_trap imagepullbackoff-wrong-tag
+fi
+
 cka_sim::grade::emit_result

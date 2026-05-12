@@ -195,6 +195,18 @@ traps:
         target: "https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service"
         note: selector / endpoints
 
+  - id: imagepullbackoff-wrong-tag
+    name: Workload stuck in ImagePullBackOff due to non-existent image tag
+    description: "A Deployment references an image tag that does not exist, so its Pods cannot pull the container image and remain in ImagePullBackOff or ErrImagePull."
+    remediation_hint: "Inspect pod events and containerStatuses waiting.reason, then update or remove the workload that references the bad tag."
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/"
+        note: Debug Pods stuck waiting on image pulls
+
   - id: rbac-viewer-role-mismatch
     name: RBAC Role or RoleBinding does not grant the required viewer permissions
     description: "Candidate created a Role/RoleBinding pair but the Role's rules omit the required verb-resource (e.g., 'list pods') OR the RoleBinding subject does not name the expected ServiceAccount; kubectl auth can-i returns 'no' for the requested impersonation."
@@ -491,18 +503,6 @@ traps:
       - kind: k8s-doc
         target: "https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/"
         note: PriorityClass globalDefault semantics and uniqueness constraint
-
-  - id: imagepullbackoff-wrong-tag
-    name: ImagePullBackOff from typo'd image tag
-    description: "Deployment pod template image tag is typo'd; pods loop in ImagePullBackOff."
-    remediation_hint: Fix the pod template to use an existing image tag and restart the affected workload.
-    severity: warn
-    domain: troubleshooting
-    source: community
-    references:
-      - kind: k8s-doc
-        target: "https://kubernetes.io/docs/concepts/containers/images/"
-        note: image pull policy and backoff semantics
 
   - id: netpol-label-key-drift
     name: NetworkPolicy selector key does not match Pod label key

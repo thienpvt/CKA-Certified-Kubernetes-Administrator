@@ -10,3 +10,5 @@ set -euo pipefail
 kubectl patch service web-svc -n "$CKA_SIM_LAB_NS" \
   --type='merge' \
   -p '{"spec":{"selector":{"app":"web"}}}'
+
+kubectl delete deployment web-canary -n "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
