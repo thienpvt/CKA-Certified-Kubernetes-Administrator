@@ -1,0 +1,40 @@
+# PACK-07 coverage matrix for the Troubleshooting domain (v1.35 Study Progress Tracker).
+# tracker.<slug>.questions lists manifest question-ids for that Tracker checkbox; multi-question mapping permitted per RESEARCH §2.
+domain: troubleshooting
+tracker:
+  kubelet-journalctl:
+    label: "Read kubelet logs with journalctl"
+    questions:
+      - troubleshooting-broken-kubelet
+  control-plane-pod-logs:
+    label: "Check control plane pod logs"
+    questions:
+      - troubleshooting-static-pod-manifest
+  pending-pods:
+    label: "Debug Pending pods"
+    questions:
+      - troubleshooting-static-pod-manifest
+  crashloop-diagnosis:
+    label: "Debug CrashLoopBackOff pods"
+    questions:
+      - troubleshooting-static-pod-manifest
+  imagepullbackoff-diagnosis:
+    label: "Debug ImagePullBackOff"
+    questions:
+      - troubleshooting-deploy-svc-mismatch
+  service-endpoints:
+    label: "Troubleshoot Service endpoints"
+    questions:
+      - troubleshooting-deploy-svc-mismatch
+  troubleshoot-coredns:
+    label: "Troubleshoot CoreDNS"
+    questions:
+      - troubleshooting-coredns-resolution
+  troubleshoot-netpol:
+    label: "Troubleshoot NetworkPolicy"
+    questions:
+      - troubleshooting-netpol-dns-egress
+  debug-kubectl-node:
+    label: "Use kubectl debug (ephemeral + node)"
+    questions:
+      - troubleshooting-debug-node
