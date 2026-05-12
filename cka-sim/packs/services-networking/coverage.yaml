@@ -17,6 +17,10 @@ tracker:
     label: "CoreDNS resolution + Pod dnsConfig"
     questions:
       - services-coredns-resolution
+  ingress-path-host:
+    label: "Ingress + IngressClass + host/path routing"
+    questions:
+      - services-ingress-path-host
   netpol-endport:
     label: "NetworkPolicy endPort (CG-16)"
     questions:
