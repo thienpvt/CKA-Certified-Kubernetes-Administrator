@@ -1,38 +1,16 @@
 #!/bin/bash
 # services-networking/01-networkpolicy-egress/setup.sh — NetworkPolicy with egress restrictions but no DNS allow.
+# Retrofitted Phase 5 Plan 02: sources shared cka-sim/lib/setup.sh helpers.
 set -euo pipefail
-: "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
+: "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"
+: "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set (drill runner exports it)}"
 
-# 1. ns + Active wait
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: services-networking
-    cka-sim/question-id: services-networkpolicy-egress
-EOF
-phase=""
-for i in $(seq 1 24); do
-  phase=$(kubectl get ns "$CKA_SIM_LAB_NS" -o jsonpath='{.status.phase}' 2>/dev/null || echo "")
-  if [[ "$phase" == "Active" ]]; then
-    break
-  fi
-  if [[ -z "$phase" ]]; then
-    kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ${CKA_SIM_LAB_NS}
-  labels:
-    cka-sim/pack: services-networking
-    cka-sim/question-id: services-networkpolicy-egress
-EOF
-  fi
-  sleep 5
-done
-[[ "$phase" == "Active" ]] || { echo "ns not Active (phase=$phase)" >&2; exit 1; }
+# shellcheck source=../../../lib/setup.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/setup.sh"
+
+# 1. Idempotent ns create + 120s Active wait (helper absorbs the --wait=false race).
+cka_sim::setup::ensure_lab_ns "$CKA_SIM_LAB_NS" services-networking services-networkpolicy-egress
+cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" services-networking services-networkpolicy-egress 120
 
 # 2. Probe pod (image MUST have bash + nslookup — netshoot is the canonical choice).
 #    Per RESEARCH Assumption A3: busybox/alpine 'sh' lacks /dev/tcp and has inconsistent
