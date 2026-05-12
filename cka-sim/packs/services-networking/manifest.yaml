@@ -2,8 +2,10 @@ pack:
   id: services-networking
   domain: services-networking
   weight: 20
-  description: "Services & Networking 20% pack — Phase 3 reference question only; full pack in Phase 5 (PACK-03)."
+  description: "Services & Networking 20% domain pack (PACK-03) -- full v1.35 Tracker coverage."
 questions:
   - id: services-networkpolicy-egress
     path: 01-networkpolicy-egress
     estimatedMinutes: 9
+  # BEGIN phase-05 new questions (P03-P07 append one question block each below this line; idempotent via grep guard)
+  # END phase-05 new questions

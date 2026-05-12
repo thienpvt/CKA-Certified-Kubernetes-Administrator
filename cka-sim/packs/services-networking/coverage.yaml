@@ -1,0 +1,12 @@
+# cka-sim/packs/services-networking/coverage.yaml
+# PACK-07 coverage matrix for the Services & Networking domain (v1.35 Study Progress Tracker).
+# Each tracker.<slug>.questions lists the question-ids (from manifest.yaml) that
+# exercise that Tracker checkbox. Multiple questions may cover the same item.
+domain: services-networking
+tracker:
+  netpol-egress:
+    label: "NetworkPolicy egress + DNS allow"
+    questions:
+      - services-networkpolicy-egress
+  # BEGIN phase-05 new questions (P03-P07 append one tracker block each below this line; idempotent via grep guard)
+  # END phase-05 new questions
