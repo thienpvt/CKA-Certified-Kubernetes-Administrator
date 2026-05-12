@@ -159,6 +159,24 @@ Plans:
 
 **Depends on:** Phase 5 (references into other packs require those packs to exist first).
 
+**Plans:** 9 plans
+
+Plans:
+**Wave 1**
+- [ ] 06-01-PLAN.md — lint-packs.sh forbidden-command guard (pass G) + 3 negative fixture families + 1 test case (Wave 1)
+- [ ] 06-02-PLAN.md — traps/catalog.yaml +11 entries for Phase 6 question metadata (Wave 1)
+- [ ] 06-03-PLAN.md — Q01 `01-deploy-svc-mismatch` retrofit: lib/setup.sh sourcing + web-canary ImagePullBackOff trap (Wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06-04-PLAN.md — Q02 `02-netpol-dns-egress` (label-key drift + DNS egress missing; two-stage fix) (Wave 2)
+- [ ] 06-05-PLAN.md — Q03 `03-coredns-resolution` (lab-ns CoreDNS; forward upstream + Corefile mount subPath key-case fix) (Wave 2)
+- [ ] 06-06-PLAN.md — Q04 `04-debug-node` (Node-API oracle; sandbox answer.txt; debug-pod leak sweep in reset) (Wave 2)
+- [ ] 06-07-PLAN.md — Q05 `05-static-pod-manifest` (two broken manifest variants; python3 yaml.safe_load + kubectl dry-run oracle; sandbox only) (Wave 2)
+- [ ] 06-08-PLAN.md — Q06 `06-broken-kubelet` (4 encoded defects in sandbox kubeadm-flags.env; subshell source check) (Wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06-09-PLAN.md — Pack finalization (manifest + coverage + README) + 06-VERIFICATION.md + live 6-drill human checkpoint (Wave 3)
+
 ---
 
 ## Phase 7: Exam Mode + Blueprint Alpha + Reporting

@@ -14,7 +14,11 @@ else
   cka_sim::grade::record_trap priorityclass-globaldefault-conflict
 fi
 
-count=$(kubectl get priorityclass -o jsonpath='{range .items[?(@.globalDefault==true)]}{.metadata.name}{"\n"}{end}' 2>/dev/null | grep -v '^$' | wc -l | tr -d ' ')
+global_defaults=$(kubectl get priorityclass -o jsonpath='{range .items[?(@.globalDefault==true)]}{.metadata.name}{"\n"}{end}' 2>/dev/null)
+count=0
+while IFS= read -r pc_name; do
+  [[ -n "$pc_name" ]] && count=$(( count + 1 ))
+done <<< "$global_defaults"
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
 if [[ "$count" == "1" ]]; then
   CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
