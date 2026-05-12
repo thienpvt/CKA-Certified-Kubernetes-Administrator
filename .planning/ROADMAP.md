@@ -175,7 +175,7 @@ Plans:
 - [x] 06-08-PLAN.md — Q06 `06-broken-kubelet` (4 encoded defects in sandbox kubeadm-flags.env; subshell source check) (Wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06-09-PLAN.md — Pack finalization (manifest + coverage + README) + 06-VERIFICATION.md + live 6-drill human checkpoint (Wave 3)
+- [x] 06-09-PLAN.md — Pack finalization (manifest + coverage + README) + 06-VERIFICATION.md + live 6-drill human checkpoint (Wave 3)
 
 ---
 
