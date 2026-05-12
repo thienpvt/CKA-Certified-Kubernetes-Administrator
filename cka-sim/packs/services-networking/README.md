@@ -12,6 +12,7 @@ is the Phase 3 reference question retrofitted in Phase 5 Plan 02 to source
 | -- | ------------------------ | --------------------- | ------ |
 | 01 | [networkpolicy-egress](01-networkpolicy-egress/) | netpol-egress | 9 min  |
 <!-- BEGIN phase-05 new questions (P03-P07 append one table row each below this line; idempotent via grep guard) -->
+| 06 | [netpol-endport](06-netpol-endport/) | netpol-endport | 7 min |
 <!-- END phase-05 new questions -->
 
 Pack total (planned): 6 questions, ~46 min.

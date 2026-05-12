@@ -8,4 +8,7 @@ questions:
     path: 01-networkpolicy-egress
     estimatedMinutes: 9
   # BEGIN phase-05 new questions (P03-P07 append one question block each below this line; idempotent via grep guard)
+  - id: services-netpol-endport
+    path: 06-netpol-endport
+    estimatedMinutes: 7
   # END phase-05 new questions
