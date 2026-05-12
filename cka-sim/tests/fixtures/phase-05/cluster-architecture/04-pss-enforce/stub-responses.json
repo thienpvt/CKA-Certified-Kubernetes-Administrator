@@ -1,0 +1,9 @@
+{
+  "namespace": {
+    "labels": {
+      "pod-security.kubernetes.io/enforce": "restricted",
+      "pod-security.kubernetes.io/enforce-version": "v1.35"
+    }
+  },
+  "admissionLog": "violates PodSecurity \"restricted:v1.35\": privileged containers are not allowed"
+}

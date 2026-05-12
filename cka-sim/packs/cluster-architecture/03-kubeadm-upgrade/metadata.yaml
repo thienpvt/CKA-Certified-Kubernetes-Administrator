@@ -1,0 +1,12 @@
+id: cluster-architecture-kubeadm-upgrade
+domain: cluster-architecture
+estimatedMinutes: 10
+verified_against: "1.35"
+traps:
+  - kubeadm-upgrade-skip-plan
+  - default-sa-used
+  - missing-dns-egress
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
+    note: kubeadm upgrade plan and apply sequence

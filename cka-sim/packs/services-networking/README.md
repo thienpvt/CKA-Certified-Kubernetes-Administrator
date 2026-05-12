@@ -15,6 +15,7 @@ is the Phase 3 reference question retrofitted in Phase 5 Plan 02 to source
 | 02 | [service-core](02-service-core/) | service-core | 7 min |
 | 03 | [coredns-resolution](03-coredns-resolution/) | coredns-resolution | 7 min |
 | 04 | [ingress-path-host](04-ingress-path-host/) | ingress-path-host | 8 min |
+| 05 | [kube-proxy-mode](05-kube-proxy-mode/) | kube-proxy-mode | 8 min |
 | 06 | [netpol-endport](06-netpol-endport/) | netpol-endport | 7 min |
 <!-- END phase-05 new questions -->
 

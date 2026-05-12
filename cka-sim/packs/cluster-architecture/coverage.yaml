@@ -11,4 +11,32 @@ tracker:
     questions:
       - cluster-architecture-rbac-viewer
   # BEGIN phase-05 new questions (P09-P15 append below this line)
+  etcd-backup-restore:
+    label: "etcd snapshot save + etcdutl restore"
+    questions:
+      - cluster-architecture-etcd-backup-restore
+  kubeadm-upgrade:
+    label: "kubeadm upgrade planning + apply sequencing"
+    questions:
+      - cluster-architecture-kubeadm-upgrade
+  pss-enforce:
+    label: "PodSecurity Standards enforce (CG-10, v1.25+ wording)"
+    questions:
+      - cluster-architecture-pss-enforce
+  audit-policy:
+    label: "Audit Policy YAML authoring (CG-11)"
+    questions:
+      - cluster-architecture-audit-policy
+  crd-basics:
+    label: "CRD basics: group/scope/CR (CG-12)"
+    questions:
+      - cluster-architecture-crd-basics
+  cri-dockerd-endpoint:
+    label: "CRI-dockerd endpoint config (CG-13)"
+    questions:
+      - cluster-architecture-cri-dockerd-endpoint
+  priorityclass:
+    label: "PriorityClass globalDefault semantics"
+    questions:
+      - cluster-architecture-priorityclass
   # END phase-05 new questions

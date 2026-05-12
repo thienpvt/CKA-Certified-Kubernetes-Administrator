@@ -21,6 +21,10 @@ tracker:
     label: "Ingress + IngressClass + host/path routing"
     questions:
       - services-ingress-path-host
+  kube-proxy-mode:
+    label: "kube-proxy mode inspection (CG-15)"
+    questions:
+      - services-kube-proxy-mode
   netpol-endport:
     label: "NetworkPolicy endPort (CG-16)"
     questions:

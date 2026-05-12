@@ -17,6 +17,9 @@ questions:
   - id: services-ingress-path-host
     path: 04-ingress-path-host
     estimatedMinutes: 8
+  - id: services-kube-proxy-mode
+    path: 05-kube-proxy-mode
+    estimatedMinutes: 8
   - id: services-netpol-endport
     path: 06-netpol-endport
     estimatedMinutes: 7
