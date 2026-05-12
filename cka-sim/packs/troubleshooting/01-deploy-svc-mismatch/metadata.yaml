@@ -6,10 +6,14 @@ traps:
   - service-selector-empty-endpoints
   - default-sa-used
   - missing-dns-egress
+  - imagepullbackoff-wrong-tag
 references:
   - kind: prior-art-exercise
+    target: cka-sim/packs/services-networking/02-service-core/
+    note: "Related prior-art: Service + Endpoints selector matching"
+  - kind: prior-art-exercise
     target: exercises/11-troubleshoot-cluster/
-    note: Prior troubleshoot exercise
+    note: Prior troubleshoot exercise (pre-simulator)
   - kind: k8s-doc
     target: https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/
     note: Debug Services (selector/endpoints)
