@@ -163,9 +163,9 @@ Plans:
 
 Plans:
 **Wave 1**
-- [ ] 06-01-PLAN.md — lint-packs.sh forbidden-command guard (pass G) + 3 negative fixture families + 1 test case (Wave 1)
-- [ ] 06-02-PLAN.md — traps/catalog.yaml +11 entries for Phase 6 question metadata (Wave 1)
-- [ ] 06-03-PLAN.md — Q01 `01-deploy-svc-mismatch` retrofit: lib/setup.sh sourcing + web-canary ImagePullBackOff trap (Wave 1)
+- [x] 06-01-PLAN.md — lint-packs.sh forbidden-command guard (pass G) + 3 negative fixture families + 1 test case (Wave 1)
+- [x] 06-02-PLAN.md — traps/catalog.yaml +11 entries for Phase 6 question metadata (Wave 1)
+- [x] 06-03-PLAN.md — Q01 `01-deploy-svc-mismatch` retrofit: lib/setup.sh sourcing + web-canary ImagePullBackOff trap (Wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06-04-PLAN.md — Q02 `02-netpol-dns-egress` (label-key drift + DNS egress missing; two-stage fix) (Wave 2)
