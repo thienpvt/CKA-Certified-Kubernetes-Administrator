@@ -1,0 +1,4 @@
+{
+  "note": "Placeholder fixture for read_node_worker no-worker path. Represents kubectl returning an empty jsonpath result (all nodes carry the control-plane label or the cluster has no nodes).",
+  "expected_behavior": "helper calls `die` and exits non-zero with 'no non-control-plane worker node found' on stderr"
+}
