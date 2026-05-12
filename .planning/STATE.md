@@ -2,47 +2,39 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-05-12T00:19:47.035Z"
-last_activity: 2026-05-12 -- Phase 5 planning complete
+status: ready
+last_updated: "2026-05-12T12:55:00.000Z"
+last_activity: 2026-05-12 -- Phase 1 and Phase 5 live verification deferred
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 50
-  completed_plans: 33
-  percent: 66
+  completed_plans: 40
+  percent: 80
 ---
 
 # State
 
 ## Current Position
 
-Phase: 05
+Phase: 06 (troubleshooting-pack) — READY
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-05-12 -- Phase 5 planning complete
+Status: Ready to discuss/plan Phase 06. Phase 1 and Phase 5 live verification are deferred as tracked verification debt.
+Last activity: 2026-05-12 -- Phase 1 and Phase 5 live verification deferred
 
-### Phase 1 outstanding (carried forward)
+### Deferred Verification
 
-Phase 1 code shipped 2026-05-07 with all static checks green. Live-cluster verification still pending — see `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-SUMMARY.md` for the 10-minute on-CP-node procedure (`cka-sim bootstrap` once, re-run for idempotency, `cka-sim doctor` exits 0).
+These are intentionally deferred, not blockers for continuing Phase 06 work.
 
-### Outstanding verification (requires user to run on CP node)
+1. **Phase 1 live bootstrap verification** — deferred until the candidate next works on the control-plane node.
+   - Tracking: `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-HUMAN-UAT.md`
+   - Scope: bootstrap idempotency, passwordless SSH to workers, and `cka-sim doctor` green.
+   - Resume with: `$gsd-verify-work 1`
 
-1. `cka-sim bootstrap` on a clean CP — expect all green; ssh-copy-id may prompt for password once per worker
-2. Re-run `cka-sim bootstrap` — expect no duplicate sentinel blocks in ~/.bashrc or ~/.ssh/config
-3. `cka-sim doctor` — expect exit 0 (all 8 checks green)
-
-See `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-SUMMARY.md` for the full 10-minute verification procedure.
-
-### Phase 4 deferred bugs (found during live-drill validation 2026-05-11)
-
-Logged from `cka-sim/results.txt` drill run on the live 1+2 cluster. These must be addressed before Phase 4 can be declared fully passed; user chose to defer and stop autonomous execution.
-
-1. **BUG-1 — `storage/04-csi-volumesnapshot/setup.sh` not executable on live cluster.** Windows git dropped the exec bit during the merge path even though the question's authoring plan committed it as 100755. Drill output: `✗ /root/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh not executable`. Fix: re-run `git update-index --chmod=+x cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh` and recommit. Trivial; single-line gap-closure plan.
-
-2. **BUG-3 — `workloads/08-nodeselector-affinity-taints/setup.sh` hardcodes K8s node name `node-02`.** Drill output: `Error from server (NotFound): nodes "node-02" not found`. The SSH alias `node-01`/`node-02` (from Phase 1 BOOT-03) is distinct from the K8s node names visible to `kubectl get nodes`. Fix: setup.sh must discover a non-control-plane Ready worker dynamically via `kubectl get nodes -l '!node-role.kubernetes.io/control-plane' -o jsonpath='{.items[0].metadata.name}'` and use that for label/taint operations; reset.sh must mirror the discovery for cleanup. Affects Q08 only.
-
-3. **Not a bug — Q06 `workloads/06-static-pod` SSH preflight refused** because `cka-sim bootstrap` has not yet been run on this cluster. Resolves itself once Phase 1 verification item (1) above runs.
+2. **Phase 5 live drill verification** — deferred until live 1+2 kubeadm cluster time is available.
+   - Tracking: `.planning/phases/05-services-networking-cluster-architecture-packs/05-VERIFICATION.md`
+   - Scope: Services-Networking Q01-Q06 and Cluster-Architecture Q01-Q08 live drill round-trips.
+   - Resume with: `$gsd-verify-work 5`
 
 ### Phase 4 automated verification (2026-05-11, all green)
 
@@ -50,25 +42,9 @@ Logged from `cka-sim/results.txt` drill run on the live 1+2 cluster. These must 
 - `bash cka-sim/scripts/lint-packs.sh` → 51 checks pass, exit 0
 - `bash cka-sim/scripts/lint-traps.sh` → 25 catalog entries pass schema, exit 0
 - `bash cka-sim/scripts/lint-coverage.sh` → 2 packs at 100% Tracker coverage, 0 warnings, exit 0
-- 6 of 7 VERIFICATION must-haves passed programmatically; MH-5 (live drill) partially validated (11/13 Qs round-trip correctly; 2 deferred bugs above).
-
-### Phase 4 live-drill validation matrix (2026-05-11)
-
-| Q | Round-trip FAIL→trap | Notes |
-|---|---|---|
-| storage/01-pvc-binding | ✓ | trap `hostpath-pv-without-nodeaffinity` fired |
-| storage/02-storageclass-dynamic | ✓ | trap `pvc-wrong-storageclass` fired |
-| storage/03-access-modes-reclaim | ✓ | traps `pv-accessmodes-mismatch` + `reclaim-policy-retain-when-delete-required` fired |
-| storage/04-csi-volumesnapshot | ✗ | **BUG-1: setup.sh not executable** |
-| storage/05-wait-for-first-consumer | ✓ | trap `pvc-pending-wffc-unscheduled-consumer` fired |
-| storage/06-pvc-mount-pod | ✓ | grader correctly reports missing deployment |
-| workloads/02-rolling-update-rollback | ✓ | previous session; full PASS 4/4 round-trip |
-| workloads/03-configmap-secret-env-volume | ✓ | trap `default-sa-used` fired |
-| workloads/04-hpa-metrics-server | ✓ | candidate-run required for metrics-server install; grader FAIL-path correct |
-| workloads/05-daemonset | ✓ | trap `daemonset-missing-control-plane-toleration` fired |
-| workloads/06-static-pod | — | SSH preflight refused; runs once `cka-sim bootstrap` ran on this CP |
-| workloads/07-native-sidecar | ✓ | trap `sidecar-not-native-restartpolicy-always` fired |
-| workloads/08-nodeselector-affinity-taints | ✗ | **BUG-3: hardcoded `node-02` K8s node name** |
+- Phase 4 live-drill bugs BUG-1 and BUG-3 are resolved:
+  - `cka-sim/packs/storage/04-csi-volumesnapshot/setup.sh` is tracked executable (`100755`).
+  - `workloads-scheduling/08-nodeselector-affinity-taints` discovers the first non-control-plane worker dynamically in `setup.sh`, `reset.sh`, `ref-solution.sh`, and `grade.sh`.
 
 ## Accumulated Context
 
@@ -96,18 +72,15 @@ Logged from `cka-sim/results.txt` drill run on the live 1+2 cluster. These must 
 
 ### Blockers
 
-- **Phase 4 live-drill validation incomplete.** 2 deferred bugs (BUG-1, BUG-3) must be resolved before Phase 4 can be declared fully passed. Resolution path: `/gsd-plan-phase 04 --gaps` when ready to fix, then `/gsd-execute-phase 04 --gaps-only`, then re-run live drill on Q04 + Q08 + Q06.
-- **Phase 1 live verification** still outstanding (3 bootstrap checks on the CP node). Q06 static-pod depends on this.
+- None. Phase 1 and Phase 5 live verification are deferred and tracked above.
 
 ### Pending Todos
 
-- Fix BUG-1 (storage/04-csi-volumesnapshot setup.sh exec bit)
-- Fix BUG-3 (workloads/08 dynamic worker discovery)
-- Run `cka-sim bootstrap` + `cka-sim doctor` on the CP node to unlock Q06 validation
-- Re-drill storage/04, workloads/08, workloads/06 after bug fixes
-- Resume autonomous with `/gsd-autonomous --from 5` once Phase 4 passes fully
+- Start Phase 06: `$gsd-discuss-phase 6`
+- Later: run `$gsd-verify-work 1` on the CP node to close Phase 1 live bootstrap UAT
+- Later: run `$gsd-verify-work 5` on the live 1+2 kubeadm cluster to close Phase 5 live drill UAT
 - WR-01 deferred: full vendoring of CSI + metrics-server manifests under `cka-sim/vendor/` with recorded SHA256
 - IN-04 deferred: `cka_sim::grade::assert_custom` helper + 6-grader retrofit (library API addition, not a correctness bug)
 
 ---
-*Reset for milestone v1.0 on 2026-05-07. Phase 4 paused 2026-05-11 at user request after live-drill surfacing 2 deferred bugs.*
+*Reset for milestone v1.0 on 2026-05-07. Phase 4 bug notes cleaned on 2026-05-12 after BUG-1 and BUG-3 were confirmed fixed. Phase 1 and Phase 5 live verification deferred on 2026-05-12.*
