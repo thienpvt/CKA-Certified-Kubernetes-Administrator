@@ -1,0 +1,68 @@
+{
+  "objects": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "web", "namespace": "cka-sim-troubleshooting-02"},
+      "spec": {
+        "replicas": 1,
+        "selector": {"matchLabels": {"app.kubernetes.io/name": "web"}},
+        "template": {
+          "metadata": {"labels": {"app.kubernetes.io/name": "web"}},
+          "spec": {"containers": [{"name": "web", "image": "nicolaka/netshoot:v0.13", "command": ["sleep", "3600"]}]}
+        }
+      },
+      "status": {"readyReplicas": 1}
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "api", "namespace": "cka-sim-troubleshooting-02"},
+      "spec": {
+        "replicas": 1,
+        "selector": {"matchLabels": {"app.kubernetes.io/name": "api"}},
+        "template": {
+          "metadata": {"labels": {"app.kubernetes.io/name": "api"}},
+          "spec": {"containers": [{"name": "api", "image": "hashicorp/http-echo:1.0", "args": ["-listen=:8080", "-text=api-ok"], "ports": [{"containerPort": 8080}]}]}
+        }
+      },
+      "status": {"readyReplicas": 1}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "api-svc", "namespace": "cka-sim-troubleshooting-02"},
+      "spec": {"type": "ClusterIP", "selector": {"app.kubernetes.io/name": "api"}, "ports": [{"port": 8080, "targetPort": 8080}]}
+    },
+    {
+      "apiVersion": "networking.k8s.io/v1",
+      "kind": "NetworkPolicy",
+      "metadata": {"name": "default-deny-egress", "namespace": "cka-sim-troubleshooting-02"},
+      "spec": {"podSelector": {}, "policyTypes": ["Egress"], "egress": []}
+    },
+    {
+      "apiVersion": "networking.k8s.io/v1",
+      "kind": "NetworkPolicy",
+      "metadata": {"name": "allow-web-to-api", "namespace": "cka-sim-troubleshooting-02"},
+      "spec": {
+        "podSelector": {"matchLabels": {"app": "web"}},
+        "policyTypes": ["Egress"],
+        "egress": [{"to": [{"podSelector": {"matchLabels": {"app.kubernetes.io/name": "api"}}}], "ports": [{"protocol": "TCP", "port": 8080}]}]
+      }
+    }
+  ],
+  "pods": [
+    {"metadata": {"name": "web-abc123", "namespace": "cka-sim-troubleshooting-02", "labels": {"app.kubernetes.io/name": "web"}}, "status": {"conditions": [{"type": "Ready", "status": "True"}]}},
+    {"metadata": {"name": "api-def456", "namespace": "cka-sim-troubleshooting-02", "labels": {"app.kubernetes.io/name": "api"}}, "status": {"conditions": [{"type": "Ready", "status": "True"}]}}
+  ],
+  "exec": {
+    "preFix": {
+      "web-abc123 nslookup kubernetes.default.svc.cluster.local": {"exitCode": 1, "stdout": "", "stderr": "connection timed out; no servers could be reached"},
+      "web-abc123 timeout 5 bash -c echo > /dev/tcp/api-svc/8080": {"exitCode": 1, "stdout": "", "stderr": "timed out"}
+    },
+    "postFix": {
+      "web-abc123 nslookup kubernetes.default.svc.cluster.local": {"exitCode": 0, "stdout": "Name: kubernetes.default.svc.cluster.local", "stderr": ""},
+      "web-abc123 timeout 5 bash -c echo > /dev/tcp/api-svc/8080": {"exitCode": 0, "stdout": "", "stderr": ""}
+    }
+  }
+}

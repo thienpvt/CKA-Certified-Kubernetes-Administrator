@@ -1,0 +1,15 @@
+id: troubleshooting-netpol-dns-egress
+domain: troubleshooting
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - netpol-label-key-drift
+  - netpol-default-deny-missing-allow
+  - missing-dns-egress
+references:
+  - kind: prior-art-exercise
+    target: cka-sim/packs/services-networking/01-networkpolicy-egress/
+    note: "Related prior-art: NetworkPolicy egress authoring"
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+    note: NetworkPolicy semantics and default-deny composition
