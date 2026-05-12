@@ -195,6 +195,6 @@ if (( errors > 0 )); then
   err "$errors lint error(s) across $checked entr(ies). Fix before pushing."
   exit 1
 else
-  ok "catalog lint passed ($checked entr(ies))."
+  ok "catalog lint passed ($checked entries schema OK)."
   exit 0
 fi

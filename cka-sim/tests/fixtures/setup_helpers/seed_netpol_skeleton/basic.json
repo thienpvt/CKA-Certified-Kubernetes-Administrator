@@ -1,0 +1,13 @@
+{
+  "note": "Placeholder fixture for seed_netpol_skeleton unit case. The case stubs kubectl inline and captures the helper's heredoc output; this file is a reference shape only.",
+  "expected_fields": {
+    "apiVersion": "networking.k8s.io/v1",
+    "kind": "NetworkPolicy",
+    "policyTypes": ["Ingress", "Egress"],
+    "egress_dns_ports": [
+      {"protocol": "UDP", "port": 53},
+      {"protocol": "TCP", "port": 53}
+    ],
+    "egress_namespace_match": {"kubernetes.io/metadata.name": "kube-system"}
+  }
+}

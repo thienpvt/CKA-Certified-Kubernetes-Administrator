@@ -1,5 +1,6 @@
 #!/bin/bash
 # workloads-scheduling/06-static-pod/grade.sh
+# cka-sim-lint: allow-node-literal  # drill is hostname-bound to the kubeadm CP node; dynamic discovery retrofit tracked in deferred-items
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"

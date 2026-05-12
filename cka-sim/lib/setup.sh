@@ -188,3 +188,52 @@ spec:
 ${resources_block}
 EOF
 }
+
+# cka_sim::setup::seed_netpol_skeleton <ns> <name> <selector-key=value>
+#   Emit a baseline NetworkPolicy with policyTypes: [Ingress, Egress] and a DNS-allow
+#   egress rule (UDP/53 + TCP/53 to the kube-system namespace). Prevents the
+#   missing-dns-egress trap by default. Selector label parsed from "key=value".
+#   Used by services-networking questions that layer additional ingress/egress rules
+#   on top of a known-safe DNS baseline.
+cka_sim::setup::seed_netpol_skeleton() {
+  local ns="$1" name="$2" selector="$3"
+  kubectl apply -f - <<EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ${name}
+  namespace: ${ns}
+spec:
+  podSelector:
+    matchLabels:
+      ${selector%%=*}: ${selector##*=}
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    # Allow DNS resolution always (prevents missing-dns-egress trap)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+EOF
+}
+
+# cka_sim::setup::read_node_worker
+#   Echo the first non-control-plane node name. Replaces hardcoded node-01/node-02
+#   references across setup scripts (BUG-3 regression guard promoted to the library).
+#   Fails loudly when no worker is discoverable so setup aborts rather than silently
+#   pinning to an empty string.
+cka_sim::setup::read_node_worker() {
+  local node
+  node=$(kubectl get nodes \
+    -l '!node-role.kubernetes.io/control-plane' \
+    --no-headers -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+  [[ -n "$node" ]] || die "read_node_worker: no non-control-plane worker node found"
+  echo "$node"
+}

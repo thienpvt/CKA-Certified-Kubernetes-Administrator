@@ -58,10 +58,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Phase 5 (RESEARCH §13 + VALIDATION.md Wave 0): dedicated named lint step
+      # runs BEFORE the aggregate test.sh so any future refactor of test.sh's
+      # lint chain cannot silently drop deprecated-string enforcement. test.sh
+      # also invokes this lint internally (belt + suspenders).
+      - name: Lint deprecated strings
+        run: bash cka-sim/scripts/lint-deprecated-strings.sh
+
       # WR-11 (04-REVIEW.md): the standalone coverage step used to run before
       # pack lint, so a malformed manifest.yaml surfaced as a confusing
       # "no questions" coverage error instead of the real pack-lint root cause.
-      # test.sh runs the three lints in the correct order (traps -> packs ->
-      # coverage -> unit cases), so one step covers everything.
+      # test.sh runs the four lints in the correct order (traps -> packs ->
+      # coverage -> deprecated-strings -> unit cases), so one step covers everything.
       - name: Run cka-sim test suite
         run: bash cka-sim/scripts/test.sh

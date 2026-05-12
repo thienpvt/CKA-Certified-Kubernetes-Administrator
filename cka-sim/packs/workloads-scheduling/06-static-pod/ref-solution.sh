@@ -1,5 +1,6 @@
 #!/bin/bash
 # workloads-scheduling/06-static-pod/ref-solution.sh
+# cka-sim-lint: allow-node-literal  # drill is hostname-bound to the kubeadm CP node; dynamic discovery retrofit tracked in deferred-items
 # Drops a static-pod manifest into /etc/kubernetes/manifests on node-01 via SSH
 # and waits for the kubelet to mirror it into the default namespace.
 set -euo pipefail

@@ -1,5 +1,6 @@
 #!/bin/bash
 # workloads-scheduling/06-static-pod/setup.sh
+# cka-sim-lint: allow-node-literal  # drill is hostname-bound to the kubeadm CP node; dynamic discovery retrofit tracked in deferred-items
 # SSH preflight only. The question is about node-01 static pods, so setup does
 # NOT mutate /etc/kubernetes/manifests — that is the candidate's job.
 set -euo pipefail
