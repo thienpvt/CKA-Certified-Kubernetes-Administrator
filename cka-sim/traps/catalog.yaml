@@ -359,3 +359,135 @@ traps:
       - kind: k8s-doc
         target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
         note: Static pods are kubelet-managed via --pod-manifest-path, not API-server-managed
+
+  - id: kube-proxy-mode-mismatch-ipvs-iptables
+    name: Reported kube-proxy mode does not match live kube-system/kube-proxy ConfigMap
+    description: "Candidate's reported kube-proxy mode does not equal the value of the `mode:` key inside the kube-system/kube-proxy ConfigMap's config.conf entry. Valid Linux values are iptables (kubeadm default), ipvs, and nftables; an empty string means defaults. Oracle is behavioural — read live ConfigMap jsonpath, never shell history."
+    remediation_hint: "Extract the active mode with: kubectl -n kube-system get configmap kube-proxy -o jsonpath='{.data.config\\.conf}' | awk '/^mode:/{print $2}' | tr -d '\"'. Submit exactly that string."
+    severity: warn
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/reference/networking/virtual-ips/"
+        note: kube-proxy modes (iptables/ipvs/nftables) and Service VIP data-plane semantics
+
+  - id: netpol-endport-missing-protocol
+    name: NetworkPolicy endPort rule omits explicit protocol
+    description: "NetworkPolicy uses spec.ingress[].ports[].endPort without a sibling protocol field. v1.35 requires an explicit protocol on any port-range rule; defaults are fragile across CNIs and an omitted protocol is ambiguous at review time even when Calico/Cilium accept it. endPort must also be numeric (not a named port) and >= port."
+    remediation_hint: "Add protocol: TCP (or UDP) next to port and endPort. Example: { protocol: TCP, port: 8080, endPort: 8090 }. Verify CNI support: Calico 3.25+ and Cilium 1.13+ enforce endPort natively."
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+        note: NetworkPolicy endPort field semantics and CNI support matrix
+
+  - id: coredns-forward-to-invalid-upstream
+    name: Pod dnsConfig or CoreDNS forward references an unreachable or non-cluster upstream
+    description: "Pod uses dnsPolicy: None with dnsConfig.nameservers pointing at a public IP (e.g. 1.1.1.1) or an unreachable host instead of the cluster DNS service IP; cluster-internal names like kubernetes.default.svc.cluster.local fail to resolve. Equivalent failure mode in the live CoreDNS Corefile is a `forward .` directive aimed at an upstream the cluster cannot reach."
+    remediation_hint: "For Pod dnsConfig: set nameservers to the cluster DNS Service IP (kubectl -n kube-system get svc kube-dns -o jsonpath='{.spec.clusterIP}') and keep dnsPolicy: ClusterFirst unless there is a specific reason to override. For CoreDNS: keep `forward . /etc/resolv.conf` to inherit the node resolver."
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/coredns/"
+        note: CoreDNS Corefile and in-cluster DNS resolution contract
+
+  - id: ingress-missing-ingressclass
+    name: Ingress has neither spec.ingressClassName nor a matching ingress.class annotation
+    description: "Ingress resource omits both spec.ingressClassName and the legacy kubernetes.io/ingress.class annotation. v1.35 strongly prefers spec.ingressClassName; without it, no controller claims the Ingress and routing never activates. Silently green until a live probe reveals the missing controller binding."
+    remediation_hint: "Set spec.ingressClassName to the name of an installed IngressClass (kubectl get ingressclass). If the cluster has a default IngressClass (ingressclass.kubernetes.io/is-default-class annotation), omission is safe — otherwise always specify explicitly."
+    severity: warn
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/ingress/"
+        note: Ingress + IngressClass binding rules and default-class annotation
+
+  - id: etcd-snapshot-without-env-set
+    name: etcdctl snapshot save/restore invoked without ETCDCTL_API=3
+    description: "Candidate ran etcdctl snapshot save or status without ETCDCTL_API=3 exported. Older etcdctl binaries default to v2 API on some distros; the v3 snapshot subcommand fails or silently operates on v2 data, producing an unusable snapshot file. On v1.35 clusters the boot script exports ETCDCTL_API=3 but the exam drill still marks bare invocations as exam-wrong."
+    remediation_hint: "Always prefix with ETCDCTL_API=3 or export it at the top of the command block. Preferred: ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=... --cert=... --key=... snapshot save <path>."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/"
+        note: etcd backup/restore procedure for kubeadm clusters
+
+  - id: etcd-restore-wrong-data-dir
+    name: etcdutl snapshot restore targets the live data-dir or omits --data-dir
+    description: "Candidate ran etcdutl snapshot restore without --data-dir, or pointed --data-dir at the live /var/lib/etcd. The first form restores into the CWD's default path and is brittle; the second is catastrophic — it overwrites the running etcd's state and bricks the control plane. A safe drill always restores into a sandbox path like /tmp/qNN-etcd-*/restored-data."
+    remediation_hint: "Always pass --data-dir pointing at a sandbox path: etcdutl snapshot restore <snapshot.db> --data-dir=/tmp/q02-etcd-backup/restored-data. Verify the member/wal/ dir exists under the sandbox after restore; never write into /var/lib/etcd on a running cluster."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/"
+        note: etcd snapshot restore procedure and data-dir handling
+
+  - id: kubeadm-upgrade-skip-plan
+    name: kubeadm upgrade apply invoked without a prior kubeadm upgrade plan step
+    description: "Upgrade runbook jumps directly to `kubeadm upgrade apply v<X.Y.Z>` without running `kubeadm upgrade plan` first. Plan output prints the allowable target versions, component version matrix, and migration notices; skipping it risks applying an incompatible minor version or missing a required pre-upgrade action (e.g. drain, etcd snapshot). Safe upgrades always plan -> snapshot -> apply -> uncordon."
+    remediation_hint: "Insert `kubeadm upgrade plan` before apply. Read the output, choose the target version it lists as available, then run `kubeadm upgrade apply v<X.Y.Z>`. Keep `kubeadm upgrade plan` in the apply-script.sh for auditability."
+    severity: warn
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/"
+        note: kubeadm upgrade plan + apply sequence
+
+  - id: audit-policy-wrong-stage-verbosity
+    name: Audit Policy rule uses invalid level or unknown omitStages value
+    description: "audit.k8s.io/v1 Policy rule has no level, or level is outside {None, Metadata, Request, RequestResponse}. Equivalent bug: omitStages lists a stage name the apiserver does not recognise (valid stages are RequestReceived, ResponseStarted, ResponseComplete, Panic). Either form causes apiserver to reject the Policy on load, silently disabling audit logging."
+    remediation_hint: "Set level to one of None/Metadata/Request/RequestResponse per rule. Use omitStages only with valid stage names; RequestReceived is the most common omission to avoid double-logging pre-admission events."
+    severity: warn
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/"
+        note: Audit Policy schema, levels, and stage names
+
+  - id: crd-missing-scope-field
+    name: CustomResourceDefinition omits spec.scope or uses the wrong scope value
+    description: "CRD manifest has no spec.scope, or sets Cluster when the intended resource should be Namespaced (or vice versa). v1 CRDs require spec.scope; apiserver rejects the manifest on apply. Wrong scope silently changes the access model: a Cluster-scoped CR lives outside namespaces and ignores RBAC RoleBindings, while a Namespaced CR requires a namespace on every query."
+    remediation_hint: "Set spec.scope explicitly to Namespaced or Cluster. Default to Namespaced unless the resource genuinely has no tenant boundary (e.g. cluster-wide config). Verify with kubectl get crd <name> -o jsonpath='{.spec.scope}'."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/"
+        note: CRD spec.scope semantics (Namespaced vs Cluster)
+
+  - id: cri-endpoint-unix-prefix-missing
+    name: kubelet --container-runtime-endpoint value omits the unix:// scheme
+    description: "kubelet --container-runtime-endpoint flag set to a bare filesystem path (e.g. /run/cri-dockerd.sock) instead of a unix:// URI. kubelet requires the scheme; without it the endpoint is treated as a protocol error and the kubelet cannot dial the runtime, producing a cryptic 'connection refused' loop at startup."
+    remediation_hint: "Always prefix with unix://. Correct form: --container-runtime-endpoint=unix:///run/cri-dockerd.sock (note the three slashes: unix:// + absolute path)."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/setup/production-environment/container-runtimes/"
+        note: Container runtime endpoint URI format for kubelet
+
+  - id: priorityclass-globaldefault-conflict
+    name: Multiple PriorityClasses declare globalDefault true
+    description: "Two or more PriorityClass resources have globalDefault: true. Kubernetes admission rejects the second creation at submission time, and if both exist (e.g. applied via separate manifests with Force or during upgrade migration) the scheduler's default-priority resolution becomes non-deterministic — new pods without an explicit priorityClassName may receive an unexpected priority."
+    remediation_hint: "Exactly one PriorityClass may be globalDefault. Pick the intended one; patch the others: kubectl patch priorityclass <name> -p '{\"globalDefault\":false}'. Verify: kubectl get priorityclass -o jsonpath='{range .items[?(@.globalDefault==true)]}{.metadata.name}{\"\\n\"}{end}' | wc -l should equal 1."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/"
+        note: PriorityClass globalDefault semantics and uniqueness constraint

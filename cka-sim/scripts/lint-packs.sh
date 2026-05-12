@@ -149,6 +149,35 @@ while IFS= read -r meta_yaml; do
   done
 done < <(find "$PACKS_DIR" -name 'metadata.yaml' -type f)
 
+info "pass F: BUG-3 pre-empt — no hardcoded node-01/node-02 in packs/**/*.sh"
+# BUG-3 (Phase 4): storage/04-csi-volumesnapshot hardcoded node-02, which does not
+# exist on every 1+2 cluster. Phase 5 promotes dynamic-worker discovery into
+# cka_sim::setup::read_node_worker (lib/setup.sh). This pass is the regression
+# guard: any literal node-01 / node-02 token in a pack shell script fails lint,
+# unless the line is a comment (first non-whitespace char is '#').
+#
+# File-level opt-out: if the file's first 10 lines contain the sentinel
+# '# cka-sim-lint: allow-node-literal', the whole file is skipped. This is
+# reserved for legitimate hostname-bound drills (e.g. static-pod on a named
+# control-plane host) where dynamic discovery is either infeasible or a
+# separately-tracked retrofit. New authors should never reach for the sentinel.
+while IFS= read -r sh_file; do
+  checked=$(( checked + 1 ))
+  if head -n 10 "$sh_file" 2>/dev/null | grep -q '# cka-sim-lint: allow-node-literal'; then
+    continue
+  fi
+  while IFS= read -r hit_line; do
+    [[ -z "$hit_line" ]] && continue
+    line_num="${hit_line%%:*}"
+    rest="${hit_line#*:}"
+    # Skip if the line is a comment (first non-whitespace char is '#').
+    stripped="${rest#"${rest%%[![:space:]]*}"}"
+    [[ "${stripped:0:1}" == "#" ]] && continue
+    err "BUG-3 pre-empt: $sh_file:$line_num contains hardcoded node-01/node-02 — use cka_sim::setup::read_node_worker instead"
+    errors=$(( errors + 1 ))
+  done < <(grep -nE '\bnode-0[12]\b' "$sh_file" 2>/dev/null || true)
+done < <(find "$PACKS_DIR" -type f -name '*.sh' -not -path '*/tests/*')
+
 printf '\n' >&2
 if (( errors > 0 )); then
   err "$errors pack lint error(s) across $checked check(s). Fix before pushing."
