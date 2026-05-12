@@ -40,12 +40,12 @@ Task IDs follow the pattern `05-PP-TT` where `PP` is the plan number and `TT` th
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 05-01-XX | P01 lib extensions | 1 | helper API | — | `seed_netpol_skeleton` emits DNS-allow egress; `read_node_worker` returns non-empty non-CP node | unit | `bash cka-sim/scripts/test.sh -- lib-setup-phase5` | ❌ W0 | ⬜ pending |
-| 05-02-XX | P02 S&N retrofit + new Qs | 1-2 | PACK-03, PACK-06, PACK-07 subset | — | 6 questions round-trip FAIL→trap and PASS→no trap against kubectl stub | unit | `bash cka-sim/scripts/test.sh -- pack-services-networking` | ❌ W0 | ⬜ pending |
-| 05-03-XX | P03 Cluster-Arch retrofit + new Qs | 1-2 | PACK-04, PACK-06, PACK-07 subset | — | 8 questions round-trip via kubectl stub | unit | `bash cka-sim/scripts/test.sh -- pack-cluster-architecture` | ❌ W0 | ⬜ pending |
+| 05-01-XX | P01 lib extensions | 1 | helper API | — | `seed_netpol_skeleton` emits DNS-allow egress; `read_node_worker` returns non-empty non-CP node | unit | `bash -n cka-sim/lib/setup.sh && bash cka-sim/scripts/test.sh` | ❌ W0 | ⬜ pending |
+| 05-02-XX | P02 S&N retrofit + new Qs | 1-2 | PACK-03, PACK-06, PACK-07 subset | — | 6 questions round-trip FAIL→trap and PASS→no trap against kubectl stub | unit | `bash cka-sim/scripts/lint-packs.sh && bash cka-sim/scripts/lint-coverage.sh services-networking && bash cka-sim/scripts/test.sh` | ❌ W0 | ⬜ pending |
+| 05-03-XX | P03 Cluster-Arch retrofit + new Qs | 1-2 | PACK-04, PACK-06, PACK-07 subset | — | 8 questions round-trip via kubectl stub | unit | `bash cka-sim/scripts/lint-packs.sh && bash cka-sim/scripts/lint-coverage.sh cluster-architecture && bash cka-sim/scripts/test.sh` | ❌ W0 | ⬜ pending |
 | 05-04-XX | P04 trap catalog + coverage.yaml | 1 | GRADE-04, PACK-07 | — | 10 new trap ids pass schema lint; both coverage.yaml files pass coverage lint | unit | `bash cka-sim/scripts/lint-traps.sh && bash cka-sim/scripts/lint-coverage.sh` | ❌ W0 | ⬜ pending |
 | 05-05-XX | P05 deprecated-strings CI lint | 2 | CI-02 | — | Lint script fails PR on forbidden strings; zero false positives on Phase 4 output | unit | `bash cka-sim/scripts/lint-deprecated-strings.sh; echo exit=$?` | ❌ W0 | ⬜ pending |
-| 05-06-XX | P06 Phase 3 retrofits sourcing lib/setup.sh | 1 | reuse-audit | — | `01-networkpolicy-egress` and `01-rbac-viewer` still round-trip green after sourcing helpers | unit | `bash cka-sim/scripts/test.sh -- retrofits` | ❌ W0 | ⬜ pending |
+| 05-06-XX | P06 Phase 3 retrofits sourcing lib/setup.sh | 1 | reuse-audit | — | `01-networkpolicy-egress` and `01-rbac-viewer` still round-trip green after sourcing helpers | unit | `bash cka-sim/scripts/lint-packs.sh && bash cka-sim/scripts/test.sh` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -60,7 +60,7 @@ Plan IDs are a placeholder — the planner may split these differently; VALIDATI
 - [ ] `cka-sim/scripts/lint-deprecated-strings.sh` — new lint script (see RESEARCH §13)
 - [ ] `cka-sim/scripts/lint-packs.sh` — extended to walk `services-networking` and `cluster-architecture` packs (already walks storage + workloads)
 - [ ] `cka-sim/scripts/lint-coverage.sh` — extended to walk the two new pack `coverage.yaml` files
-- [ ] Extend `cka-sim/scripts/test.sh` harness to load Phase 5 fixtures under a new suite label (e.g., `-- phase5`)
+- [ ] Extend `cka-sim/scripts/test.sh` harness to auto-discover Phase 5 fixtures via the existing case-glob (no new suite-label flag; plans use concrete shell invocations in the Per-Task table above)
 - [ ] `.github/workflows/validate.yml` — add `bash cka-sim/scripts/lint-deprecated-strings.sh` step
 
 ---

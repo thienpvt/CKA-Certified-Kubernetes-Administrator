@@ -79,7 +79,7 @@ Author the two mid-weight domain packs end-to-end — Services & Networking (20 
 ### Reusable Assets
 - `cka-sim/lib/traps.sh` + `cka-sim/lib/grade.sh` (Phase 2) — assertion + detector helpers every grader composes from.
 - `cka-sim/lib/setup.sh` (Phase 4) — `ensure_lab_ns`, `wait_for_ns_active`, `seed_pv_hostpath`, `seed_deployment`. Phase 5 adds `seed_netpol_skeleton` and `read_node_worker`.
-- `cka-sim/traps/catalog.yaml` (Phase 2 seeded + Phase 3/4 extensions) — 27 entries as of commit `03b600f`; schema lint green. Phase 5 adds ~10 new + activates 4 CONCERNS-seeded entries on the new questions.
+- `cka-sim/traps/catalog.yaml` (Phase 2 seeded + Phase 3/4 extensions) — 25 entries as of commit `03b600f`; schema lint green. Phase 5 adds ~10 new + activates 4 CONCERNS-seeded entries on the new questions.
 - `cka-sim/packs/services-networking/01-networkpolicy-egress/` + `cka-sim/packs/cluster-architecture/01-rbac-viewer/` (Phase 3) — reference questions; six-file shape + pack `manifest.yaml` shape are proven. Retrofitted in place in this phase.
 - `cka-sim/scripts/test.sh` — bash test harness with PATH-shadowed `kubectl` stub; extend by dropping new fixtures under `cka-sim/tests/fixtures/`.
 - `cka-sim/scripts/lint-traps.sh` / `scripts/lint-packs.sh` / `scripts/lint-coverage.sh` — Phase 4 CI contract; extend coverage walker to the two new packs.

@@ -120,14 +120,17 @@ Plans:
 **Plans:** 16 plans
 
 Plans:
+**Wave 1**
 - [ ] 05-01-PLAN.md -- Library extensions + catalog + lint-packs pass F + lint-deprecated-strings.sh (Wave 1)
 - [ ] 05-02-PLAN.md -- Services-Networking retrofit + pack shell (manifest/coverage/README) (Wave 1)
+- [ ] 05-08-PLAN.md -- Cluster-Architecture retrofit + pack shell (Wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 05-03-PLAN.md -- S&N Q02 02-service-core (Wave 2)
 - [ ] 05-04-PLAN.md -- S&N Q03 03-coredns-resolution (Wave 2)
 - [ ] 05-05-PLAN.md -- S&N Q04 04-ingress-path-host (Wave 2)
 - [ ] 05-06-PLAN.md -- S&N Q05 05-kube-proxy-mode (Wave 2)
 - [ ] 05-07-PLAN.md -- S&N Q06 06-netpol-endport (Wave 2)
-- [ ] 05-08-PLAN.md -- Cluster-Architecture retrofit + pack shell (Wave 1)
 - [ ] 05-09-PLAN.md -- Cluster-Arch Q02 02-etcd-backup-restore (Wave 2)
 - [ ] 05-10-PLAN.md -- Cluster-Arch Q03 03-kubeadm-upgrade (Wave 2)
 - [ ] 05-11-PLAN.md -- Cluster-Arch Q04 04-pss-enforce (Wave 2)
@@ -135,6 +138,8 @@ Plans:
 - [ ] 05-13-PLAN.md -- Cluster-Arch Q06 06-crd-basics (Wave 2)
 - [ ] 05-14-PLAN.md -- Cluster-Arch Q07 07-cri-dockerd-endpoint (Wave 2)
 - [ ] 05-15-PLAN.md -- Cluster-Arch Q08 08-priorityclass (Wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 05-16-PLAN.md -- Phase 5 VERIFICATION.md (Wave 3)
 
 ---
