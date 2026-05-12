@@ -9,6 +9,10 @@ tracker:
     questions:
       - services-networkpolicy-egress
   # BEGIN phase-05 new questions (P03-P07 append one tracker block each below this line; idempotent via grep guard)
+  service-core:
+    label: "Service + Endpoints + selector matching"
+    questions:
+      - services-service-core
   netpol-endport:
     label: "NetworkPolicy endPort (CG-16)"
     questions:

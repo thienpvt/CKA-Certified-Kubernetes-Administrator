@@ -1,0 +1,14 @@
+{
+  "service/q02-web": {
+    "exists": true,
+    "jsonpath": {
+      "{.spec.selector.app}": "q02-web"
+    }
+  },
+  "endpoints/q02-web": {
+    "exists": true,
+    "jsonpath": {
+      "{.subsets[0].addresses[0].ip}": "10.244.0.5"
+    }
+  }
+}
