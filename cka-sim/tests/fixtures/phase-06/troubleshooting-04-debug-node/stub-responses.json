@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    {
+      "metadata": { "name": "worker-a" },
+      "status": {
+        "nodeInfo": {
+          "kernelVersion": "6.8.0-65-generic"
+        }
+      }
+    }
+  ],
+  "pods": {
+    "debugSourcePass": {
+      "items": [
+        {
+          "metadata": {
+            "namespace": "default",
+            "name": "worker-a-debugger-abcde",
+            "labels": {
+              "kubectl.kubernetes.io/debug-source": "node/worker-a"
+            }
+          },
+          "status": { "phase": "Succeeded" }
+        }
+      ]
+    },
+    "debugSourceFail": {
+      "items": []
+    },
+    "ephemeralOnly": {
+      "items": [
+        {
+          "metadata": {
+            "namespace": "cka-sim-troubleshooting-04",
+            "name": "app",
+            "annotations": {
+              "kubectl.kubernetes.io/debug-container": "debugger"
+            }
+          },
+          "status": { "phase": "Running" }
+        }
+      ]
+    }
+  }
+}

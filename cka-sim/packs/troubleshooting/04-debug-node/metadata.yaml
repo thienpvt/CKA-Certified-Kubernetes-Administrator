@@ -1,0 +1,15 @@
+id: troubleshooting-debug-node
+domain: troubleshooting
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - debug-node-missing-chroot-host
+  - debug-pod-leaked-not-cleaned
+  - debug-ephemeral-vs-node-confusion
+references:
+  - kind: prior-art-exercise
+    target: cka-sim/packs/cluster-architecture/02-etcd-backup-restore/
+    note: "Related prior-art: node-level control-plane inspection without mutation"
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/
+    note: kubectl debug node/<name> semantics and chroot /host
