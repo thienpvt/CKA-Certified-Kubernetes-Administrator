@@ -40,7 +40,7 @@ checked=0
 info "pass A: GRADE-02 grade.sh idioms"
 while IFS= read -r grade_sh; do
   checked=$(( checked + 1 ))
-  if grep -nE '^[[:space:]]*[^#]*kubectl[[:space:]]+get[[:space:]].*\|[[:space:]]*grep' "$grade_sh" >/dev/null; then
+  if grep -nE '^[[:space:]]*[^#]*kubectl[[:space:]]+get[[:space:]][^|]*\|[[:space:]]*grep' "$grade_sh" >/dev/null; then
     err "GRADE-02: $grade_sh contains banned 'kubectl get | grep'"
     errors=$(( errors + 1 ))
   fi
@@ -177,6 +177,36 @@ while IFS= read -r sh_file; do
     errors=$(( errors + 1 ))
   done < <(grep -nE '\bnode-0[12]\b' "$sh_file" 2>/dev/null || true)
 done < <(find "$PACKS_DIR" -type f -name '*.sh' -not -path '*/tests/*')
+
+info "pass G: FORBIDDEN-COMMAND guard — troubleshooting pack host-safety (D-09/D-11/D-12)"
+if [[ -d "$PACKS_DIR/troubleshooting" ]]; then
+  while IFS= read -r sh_file; do
+    checked=$(( checked + 1 ))
+    forbidden_patterns=(
+      "\\bsystemctl\\b|systemctl"
+      "kubectl[[:space:]]+edit[[:space:]]+configmap[[:space:]]+coredns[[:space:]]+-n[[:space:]]+kube-system|kubectl edit cm coredns (kube-system)"
+      "kubectl[[:space:]]+delete[[:space:]]+(namespace|ns)[[:space:]]+kube-system|kubectl delete ns kube-system"
+      "kubectl[[:space:]]+(cordon|drain)[[:space:]]|kubectl cordon/drain"
+      ">[[:space:]]*/etc/kubernetes/|write into /etc/kubernetes/ (covers /etc/kubernetes/manifests/ via prefix)"
+      ">[[:space:]]*/var/lib/kubelet/|write into /var/lib/kubelet/"
+      "cp[[:space:]]+([^#][^[:space:]]*[[:space:]]+)+/etc/kubernetes/manifests/|copy into /etc/kubernetes/manifests/"
+    )
+    for pattern_label in "${forbidden_patterns[@]}"; do
+      pattern="${pattern_label%%|*}"
+      label="${pattern_label#*|}"
+      while IFS= read -r hit_line; do
+        [[ -z "$hit_line" ]] && continue
+        line_num="${hit_line%%:*}"
+        rest="${hit_line#*:}"
+        # Skip if the line is a comment (first non-whitespace char is '#').
+        stripped="${rest#"${rest%%[![:space:]]*}"}"
+        [[ "${stripped:0:1}" == "#" ]] && continue
+        err "FORBIDDEN-COMMAND: $sh_file:$line_num forbidden pattern '$label' (D-09/D-11/D-12 host-safety)"
+        errors=$(( errors + 1 ))
+      done < <(grep -nE "^[[:space:]]*[^#]*${pattern}" "$sh_file" 2>/dev/null || true)
+    done
+  done < <(find "$PACKS_DIR/troubleshooting" -type f -name '*.sh' -not -path '*/tests/*')
+fi
 
 printf '\n' >&2
 if (( errors > 0 )); then
