@@ -5,191 +5,123 @@ status: human_needed
 must_haves_passed: 7
 must_haves_total: 8
 human_verification_count: 1
-score: "7/8 must-haves verified programmatically"
+score: "7/8 automated must-haves verified; 1 live-drill must-have deferred"
 gaps: []
-re_verification: { previous_status: null }
+re_verification: { previous_status: human_needed }
 requirements_coverage:
   PACK-05: satisfied
   PACK-06: "satisfied (Troubleshooting subset)"
   PACK-07: "satisfied (all 5 packs at 100% Tracker coverage)"
+human_verification:
+  - test: "Live 1+2 cluster drill round-trip for troubleshooting 01..06"
+    expected: "Each drill completes with fail-with-trap before reference solution, pass-with-ref-solution after, reset clean, and host-safety checks unchanged."
+    why_human: "Requires live 1+2 kubeadm cluster; intentionally deferred per Phase 1 and Phase 5 deferred verification pattern."
+deferred:
+  - truth: "Live 1+2 cluster drill round-trip: cka-sim drill troubleshooting 01..06 each completes with expected fail-with-trap and pass-with-ref-solution states, plus host-safety checks."
+    addressed_in: "Human verification debt"
+    evidence: ".planning/STATE.md Deferred Verification pattern for Phase 1 and Phase 5; Phase 6 live drills require same live cluster access."
 deferred_items:
-  - ref: WR-01 (Phase 4)
-    note: full vendoring of CSI + metrics-server manifests under cka-sim/vendor/ with recorded SHA256
-  - ref: IN-04 (Phase 4)
-    note: cka_sim::grade::assert_custom helper + 6-grader retrofit
-  - ref: DF-08
-    note: Hint reveal (drill mode only)
+  - ref: Phase 6 live UAT
+    note: "Live 6-drill troubleshooting round-trip on 1+2 kubeadm cluster deferred to human-verification debt."
   - ref: Phase 1 live UAT
-    note: tracked in 01-HUMAN-UAT.md; reopen via /gsd-verify-work 1
+    note: "tracked in 01-HUMAN-UAT.md; reopen via /gsd-verify-work 1"
   - ref: Phase 5 live UAT
-    note: tracked in 05-VERIFICATION.md; reopen via /gsd-verify-work 5
-source: [06-RESEARCH.md, 06-VALIDATION.md]
+    note: "tracked in 05-VERIFICATION.md; reopen via /gsd-verify-work 5"
+source: [06-RESEARCH.md, 06-VALIDATION.md, 06-CONTEXT.md, 06-REVIEW.md, .planning/REQUIREMENTS.md, .planning/STATE.md]
 ---
 
 # Phase 6 Verification Report
 
-## Summary
+**Phase Goal:** Complete the largest-weight domain pack (Troubleshooting 30%). Cross-references questions in the other four packs as teaching material. Closes out PACK-07's 100% coverage-matrix requirement.
 
-Phase 6 Troubleshooting pack completes PACK-05 with 6 questions at a progressive difficulty ramp (53 min total), closes PACK-07 100% coverage across all 5 packs, and introduces 11 new trap catalog entries plus 1 forbidden-command lint guard. Host-safety contract (D-09/D-11/D-12) is encoded twice: per-question sandboxing and lint-packs pass G.
+**Verified:** 2026-05-13
+**Status:** human_needed
+**Score:** 7/8 automated must-haves verified; 1 live-drill must-have deferred
 
-## Observable Truths
+## Goal Achievement
 
-| # | Truth | Status | Evidence |
-|---|-------|--------|----------|
-| 1 | MH-1: Troubleshooting pack has >=1 question each for CoreDNS, kubectl debug node, NetworkPolicy, broken kubelet, static pod. | VERIFIED | `cka-sim/packs/troubleshooting/coverage.yaml` maps required topics to 6 manifest IDs. |
-| 2 | MH-2: Coverage-matrix lint reports 100% for troubleshooting AND for every pack collectively (closes PACK-07). | VERIFIED | `bash cka-sim/scripts/lint-coverage.sh troubleshooting` and `bash cka-sim/scripts/lint-coverage.sh` exit 0. |
-| 3 | MH-3: Every troubleshooting metadata.yaml has >=1 references[] entry whose target begins with `cka-sim/packs/` (D-05 cross-pack guarantee). | VERIFIED | `for f in cka-sim/packs/troubleshooting/*/metadata.yaml; do grep -q 'target: cka-sim/packs/' "$f" || exit 1; done` exits 0. |
-| 4 | MH-4: `cka-sim drill troubleshooting` can run every question without error. | HUMAN | Live 1+2 kubeadm drill checklist pending. |
-| 5 | MH-5: Every trap ID referenced is registered in `cka-sim/traps/catalog.yaml` (catalog + lint-packs pass E). | VERIFIED | `bash cka-sim/scripts/lint-packs.sh` and `bash cka-sim/scripts/lint-traps.sh` exit 0. |
-| 6 | MH-6: lint-packs.sh pass G exits 0 against the full troubleshooting pack with no forbidden commands. | VERIFIED | `bash cka-sim/scripts/lint-packs.sh cka-sim/packs/troubleshooting` exits 0 and pass G is present. |
-| 7 | MH-7: All 4 previously-existing lints exit 0 on the post-P08 tree. | VERIFIED | `lint-traps.sh`, `lint-packs.sh`, `lint-coverage.sh`, and `lint-deprecated-strings.sh` exit 0. |
-| 8 | MH-8: `bash cka-sim/scripts/test.sh` exits 0 (round-trip fixtures for all 6 questions). | VERIFIED | Full suite exits 0. |
-
-## Required Artifacts
-
-| Artifact | Status | Expected contains |
-|----------|--------|-------------------|
-| `cka-sim/scripts/lint-packs.sh` | PRESENT | `pass G: FORBIDDEN-COMMAND guard` |
-| `cka-sim/traps/catalog.yaml` | PRESENT | 11 Phase 6 trap IDs including `kubelet-flag-file-malformed-quoting` |
-| `cka-sim/packs/troubleshooting/01-deploy-svc-mismatch/{metadata.yaml,question.md,setup.sh,grade.sh,reset.sh,ref-solution.sh}` | PRESENT | Service mismatch + ImagePullBackOff retrofit |
-| `cka-sim/packs/troubleshooting/02-netpol-dns-egress/{metadata.yaml,question.md,setup.sh,grade.sh,reset.sh,ref-solution.sh}` | PRESENT | NetworkPolicy DNS egress troubleshooting |
-| `cka-sim/packs/troubleshooting/03-coredns-resolution/{metadata.yaml,question.md,setup.sh,grade.sh,reset.sh,ref-solution.sh}` | PRESENT | lab-ns CoreDNS, not kube-system mutation |
-| `cka-sim/packs/troubleshooting/04-debug-node/{metadata.yaml,question.md,setup.sh,grade.sh,reset.sh,ref-solution.sh}` | PRESENT | kubectl debug node read-only workflow |
-| `cka-sim/packs/troubleshooting/05-static-pod-manifest/{metadata.yaml,question.md,setup.sh,grade.sh,reset.sh,ref-solution.sh}` | PRESENT | `/tmp/q05-staticpod/` sandbox |
-| `cka-sim/packs/troubleshooting/06-broken-kubelet/{metadata.yaml,question.md,setup.sh,grade.sh,reset.sh,ref-solution.sh}` | PRESENT | `/tmp/q06-kubelet-flags/` sandbox |
-| `cka-sim/tests/fixtures/troubleshooting-01-deploy-svc-mismatch/{stub-responses.json,expected-fail-score.txt,expected-pass-score.txt}` | PRESENT | Q01 fixture round-trip |
-| `cka-sim/tests/fixtures/troubleshooting-02-netpol-dns-egress/{stub-responses.json,expected-fail-score.txt,expected-pass-score.txt}` | PRESENT | Q02 fixture round-trip |
-| `cka-sim/tests/fixtures/troubleshooting-03-coredns-resolution/{stub-responses.json,expected-fail-score.txt,expected-pass-score.txt}` | PRESENT | Q03 fixture round-trip |
-| `cka-sim/tests/fixtures/troubleshooting-04-debug-node/{stub-responses.json,expected-fail-score.txt,expected-pass-score.txt}` | PRESENT | Q04 fixture round-trip |
-| `cka-sim/tests/fixtures/troubleshooting-05-static-pod-manifest/{stub-responses.json,expected-fail-score.txt,expected-pass-score.txt}` | PRESENT | Q05 fixture round-trip |
-| `cka-sim/tests/fixtures/troubleshooting-06-broken-kubelet/{stub-responses.json,expected-fail-score.txt,expected-pass-score.txt}` | PRESENT | Q06 fixture round-trip |
-| `cka-sim/packs/troubleshooting/manifest.yaml` | PRESENT | 6 question IDs, 53 minutes |
-| `cka-sim/packs/troubleshooting/coverage.yaml` | PRESENT | 9 tracker slugs |
-| `cka-sim/packs/troubleshooting/README.md` | PRESENT | 6-row candidate table and disclaimer |
-| `.planning/phases/06-troubleshooting-pack/06-VERIFICATION.md` | PRESENT | human_needed, 8 must-haves |
-
-## Key Link Verification
-
-| From | To | Via | Status |
-|------|----|-----|--------|
-| `setup.sh` | `lib/setup.sh` | source + helper calls | WIRED |
-| `metadata.traps` | `catalog.yaml` | lint-packs pass E | WIRED |
-| `coverage.yaml.tracker.*.questions` | `manifest.yaml.questions[].id` | lint-coverage | WIRED |
-| `metadata.references[].target` beginning `cka-sim/packs/` | existing pack paths | D-05 cross-pack scan | WIRED |
-| `troubleshooting/*.sh` | pass G forbidden-command guard | no live kube-system, kubelet data directory, Kubernetes config directory, or service-manager mutation | WIRED |
-
-## Automated Checks
-
-| Check | Command | Expected evidence |
-|-------|---------|-------------------|
-| Trap catalog schema | `bash cka-sim/scripts/lint-traps.sh` | schema OK on every entry |
-| Pack lint | `bash cka-sim/scripts/lint-packs.sh` | `pack lint passed` including passes A..G |
-| Coverage lint | `bash cka-sim/scripts/lint-coverage.sh` | `coverage lint passed (5 pack(s), 0 warning(s))` |
-| Deprecated strings | `bash cka-sim/scripts/lint-deprecated-strings.sh` | exits 0 |
-| Full harness | `bash cka-sim/scripts/test.sh` | `all N case(s) passed` and `test.sh complete` |
+Phase 6 automated evidence supports goal achievement for authored troubleshooting pack, cross-pack references, trap catalog registration, host-safety linting, fixture round-trips, and final PACK-07 coverage closure. One must-have remains pending human verification: live 1+2 kubeadm cluster round-trip for all six troubleshooting drills.
 
 ## Must-Haves Verification
 
-### MH-1: Troubleshooting pack has >=1 question each for CoreDNS, kubectl debug node, NetworkPolicy, broken kubelet, static pod.
+| # | Must-have | Status | Evidence |
+|---|-----------|--------|----------|
+| 1 | `bash cka-sim/scripts/lint-coverage.sh troubleshooting` — tracker mapping complete. | PASS | Exit 0. Output: `✓ troubleshooting: coverage schema OK`; `✓ coverage lint passed (1 pack(s), 0 warning(s)).` |
+| 2 | `bash cka-sim/scripts/lint-coverage.sh` — all 5 packs at 100% Tracker coverage (closes PACK-07). | PASS | Exit 0. Output lists `cluster-architecture`, `services-networking`, `storage`, `troubleshooting`, `workloads-scheduling`; `✓ coverage lint passed (5 pack(s), 0 warning(s)).` |
+| 3 | `bash cka-sim/scripts/lint-packs.sh cka-sim/packs/troubleshooting` — schema, RFC 1123, round-trip, pass G guard. | PASS | Exit 0. Output includes passes A-G and `✓ pack lint passed (262 check(s)).` |
+| 4 | `bash cka-sim/scripts/lint-traps.sh` — 47 trap catalog entries schema OK. | PASS | Exit 0. Output includes all Phase 6 trap IDs and `✓ catalog lint passed (47 entries schema OK).` |
+| 5 | `bash cka-sim/scripts/test.sh` — 33+ cases passing including pass G regression. | PASS | Exit 0. Output includes `lint_packs_forbidden_command` passing and `✓ all 33 case(s) passed`; `✓ test.sh complete`. |
+| 6 | Grep sweep: no troubleshooting script contains forbidden patterns (`systemctl`, live kube-system CoreDNS edit/delete, live host-file writes, cordon/drain workers). | PASS | Script-only sweeps exit 0: `grep -rnE --include='*.sh' '(\bsystemctl\b|kubectl edit configmap coredns -n kube-system|kubectl delete ns kube-system)' cka-sim/packs/troubleshooting/ && exit 1 || exit 0`; `grep -rnE --include='*.sh' '(>\s*/etc/kubernetes/|>\s*/var/lib/kubelet/|kubectl (cordon|drain).*worker)' cka-sim/packs/troubleshooting/ && exit 1 || exit 0`. Note: user-provided non-script grep hits README documentation line `No script invokes systemctl`; not script implementation. |
+| 7 | Every troubleshooting `metadata.yaml` has at least one `references[]` target beginning with `cka-sim/packs/` (D-05 cross-pack guarantee). | PASS | Exit 0: `for f in cka-sim/packs/troubleshooting/*/metadata.yaml; do grep -q 'target: cka-sim/packs/' "$f" || { echo "missing cross-pack ref: $f"; exit 1; }; done`. |
+| 8 | Live 1+2 cluster drill round-trip: `cka-sim drill troubleshooting 01..06` each completes with expected fail-with-trap and pass-with-ref-solution states, plus host-safety checks. | PENDING-HUMAN | Intentionally deferred to human-verification debt. Requires live 1+2 kubeadm cluster access. Pattern matches `.planning/STATE.md` deferred verification for Phase 1 and Phase 5. |
 
-**Status:** PASS. `coverage.yaml` maps `troubleshoot-coredns` to Q03, `debug-kubectl-node` to Q04, `troubleshoot-netpol` to Q02, `kubelet-journalctl` to Q06, and control-plane/static-pod-related tracker slugs to Q05.
+**Score:** 7/8 must-haves verified.
 
-```bash
-for slug in troubleshoot-coredns debug-kubectl-node troubleshoot-netpol kubelet-journalctl control-plane-pod-logs; do grep -qE "^  $slug:$" cka-sim/packs/troubleshooting/coverage.yaml || exit 1; done
-```
+## Requirements Coverage
 
-### MH-2: Coverage-matrix lint reports 100% for troubleshooting AND for every pack collectively (closes PACK-07).
+| Requirement | Description | Status | Evidence |
+|-------------|-------------|--------|----------|
+| PACK-05 | Troubleshooting pack (30%, largest): at least one question each for CoreDNS, `kubectl debug node`, NetworkPolicy troubleshooting; references existing troubleshooting playbook as link-only. | SATISFIED | Troubleshooting pack exists with six questions. Coverage lint for `troubleshooting` exits 0. `coverage.yaml` maps required troubleshooting tracker topics. Metadata cross-pack reference scan exits 0. |
+| PACK-06 | Every question declares front-matter: `id`, `domain`, `estimatedMinutes ∈ [4, 12]`, `verified_against: "1.35"`, `traps: []` (≥3 IDs), `references: []`. | SATISFIED (Troubleshooting subset) | `bash cka-sim/scripts/lint-packs.sh cka-sim/packs/troubleshooting` exits 0, including pass D six-files-per-question/executable bits and pass E metadata schema/trap-id registration. |
+| PACK-07 | Every pack's questions collectively map 1-to-1 against v1.35 Study Progress Tracker checkboxes for that domain (coverage-matrix lint enforces). | SATISFIED | `bash cka-sim/scripts/lint-coverage.sh` exits 0 over all five packs: storage, workloads-scheduling, services-networking, cluster-architecture, troubleshooting. |
 
-**Status:** PASS.
+Every Phase 6 requirement ID named by plan frontmatter is accounted for: PACK-05, PACK-06, PACK-07.
 
-```bash
-bash cka-sim/scripts/lint-coverage.sh troubleshooting
-bash cka-sim/scripts/lint-coverage.sh
-```
+## Required Artifacts
 
-### MH-3: Every troubleshooting metadata.yaml has >=1 references[] entry whose target begins with `cka-sim/packs/` (D-05 cross-pack guarantee).
+| Artifact | Expected | Status | Details |
+|----------|----------|--------|---------|
+| `cka-sim/packs/troubleshooting/manifest.yaml` | Pack manifest for six troubleshooting questions. | VERIFIED | Covered by pack lint and coverage lint. |
+| `cka-sim/packs/troubleshooting/coverage.yaml` | Tracker mapping for troubleshooting domain. | VERIFIED | Troubleshooting coverage lint exits 0. |
+| `cka-sim/packs/troubleshooting/*/metadata.yaml` | Metadata schema, traps, references, verified_against, estimatedMinutes. | VERIFIED | Pack lint pass E exits 0; cross-pack reference sweep exits 0. |
+| `cka-sim/packs/troubleshooting/*/{question.md,setup.sh,grade.sh,reset.sh,ref-solution.sh}` | Six-file question contract and executable scripts. | VERIFIED | Pack lint pass D exits 0. |
+| `cka-sim/traps/catalog.yaml` | Registered trap IDs, including Phase 6 additions. | VERIFIED | Trap lint exits 0 with 47 entries schema OK. |
+| `cka-sim/scripts/lint-packs.sh` | Host-safety forbidden-command guard pass G. | VERIFIED | Pack lint output includes pass G; negative fixture test passes. |
+| `cka-sim/tests/fixtures/troubleshooting-*` | Fixture round-trips for six troubleshooting questions. | VERIFIED | `bash cka-sim/scripts/test.sh` exits 0; all 33 cases pass. |
 
-**Status:** PASS.
+## Key Link Verification
 
-```bash
-for f in cka-sim/packs/troubleshooting/*/metadata.yaml; do grep -q 'target: cka-sim/packs/' "$f" || { echo "missing cross-pack ref: $f"; exit 1; }; done
-```
+| From | To | Via | Status | Details |
+|------|----|-----|--------|---------|
+| Troubleshooting `coverage.yaml` | Troubleshooting `manifest.yaml` question IDs | `lint-coverage.sh troubleshooting` | WIRED | Exit 0. |
+| All pack `coverage.yaml` files | v1.35 Tracker coverage closure | `lint-coverage.sh` | WIRED | Exit 0 across 5 packs. |
+| Troubleshooting `metadata.yaml` traps | `cka-sim/traps/catalog.yaml` | `lint-packs.sh` pass E + `lint-traps.sh` | WIRED | Exit 0; 47 catalog entries schema OK. |
+| Troubleshooting scripts | Host-safety deny list | `lint-packs.sh` pass G + script-only grep sweep | WIRED | Exit 0; no implementation scripts contain forbidden host mutation patterns. |
+| Troubleshooting metadata references | Other `cka-sim/packs/` content | Cross-pack reference grep | WIRED | Exit 0. |
+| Troubleshooting fixtures | `scripts/test.sh` round-trip harness | Bash unit cases | WIRED | Exit 0; all 33 cases pass. |
 
-### MH-4: `cka-sim drill troubleshooting` can run every question without error (manual live check — human-gated).
+## Data-Flow Trace (Level 4)
 
-**Status:** HUMAN — see Human Verification Required section below.
-
-### MH-5: Every trap ID referenced is registered in `cka-sim/traps/catalog.yaml` (catalog + lint-packs pass E).
-
-**Status:** PASS.
-
-```bash
-bash cka-sim/scripts/lint-traps.sh
-bash cka-sim/scripts/lint-packs.sh
-```
-
-### MH-6: lint-packs.sh pass G (forbidden-command guard, added in P01) exits 0 against the full troubleshooting pack.
-
-The guard rejects service-manager calls, live kube-system CoreDNS edits, and writes to live Kubernetes config or kubelet data paths.
-
-**Status:** PASS.
-
-```bash
-grep -q 'pass G' cka-sim/scripts/lint-packs.sh
-bash cka-sim/scripts/lint-packs.sh cka-sim/packs/troubleshooting
-```
-
-### MH-7: All 4 previously-existing lints exit 0 on the post-P08 tree (lint-traps, lint-packs, lint-coverage, lint-deprecated-strings).
-
-**Status:** PASS.
-
-```bash
-bash cka-sim/scripts/lint-traps.sh
-bash cka-sim/scripts/lint-packs.sh
-bash cka-sim/scripts/lint-coverage.sh
-bash cka-sim/scripts/lint-deprecated-strings.sh
-```
-
-### MH-8: `bash cka-sim/scripts/test.sh` exits 0 (round-trip fixtures for all 6 questions).
-
-**Status:** PASS.
-
-```bash
-bash cka-sim/scripts/test.sh
-```
-
-## Requirements Traceability
-
-| REQ-ID | Description | Source plan IDs | Status |
-|--------|-------------|-----------------|--------|
-| PACK-05 | Troubleshooting pack covers CoreDNS, kubectl debug node, NetworkPolicy, broken kubelet, static pod, and service/endpoints mismatch. | 06-03 through 06-09 | SATISFIED |
-| PACK-06 | Troubleshooting subset uses 6-file question contract and metadata schema. | 06-03 through 06-08 | SATISFIED |
-| PACK-07 | All 5 packs have complete v1.35 Tracker coverage. | 06-09 | SATISFIED |
-
-## Anti-Patterns Scan
-
-lint-packs passes A-G cover grader read-only idioms, mutating-verb rejection, setup cleanup ownership, six-file shape and executable bits, trap registration, hardcoded node-name rejection, and troubleshooting host-safety forbidden commands. Pass G is explicitly present:
-
-```bash
-grep -q 'pass G' cka-sim/scripts/lint-packs.sh
-```
-
-The negative-fixture test case `lint_packs_forbidden_command.sh` is in the green suite.
+Not applicable. Phase artifacts are bash/YAML pack content, lints, and fixtures rather than UI components rendering dynamic data. Data-flow equivalent is pack metadata -> lints -> test harness; verified by key links above.
 
 ## Behavioral Spot-Checks
 
-| Question | FAIL fixture | PASS fixture | Expected behavior |
-|----------|--------------|--------------|-------------------|
-| Q01 | 2/3 | 3/3 | endpoints oracle + 2 resource existence; trap on FAIL |
-| Q02 | 4/6 | 6/6 | 4 structural + 2 probes |
-| Q03 | 5/6 | 6/6 | 5 structural + 1 DNS probe |
-| Q04 | 0/1 | 1/1 | D-10 gated oracle; answer + debug-source evidence both required for PASS |
-| Q05 | 1/4 | 4/4 | file exists + parse + kind + dry-run |
-| Q06 | 1/3 | 3/3 | exists + source-parseable + endpoint correct |
+| Behavior | Command | Result | Status |
+|----------|---------|--------|--------|
+| Troubleshooting tracker mapping complete | `bash cka-sim/scripts/lint-coverage.sh troubleshooting` | `✓ coverage lint passed (1 pack(s), 0 warning(s)).` | PASS |
+| All five packs close PACK-07 coverage | `bash cka-sim/scripts/lint-coverage.sh` | `✓ coverage lint passed (5 pack(s), 0 warning(s)).` | PASS |
+| Troubleshooting pack schema/round-trip/host-safety lint | `bash cka-sim/scripts/lint-packs.sh cka-sim/packs/troubleshooting` | `✓ pack lint passed (262 check(s)).` | PASS |
+| Trap catalog schema | `bash cka-sim/scripts/lint-traps.sh` | `✓ catalog lint passed (47 entries schema OK).` | PASS |
+| Full bash harness | `bash cka-sim/scripts/test.sh` | `✓ all 33 case(s) passed`; `✓ test.sh complete`. | PASS |
+| Forbidden command sweep, script files | `grep -rnE --include='*.sh' '(\bsystemctl\b|kubectl edit configmap coredns -n kube-system|kubectl delete ns kube-system)' cka-sim/packs/troubleshooting/ && exit 1 || exit 0` | No output, exit 0. | PASS |
+| Host mutation sweep, script files | `grep -rnE --include='*.sh' '(>\s*/etc/kubernetes/|>\s*/var/lib/kubelet/|kubectl (cordon|drain).*worker)' cka-sim/packs/troubleshooting/ && exit 1 || exit 0` | No output, exit 0. | PASS |
+| Cross-pack metadata references | `for f in cka-sim/packs/troubleshooting/*/metadata.yaml; do grep -q 'target: cka-sim/packs/' "$f" || { echo "missing cross-pack ref: $f"; exit 1; }; done` | No output, exit 0. | PASS |
+
+## Probe Execution
+
+No separate `probe-*.sh` declared for Phase 6. Runnable verification uses lint and harness commands above.
+
+## Anti-Patterns Found
+
+| File | Line | Pattern | Severity | Impact |
+|------|------|---------|----------|--------|
+| `cka-sim/packs/troubleshooting/README.md` | 24 | Documentation text contains `systemctl` in safety statement. | INFO | User-provided raw grep over entire directory reports this README line. Script-only implementation sweep passes; pack lint pass G passes. Not a blocker. |
+
+No blocker debt markers or stub implementations found by automated gates. Host-safety implementation guard is present and covered by negative fixture tests.
 
 ## Human Verification Required
 
-MH-4 requires the 6-drill loop on the 1+2 kubeadm cluster plus 4 host-safety post-checks. Each drill must show fail-with-trap before the reference solution, pass-with-ref-solution after it, and clean reset.
+MH-8 requires the 6-drill loop on the 1+2 kubeadm cluster. Each drill must show fail-with-trap before the reference solution, pass-with-ref-solution after it, and clean reset.
 
 ```bash
 sha256sum /var/lib/kubelet/kubeadm-flags.env > /tmp/q06-baseline.sha
@@ -212,6 +144,15 @@ diff /tmp/q05-manifests-baseline.txt <(ls -la /etc/kubernetes/manifests/)
 sha256sum -c /tmp/q06-baseline.sha
 ```
 
+Expected host-safety checks:
+
+- kube-system CoreDNS ConfigMap baseline diff empty.
+- `kubectl get pods -A -l kubectl.kubernetes.io/debug-source` empty after reset.
+- `/etc/kubernetes/manifests/` listing diff empty.
+- `/var/lib/kubelet/kubeadm-flags.env` sha256 baseline matches.
+- `cka-sim drill troubleshooting` twice consecutively has no `AlreadyExists` errors.
+- Cluster DNS smoke still resolves `kubernetes.default.svc.cluster.local`.
+
 Per-question attention notes:
 
 - Q01: web-canary reaches ImagePullBackOff within 30s; grader records the trap; ref-solution deletes the canary.
@@ -223,14 +164,17 @@ Per-question attention notes:
 
 ## Deferred Items
 
-| Ref | Note |
-|-----|------|
-| WR-01 (Phase 4) | Full vendoring of CSI + metrics-server manifests under cka-sim/vendor/ with recorded SHA256. |
-| IN-04 (Phase 4) | cka_sim::grade::assert_custom helper + 6-grader retrofit. |
-| DF-08 | Hint reveal (drill mode only). |
-| Phase 1 live UAT | Tracked in 01-HUMAN-UAT.md; reopen via `/gsd-verify-work 1`. |
-| Phase 5 live UAT | Tracked in 05-VERIFICATION.md; reopen via `/gsd-verify-work 5`. |
+| Item | Addressed In | Evidence |
+|------|--------------|----------|
+| Live 1+2 cluster drill round-trip for troubleshooting 01..06. | Human verification debt | Matches `.planning/STATE.md` deferred verification pattern for Phase 1 live bootstrap verification and Phase 5 live drill verification. |
+| Phase 1 live UAT. | Existing deferred verification debt | `.planning/STATE.md` tracks `01-HUMAN-UAT.md`; reopen via `/gsd-verify-work 1`. |
+| Phase 5 live UAT. | Existing deferred verification debt | `.planning/STATE.md` tracks `05-VERIFICATION.md`; reopen via `/gsd-verify-work 5`. |
 
 ## Gaps Summary
 
-No blocking gaps. Phase 6 completes all 3 PACK requirements (PACK-05 + PACK-06 Troubleshooting subset + PACK-07 final 100% coverage). MH-4 is human-gated per standard CONTEXT contract.
+No automated blocking gaps. PACK-05, PACK-06 troubleshooting subset, and PACK-07 are satisfied by codebase evidence and green gates. Phase status remains `human_needed` because one of eight must-haves requires live 1+2 kubeadm cluster verification and is intentionally deferred.
+
+---
+
+_Verified: 2026-05-13_
+_Verifier: Claude (gsd-verifier)_
