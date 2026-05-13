@@ -245,8 +245,7 @@ cka_sim::exam::batch_grade() {
     status=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" | jq -r ".[$i].status // \"pending\"")
 
     if [[ "$status" == "skipped" ]]; then
-      local max_score
-      max_score=$(grep -oE 'estimatedMinutes: [0-9]+' "$qdir/metadata.yaml" 2>/dev/null | grep -oE '[0-9]+' || echo 8)
+      local max_score=8
       cka_sim::state::record_grade "$i" 1 "SCORE: 0/$max_score"
       info "Q$((i+1)): skipped (0/$max_score)"
       continue

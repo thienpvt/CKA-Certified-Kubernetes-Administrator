@@ -11,6 +11,8 @@ source "$CKA_SIM_ROOT/lib/colors.sh"
 source "$CKA_SIM_ROOT/lib/log.sh"
 # shellcheck source=../exam-state.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/exam-state.sh"
+# shellcheck source=../exam-report.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/exam-report.sh"
 
 cka_sim::list::usage() {
   cat >&2 <<'EOF'
