@@ -59,14 +59,19 @@ else
   err "manifest fails client dry-run"
 fi
 
-img=$(python3 - "$manifest" 2>/dev/null <<'PY'
+if img=$(python3 - "$manifest" 2>/dev/null <<'PY'
 import sys, yaml
 d = yaml.safe_load(open(sys.argv[1]))
 print(d["spec"]["containers"][0]["image"])
 PY
 )
-if [[ "$img" == *"doesnotexistXYZ"* ]]; then
-  cka_sim::grade::record_trap static-pod-image-tag-typo
+then
+  if [[ "$img" == *"doesnotexistXYZ"* ]]; then
+    cka_sim::grade::record_trap static-pod-image-tag-typo
+  fi
+else
+  err "manifest image could not be extracted (YAML parse or schema failure)"
+  cka_sim::grade::record_trap static-pod-manifest-bad-yaml
 fi
 
 cka_sim::grade::emit_result
