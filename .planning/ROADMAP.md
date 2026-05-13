@@ -213,6 +213,15 @@ Plans:
 
 **Depends on:** Phase 7 (exam mode must work before the second blueprint is meaningful; docs assume all prior phases landed).
 
+**Plans:** 5 plans
+
+Plans:
+- [x] 08-01-PLAN.md — Blueprint Bravo manifest + README (Wave 1)
+- [x] 08-02-PLAN.md — Superseded-content banners (Wave 1)
+- [x] 08-03-PLAN.md — Full documentation: README, AUTHORING, SCHEMA, CONTRIBUTING (Wave 2)
+- [x] 08-04-PLAN.md — validate-local.sh + CI shellcheck job (Wave 3)
+- [x] 08-05-PLAN.md — Phase verification (Wave 3)
+
 ---
 
 ## Requirement Traceability (all 48 REQ-IDs)
