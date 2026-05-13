@@ -4,6 +4,7 @@ set -uo pipefail
 
 source "$CKA_SIM_ROOT/lib/grade.sh"
 
+# Assertion 1: both q08 PriorityClasses still exist (no cheating by deletion).
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
 if kubectl get priorityclass q08-critical q08-batch -o name >/dev/null 2>&1; then
   CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
@@ -14,11 +15,13 @@ else
   cka_sim::grade::record_trap priorityclass-globaldefault-conflict
 fi
 
-global_defaults=$(kubectl get priorityclass -o jsonpath='{range .items[?(@.globalDefault==true)]}{.metadata.name}{"\n"}{end}' 2>/dev/null)
-count=0
-while IFS= read -r pc_name; do
-  [[ -n "$pc_name" ]] && count=$(( count + 1 ))
-done <<< "$global_defaults"
+# Assertion 2: exactly one PriorityClass in the cluster is globalDefault.
+# Uses storage/03's canonical jsonpath + wc -w idiom (space-stream, not
+# newline-stream). Piping `kubectl get` to `grep` is banned by lint-packs
+# pass A (GRADE-02); space-stream + `wc -w` is the accepted replacement.
+names=$(kubectl get priorityclass \
+  -o jsonpath='{.items[?(@.globalDefault==true)].metadata.name}' 2>/dev/null || echo "")
+count=$(printf '%s' "$names" | wc -w | tr -d ' ')
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
 if [[ "$count" == "1" ]]; then
   CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
