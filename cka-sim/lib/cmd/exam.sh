@@ -190,10 +190,9 @@ cka_sim::exam::question_loop() {
 
     local action=""
     printf '> '
-    read -r action || action="(signaled)"
-
-    if [[ "$action" == "(signaled)" ]]; then
-      continue
+    if ! read -r action; then
+      CKA_SIM_EXAM_ENDED=1
+      break
     fi
 
     cka_sim::exam::handle_action "$action"
