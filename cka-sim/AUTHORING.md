@@ -212,3 +212,68 @@ Intentionally deferred to the full authoring guide (DOC-02):
 If you need any of the above today, read `cka-sim/packs/storage/01-pvc-binding/`
 as the working exemplar and the decisions in
 `.planning/phases/03-runtime-contract-drill-mode/03-CONTEXT.md`.
+
+## Style Guide
+
+Question prose in `question.md` follows PSI-style conventions:
+
+- Use imperative voice addressing the candidate directly: "Create a PVC...", "Fix the Deployment..."
+- State the symptom, never the root cause. Do not mention the trap by name.
+- Include the context namespace using `${CKA_SIM_LAB_NS}` — the runner substitutes it.
+- State the expected outcome clearly: "The Pod should reach Running state within 60s."
+- Keep tasks numbered (1-3 max), verb-first, concrete and unambiguous.
+- Add `## Constraints` (what the candidate may/may not modify) and `## Verify yourself` (the kubectl command to self-check).
+
+## Schema Deep-Dive
+
+Full field reference for `metadata.yaml`:
+
+| Field | Type | Rule |
+|-------|------|------|
+| `id` | string | RFC 1123 — lowercase `[a-z0-9-]`, ≤63 chars, unique across all packs |
+| `domain` | enum | One of: storage, workloads-scheduling, services-networking, cluster-architecture, troubleshooting |
+| `estimatedMinutes` | integer | Range `[4, 12]` — time budget for a prepared candidate |
+| `verified_against` | string | Exact k8s version the question was validated on (currently `"1.35"`) |
+| `traps` | array | ≥3 trap IDs, each must exist in `cka-sim/traps/catalog.yaml` |
+| `references` | array | Objects with `{kind, target, note}`. `kind` ∈ {prior-art-exercise, k8s-doc, concerns-md, community} |
+
+See `cka-sim/SCHEMA.md` for full YAML examples of all schemas.
+
+## Coverage-Matrix Workflow
+
+When adding a new question to a domain pack:
+
+1. Create the question directory: `cka-sim/packs/<domain>/<NN>-<slug>/` with all 6 required files
+2. Add the question entry to the pack's `manifest.yaml` (id, path, estimatedMinutes)
+3. Update `coverage.yaml` to reflect the new topic/trap coverage
+4. Run `bash cka-sim/scripts/lint-coverage.sh` to verify no gaps or duplicates
+5. Run `bash cka-sim/scripts/test.sh` to confirm the full suite passes
+
+The coverage matrix tracks which CKA curriculum objectives have drill coverage and which traps are exercised. Gaps show up as warnings in lint output.
+
+## CI Integration
+
+`lint-packs.sh` runs automatically in the test suite and enforces these passes:
+
+| Pass | What it checks |
+|------|----------------|
+| A | No `kubectl get ... \| grep` or `kubectl get -A` in grade.sh |
+| B | No mutating verbs in grade.sh (delete/create/apply/patch/edit/replace) |
+| C | setup.sh does not start with `kubectl delete ns` (runner owns cleanup) |
+| D | All 6 required files present; 4 scripts are executable |
+| E | metadata.yaml schema valid; all trap IDs registered in catalog |
+| F | Exam manifest structure and weighting totals |
+| G | Pack manifest question ordering matches directory numbering |
+| H | Coverage.yaml consistency with manifest entries |
+
+Run locally: `bash cka-sim/scripts/lint-packs.sh`. Any failure blocks a PR merge. Fix the reported pass letter and re-run.
+
+## Trap Registration Flow
+
+To add a new trap to the system:
+
+1. Add an entry to `cka-sim/traps/catalog.yaml` with all required fields (id, name, description, remediation_hint, references, severity, domain, source)
+2. Write a `cka_sim::trap::detect_<id>` function in `cka-sim/lib/traps.sh` — it must echo the exact trap ID on detection, empty string otherwise
+3. Add fixture files under `cka-sim/tests/fixtures/` that reproduce the trap condition
+4. Add a test case in the appropriate test file that exercises the detector
+5. Run `bash cka-sim/scripts/test.sh` — lint-traps.sh verifies every catalog ID has a paired detector function

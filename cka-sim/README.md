@@ -1,39 +1,54 @@
 # cka-sim — CKA Exam Simulator
 
-Bash-only, kubectl-driven exam simulator for the CKA v1.35 syllabus. Runs against your own 1+2 kubeadm cluster. Ship trap-aware grading, timed mocks, and domain drilling.
+Bash-only, kubectl-driven exam simulator for the CKA v1.35 syllabus. Runs against your own 1+2 kubeadm cluster.
 
-This README is a placeholder. Full quickstart and architecture docs land in Phase 8 (DOC-01). For now:
-
-## Quickstart (Phase 1)
+## Quickstart
 
 ```bash
-# On the control-plane node of your existing 1+2 cluster:
-cd <repo-root>
-./cka-sim/bin/cka-sim bootstrap    # Phase 2 delivers the body
-./cka-sim/bin/cka-sim doctor       # Phase 2 delivers the body
+# On the control-plane node:
+cka-sim bootstrap          # SSH setup + environment
+cka-sim doctor             # Verify cluster health
+cka-sim drill <domain>     # Practice a single question
+cka-sim exam blueprint-alpha  # Timed 2-hour mock (17 questions)
+cka-sim score              # View your last score report
+cka-sim list history       # All completed sessions
 ```
 
-## Layout
+## Architecture
 
 ```
 cka-sim/
-├── bin/cka-sim         router (only thing on $PATH)
-├── lib/
-│   ├── colors.sh       ANSI color vars (TTY-detected)
-│   ├── log.sh          info / ok / warn / err / die / header
-│   ├── preflight.sh    cluster & dependency checks (Plan 02)
-│   └── cmd/
-│       ├── bootstrap.sh
-│       ├── doctor.sh
-│       ├── list.sh
-│       ├── drill.sh    (stub, phase 3)
-│       ├── exam.sh     (stub, phase 7)
-│       ├── score.sh    (stub, phase 7)
-│       ├── help.sh
-│       └── version.sh
-└── README.md
+├── bin/cka-sim            # Entry-point router
+├── lib/                   # Core libraries (grade.sh, traps.sh, exam-*.sh, cmd/)
+├── packs/                 # Domain question packs (5 domains)
+├── exams/                 # Blueprint manifests (alpha, bravo)
+├── scripts/               # Lint, test, validate tooling
+├── tests/                 # Unit + integration tests
+└── traps/                 # Trap catalog (catalog.yaml)
 ```
 
-## Status
+## Domain Packs
 
-Phase 1 of 8 in milestone v1.0. See `.planning/ROADMAP.md` for full build plan.
+| Domain | Weight | Questions |
+|--------|--------|-----------|
+| Storage | 10% | 6 |
+| Workloads & Scheduling | 15% | 8 |
+| Services & Networking | 20% | 6 |
+| Cluster Architecture | 25% | 8 |
+| Troubleshooting | 30% | 6 |
+
+## Mock Exams
+
+Two blueprint manifests ship with cka-sim. Each draws 17 questions across all five domains, weighted to match the CKA v1.35 blueprint. A 2-hour countdown timer enforces exam pacing. `blueprint-alpha` and `blueprint-bravo` use different question draws so you can retake without memorization bias.
+
+## Development
+
+```bash
+bash scripts/test.sh            # Full test suite (unit + lint)
+bash scripts/lint-packs.sh      # Pack structure + content lint
+bash scripts/validate-local.sh  # shellcheck + yamllint
+```
+
+## Disclaimer
+
+> Not real CKA exam content; independently authored. Targets v1.35 CKA blueprint.
