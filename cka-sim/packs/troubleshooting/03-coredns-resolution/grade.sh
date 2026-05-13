@@ -32,8 +32,15 @@ fi
 
 external_out=$(kubectl exec -n "$ns" q03-dnsclient -- nslookup www.example.com 2>&1)
 external_rc=$?
-if [[ $external_rc -ne 0 || "$external_out" != *"Address"* ]]; then
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+if [[ $external_rc -eq 0 && "$external_out" == *"Address"* ]]; then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("q03-dnsclient resolves www.example.com")
+  ok "q03-dnsclient resolves www.example.com"
+else
+  CKA_SIM_GRADE_FAILS+=("q03-dnsclient cannot resolve www.example.com")
   err "q03-dnsclient cannot resolve www.example.com"
+  cka_sim::grade::record_trap coredns-forward-to-invalid-upstream
 fi
 
 corefile=$(kubectl get configmap q03-coredns-corefile -n "$ns" -o jsonpath='{.data.Corefile}' 2>/dev/null || true)
