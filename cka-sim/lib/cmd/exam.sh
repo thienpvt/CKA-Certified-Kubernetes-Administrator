@@ -307,7 +307,7 @@ cka_sim::exam::build_questions_json() {
       "$pack" "$slug" "$domain" "$pack" "$slug" "$i" "${est:-7}")
   done
   questions_json+="]"
-  printf '%s' "$questions_json"
+  CKA_SIM_EXAM_QUESTIONS_JSON_BUILT="$questions_json"
 }
 
 cka_sim::exam::start_new() {
@@ -334,7 +334,8 @@ cka_sim::exam::start_new() {
   info "Duration: ${CKA_SIM_BLUEPRINT_META[durationMinutes]:-120} minutes"
 
   local questions_json
-  questions_json=$(cka_sim::exam::build_questions_json)
+  cka_sim::exam::build_questions_json
+  questions_json="$CKA_SIM_EXAM_QUESTIONS_JSON_BUILT"
 
   local duration="${CKA_SIM_BLUEPRINT_META[durationMinutes]:-120}"
   cka_sim::state::init "$blueprint_name" "$manifest" "$questions_json" "$duration"
