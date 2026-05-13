@@ -85,6 +85,8 @@ for i in $(seq 1 17); do input+=$'\n'; done
 input+="y"
 
 exam_out=$(printf '%s' "$input" | timeout 600 bash "$CKA_SIM" exam blueprint-alpha 2>&1) || true
+exam_rc=$?
+log_result "[phase7] exam exit code: $exam_rc"
 
 # Find session timestamp
 session_ts=$(echo "$exam_out" | grep -oE 'Session: [0-9T]+Z' | grep -oE '[0-9T]+Z' | head -1 || true)
@@ -100,6 +102,12 @@ if [[ -n "$session_ts" ]]; then
     pass "Test 4a: report file created at $report_file"
   else
     fail "Test 4a: report file" "not found at $report_file"
+    log_result "[phase7] session JSON final_report_path:"
+    log_result "$(jq -r '.final_report_path // "null"' "$json_file" 2>/dev/null || echo 'jq failed')"
+    log_result "[phase7] questions started_at count:"
+    log_result "$(jq '[.questions[] | select(.started_at != null)] | length' "$json_file" 2>/dev/null || echo 'jq failed')"
+    log_result "[phase7] exam output (last 30 lines):"
+    log_result "$(echo "$exam_out" | tail -30)"
   fi
 
   if [[ -f "$json_file" ]]; then
