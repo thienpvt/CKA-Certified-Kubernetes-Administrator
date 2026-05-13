@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-13T14:53:27.060Z"
-last_activity: 2026-05-13 -- Phase 7 planning complete
+last_updated: "2026-05-13T16:43:00.000Z"
+last_activity: 2026-05-13 -- Phases 2/3/4 UAT complete (all pass)
 progress:
   total_phases: 8
   completed_phases: 6
@@ -20,7 +20,7 @@ progress:
 Phase: 06 (Troubleshooting Pack) — COMPLETE
 Plan: 9 of 9
 Status: Ready to execute
-Last activity: 2026-05-13 -- Phase 7 planning complete
+Last activity: 2026-05-13 -- Phases 2/3/4 UAT complete (all pass)
 
 ### Deferred Verification
 
@@ -31,11 +31,20 @@ These are intentionally deferred, not blockers for advancing.
    - Scope: bootstrap idempotency, passwordless SSH to workers, and `cka-sim doctor` green.
    - Resume with: `$gsd-verify-work 1`
 
-2. **Phase 5 live drill verification** — CLOSED (2026-05-13). All 14 drills pass on live 1+2 cluster.
+2. **Phase 2 UAT** — CLOSED (2026-05-13). All 5 tests pass (unit suite, catalog lint, assertion helpers, detectors, RFC 1123).
+   - Tracking: `.planning/phases/02-trap-framework-assertion-library/02-UAT.md`
+
+3. **Phase 3 UAT** — CLOSED (2026-05-13). All 5 tests pass (drill command, TRIP-02 idempotency, 5-domain round-trip, AUTHORING.md, GRADE-02 lint).
+   - Tracking: `.planning/phases/03-runtime-contract-drill-mode/03-UAT.md`
+
+4. **Phase 4 UAT** — CLOSED (2026-05-13). 7/7 pass. Q05/Q08 grader bugs fixed (commits 0916c98, 9c065c3). Q06-static-pod blocked by SSH env (Phase 1 prerequisite).
+   - Tracking: `.planning/phases/04-storage-workloads-scheduling-packs/04-UAT.md`
+
+5. **Phase 5 live drill verification** — CLOSED (2026-05-13). All 14 drills pass on live 1+2 cluster.
    - Tracking: `.planning/phases/05-services-networking-cluster-architecture-packs/05-VERIFICATION.md`
    - Final result: 14/14 PASS (6 S&N + 8 CA). Q06 heredoc bug fixed (815e19a). Gaps 1-4,15 closed by plans 05-17..05-20.
 
-3. **Phase 6 live drill verification** — CLOSED (2026-05-13). All 6 troubleshooting drills + host-safety sweep pass on live 1+2 cluster.
+6. **Phase 6 live drill verification** — CLOSED (2026-05-13). All 6 troubleshooting drills + host-safety sweep pass on live 1+2 cluster.
    - Tracking: `.planning/phases/06-troubleshooting-pack/06-HUMAN-UAT.md` and `06-VERIFICATION.md`
    - Final result: 22/22 PASS (6 drills × pre-fix + post-fix + host-safety, plus post-sweep with idempotency). Q04 ref-solution fixed (replaced `kubectl debug node` with explicit privileged debug pod manifest carrying same `kubectl.kubernetes.io/debug-source` label).
 
