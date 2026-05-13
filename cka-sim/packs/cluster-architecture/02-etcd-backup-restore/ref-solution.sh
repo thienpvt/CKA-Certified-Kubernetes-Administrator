@@ -13,6 +13,7 @@ ETCDCTL_API=3 etcdctl \
   --cert=/etc/kubernetes/pki/etcd/server.crt \
   --key=/etc/kubernetes/pki/etcd/server.key \
   snapshot save /tmp/q02-etcd-backup/snapshot.db
+rm -rf /tmp/q02-etcd-backup/restored-data
 etcdutl snapshot restore /tmp/q02-etcd-backup/snapshot.db \
   --data-dir=/tmp/q02-etcd-backup/restored-data
 EOF
@@ -23,4 +24,5 @@ ETCDCTL_API=3 etcdctl \
   --cert=/etc/kubernetes/pki/etcd/server.crt \
   --key=/etc/kubernetes/pki/etcd/server.key \
   snapshot save "$sandbox/snapshot.db"
+rm -rf "$sandbox/restored-data"
 etcdutl snapshot restore "$sandbox/snapshot.db" --data-dir="$sandbox/restored-data"
