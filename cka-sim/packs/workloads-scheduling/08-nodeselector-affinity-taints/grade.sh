@@ -12,6 +12,11 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 # Wait up to 90s for Available (scheduler needs time after candidate patch rolls out).
 kubectl wait --for=condition=Available deployment/q08-gpu-sim -n "$CKA_SIM_LAB_NS" --timeout=90s 2>/dev/null || true
 
+# Wait for all pods to be Running and scheduled (rollout status alone doesn't guarantee
+# old pods are fully terminated and new pods have nodeName assigned).
+kubectl rollout status deployment/q08-gpu-sim -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
+sleep 5
+
 # Discover target worker. Identical idiom to setup.sh / reset.sh / ref-solution.sh.
 # On failure the discovery-dependent assertions auto-FAIL (soft fail -- do not exit).
 target_node=$(kubectl get nodes -l '!node-role.kubernetes.io/control-plane' \

@@ -23,10 +23,19 @@ cka_sim::grade::assert_field_eq daemonset q05-node-agent \
   '{.status.desiredNumberScheduled}' "$node_count" -n "$CKA_SIM_LAB_NS"
 
 # Assertion 3: toleration for node-role.kubernetes.io/control-plane with operator=Exists.
-# `operator: Exists` tolerates any value/effect, covering CP nodes that may also carry NoExecute.
-cka_sim::grade::assert_field_eq daemonset q05-node-agent \
-  '{.spec.template.spec.tolerations[?(@.key=="node-role.kubernetes.io/control-plane")].operator}' \
-  'Exists' -n "$CKA_SIM_LAB_NS"
+# The ref-solution adds two tolerations (NoSchedule + NoExecute) with the same key, so the
+# jsonpath filter returns space-separated duplicates. Check that at least one "Exists" is present.
+cp_op=$(kubectl get daemonset q05-node-agent -n "$CKA_SIM_LAB_NS" \
+  -o jsonpath='{.spec.template.spec.tolerations[?(@.key=="node-role.kubernetes.io/control-plane")].operator}' 2>/dev/null || echo "")
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+if [[ "$cp_op" == *"Exists"* ]]; then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("CP toleration operator contains 'Exists'")
+  ok "CP toleration operator contains 'Exists'"
+else
+  CKA_SIM_GRADE_FAILS+=("CP toleration operator = '${cp_op:-<unset>}' (expected contains 'Exists')")
+  err "CP toleration operator = '${cp_op:-<unset>}' (expected contains 'Exists')"
+fi
 
 # Assertion 4: container declares non-zero resources.requests.cpu (guards deployment-missing-requests trap).
 cpu=$(kubectl get daemonset q05-node-agent -n "$CKA_SIM_LAB_NS" \
