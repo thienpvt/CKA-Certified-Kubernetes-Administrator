@@ -1,3 +1,7 @@
+> **Note:** The content below is superseded by the interactive exam simulator.
+> See [`cka-sim/`](./cka-sim/) for trap-aware drills, timed mocks, and automated grading.
+> This content remains for reference but is no longer actively maintained.
+
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![YAML Validation](https://github.com/theplatformlab/CKA-Certified-Kubernetes-Administrator/actions/workflows/validate.yml/badge.svg)](https://github.com/theplatformlab/CKA-Certified-Kubernetes-Administrator/actions/workflows/validate.yml)
