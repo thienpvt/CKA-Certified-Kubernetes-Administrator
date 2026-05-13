@@ -23,9 +23,9 @@ if [[ -n "$worker" ]]; then
 fi
 actual=$(cat "$sandbox/answer.txt" 2>/dev/null || echo "")
 
-debug_pods_running=$(kubectl get pods --all-namespaces -l 'kubectl.kubernetes.io/debug-source' --field-selector=status.phase=Running -o name 2>/dev/null || echo "")
-debug_pods_succeeded=$(kubectl get pods --all-namespaces -l 'kubectl.kubernetes.io/debug-source' --field-selector=status.phase=Succeeded -o name 2>/dev/null || echo "")
-debug_pods_failed=$(kubectl get pods --all-namespaces -l 'kubectl.kubernetes.io/debug-source' --field-selector=status.phase=Failed -o name 2>/dev/null || echo "")
+debug_pods_running=$(kubectl get pods --all-namespaces -l "kubectl.kubernetes.io/debug-source=$worker" --field-selector=status.phase=Running -o name 2>/dev/null || echo "")
+debug_pods_succeeded=$(kubectl get pods --all-namespaces -l "kubectl.kubernetes.io/debug-source=$worker" --field-selector=status.phase=Succeeded -o name 2>/dev/null || echo "")
+debug_pods_failed=$(kubectl get pods --all-namespaces -l "kubectl.kubernetes.io/debug-source=$worker" --field-selector=status.phase=Failed -o name 2>/dev/null || echo "")
 debug_evidence="${debug_pods_running}${debug_pods_succeeded}${debug_pods_failed}"
 ephemeral=$(kubectl get pods -n "$CKA_SIM_LAB_NS" -o jsonpath='{.items[*].metadata.annotations.kubectl\.kubernetes\.io/debug-container}' 2>/dev/null || echo "")
 
