@@ -1,0 +1,12 @@
+id: mock-alpha-03
+domain: workloads-scheduling
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - mock-trap-c
+  - mock-trap-b
+  - mock-trap-c
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/"
+    note: "mock reference"

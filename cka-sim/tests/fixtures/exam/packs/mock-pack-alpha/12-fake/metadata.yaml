@@ -1,0 +1,12 @@
+id: mock-alpha-12
+domain: cluster-architecture
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - mock-trap-d
+  - mock-trap-b
+  - mock-trap-c
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/"
+    note: "mock reference"

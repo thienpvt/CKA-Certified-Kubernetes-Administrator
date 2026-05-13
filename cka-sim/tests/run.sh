@@ -43,6 +43,21 @@ while IFS= read -r -d '' case_file; do
   fi
 done < <(find "$cases_dir" -name '*.sh' -print0 | sort -z)
 
+# Walk tests/exam/ if it exists (Phase 7+ exam mode tests).
+exam_dir="$CKA_SIM_ROOT/tests/exam"
+if [[ -d "$exam_dir" ]]; then
+  while IFS= read -r -d '' case_file; do
+    total=$(( total + 1 ))
+    header "$(basename "$case_file" .sh)"
+    if ( source "$case_file" ); then
+      ok "case passed: $(basename "$case_file" .sh)"
+    else
+      err "case failed (rc=$?): $(basename "$case_file" .sh)"
+      failed=$(( failed + 1 ))
+    fi
+  done < <(find "$exam_dir" -name '*.sh' -print0 | sort -z)
+fi
+
 printf '\n' >&2
 if (( total == 0 )); then
   warn "no test cases found in $cases_dir — treat as success during scaffold"

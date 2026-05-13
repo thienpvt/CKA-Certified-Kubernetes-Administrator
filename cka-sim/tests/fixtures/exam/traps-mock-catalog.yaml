@@ -1,0 +1,56 @@
+traps:
+  - id: mock-trap-a
+    name: "Mock Trap A"
+    description: "A mock trap for testing — simulates a common mistake"
+    remediation_hint: "Fix mock A by correcting the selector"
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/"
+        note: "mock reference"
+    severity: error
+    domain: storage
+    source: mock
+  - id: mock-trap-b
+    name: "Mock Trap B"
+    description: "A mock trap B for testing — simulates wrong namespace"
+    remediation_hint: "Fix mock B by using the correct namespace"
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/"
+        note: "mock reference"
+    severity: error
+    domain: services-networking
+    source: mock
+  - id: mock-trap-c
+    name: "Mock Trap C"
+    description: "A mock trap C for testing — simulates missing RBAC"
+    remediation_hint: "Fix mock C by adding the ClusterRoleBinding"
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/"
+        note: "mock reference"
+    severity: warn
+    domain: cluster-architecture
+    source: mock
+  - id: mock-trap-d
+    name: "Mock Trap D"
+    description: "A mock trap D for testing — simulates wrong resource limits"
+    remediation_hint: "Fix mock D by setting correct resource requests"
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/"
+        note: "mock reference"
+    severity: warn
+    domain: workloads-scheduling
+    source: mock
+  - id: mock-trap-e
+    name: "Mock Trap E"
+    description: "A mock trap E for testing — simulates DNS misconfiguration"
+    remediation_hint: "Fix mock E by correcting the CoreDNS forward"
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/"
+        note: "mock reference"
+    severity: error
+    domain: troubleshooting
+    source: mock
