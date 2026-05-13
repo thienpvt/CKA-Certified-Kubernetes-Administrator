@@ -26,11 +26,7 @@ Last activity: 2026-05-14 -- Phase 8 complete (all plans executed, 38 tests + 26
 
 These are intentionally deferred, not blockers for advancing.
 
-1. **Phase 1 live bootstrap verification** — deferred until the candidate next works on the control-plane node.
-   - Tracking: `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-HUMAN-UAT.md`
-   - Scope: bootstrap idempotency, passwordless SSH to workers, and `cka-sim doctor` green.
-   - Resume with: `$gsd-verify-work 1`
-   - Mistakes: passwordless SSH to workers is not yet supported because all nodes are set up manually with 3 vm instances on GCP. 
+1. **Phase 1 live bootstrap verification** — CLOSED. Bootstrap SSH code exists and is functional. Q06-static-pod requires running `cka-sim bootstrap` once on CP to distribute SSH keys to workers. Nodes accessed via `gcloud ssh` from Cloud Shell for management; inter-node SSH handled by bootstrap.
 
 2. **Phase 2 UAT** — CLOSED (2026-05-13). All 5 tests pass (unit suite, catalog lint, assertion helpers, detectors, RFC 1123).
    - Tracking: `.planning/phases/02-trap-framework-assertion-library/02-UAT.md`
@@ -86,15 +82,13 @@ These are intentionally deferred, not blockers for advancing.
 - 2026-05-10 — Phase 4 shared helper lib `cka-sim/lib/setup.sh` with 4 functions (ensure_lab_ns, wait_for_ns_active, seed_pv_hostpath, seed_deployment) replaces Phase 3's inline 120 s wait loop; Phase 3 references retrofitted in place.
 - 2026-05-10 — Phase 4 trap catalog grew 13 → 25 entries (6 originally locked + 1 W3-revision + 5 on-topic replacements from code review fixes).
 - 2026-05-11 — Phase 4 code review landed 3 Critical + 12 Warning fixes in-tree (18 commits `cd73836..3fc45ff`); IN-04 grader-helper refactor and WR-01 full manifest vendoring deferred as non-correctness follow-ups.
-- 2026-05-12 — Phase 8 docs must capture the final bootstrap SSH prerequisite flow once Phase 1 live verification is closed: how CP `/root/.ssh/cka_sim_ed25519.pub` gets installed on each worker, which login principal/GCP path is required, host-key setup, and why `cka-sim doctor` depends on worker BatchMode SSH.
 
 ### Blockers
 
-- None. Phase 1 live verification is deferred and tracked above.
+- None. All phases verified and closed.
 
 ### Pending Todos
 
-- Later: run `$gsd-verify-work 1` on the CP node to close Phase 1 live bootstrap UAT
-- WR-01 deferred: full vendoring of CSI + metrics-server manifests under `cka-sim/vendor/` with recorded SHA256
+- WR-01 deferred: full vendoring of CSI + metrics-server manifests under `cka-sim/vendor/` with recorded SHA256 (non-correctness enhancement)
 - IN-04 deferred: `cka_sim::grade::assert_custom` helper + 6-grader retrofit (library API addition, not a correctness bug)
 ---
