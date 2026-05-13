@@ -24,7 +24,7 @@ questions:
   - pack: troubleshooting
     slug: 02-netpol-dns-egress
   - pack: workloads-scheduling
-    slug: 04-hpa-metrics-server
+    slug: 05-daemonset
   - pack: services-networking
     slug: 06-netpol-endport
   - pack: cluster-architecture
@@ -32,16 +32,16 @@ questions:
   - pack: troubleshooting
     slug: 04-debug-node
   - pack: storage
-    slug: 04-csi-volumesnapshot
+    slug: 02-storageclass-dynamic
   - pack: cluster-architecture
     slug: 07-cri-dockerd-endpoint
   - pack: workloads-scheduling
-    slug: 07-native-sidecar
+    slug: 01-deployment-requests
   - pack: troubleshooting
     slug: 03-coredns-resolution
   - pack: services-networking
     slug: 05-kube-proxy-mode
   - pack: cluster-architecture
-    slug: 02-etcd-backup-restore
+    slug: 08-priorityclass
   - pack: troubleshooting
-    slug: 06-broken-kubelet
+    slug: 05-static-pod-manifest

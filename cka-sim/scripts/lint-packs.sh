@@ -218,6 +218,91 @@ if [[ -d "$PACKS_DIR/troubleshooting" ]]; then
   done < <(find "$PACKS_DIR/troubleshooting" -type f -name '*.sh' -not -path '*/tests/*')
 fi
 
+info "pass H: blueprint manifest lint"
+EXAMS_DIR="${CKA_SIM_LINT_EXAMS_DIR:-$REPO_ROOT/exams}"
+if [[ -d "$EXAMS_DIR" ]]; then
+  while IFS= read -r manifest; do
+    [[ -z "$manifest" ]] && continue
+    checked=$(( checked + 1 ))
+    local_bp_dir="$(dirname "$manifest")"
+    local_bp_name="$(basename "$local_bp_dir")"
+
+    # Count questions
+    q_count=$(grep -c 'slug:' "$manifest" 2>/dev/null || echo 0)
+    if (( q_count != 17 )); then
+      err "BLUEPRINT: $manifest: expected 17 questions, got $q_count"
+      errors=$(( errors + 1 ))
+    fi
+
+    # Check weighting fields
+    for wt in "storage: 10" "workloads-scheduling: 15" "services-networking: 20" "cluster-architecture: 25" "troubleshooting: 30"; do
+      if ! grep -qF "$wt" "$manifest"; then
+        err "BLUEPRINT: $manifest: missing or wrong weighting '$wt'"
+        errors=$(( errors + 1 ))
+      fi
+    done
+
+    # Check no duplicate (pack, slug) pairs
+    local_dupes=$(grep -E '^\s+(pack|slug):' "$manifest" | paste - - | sort | uniq -d)
+    if [[ -n "$local_dupes" ]]; then
+      err "BLUEPRINT: $manifest: duplicate (pack, slug) pairs found"
+      errors=$(( errors + 1 ))
+    fi
+
+    # Check every (pack, slug) resolves to existing question dir
+    local_packs=()
+    local_slugs=()
+    while IFS= read -r line; do
+      if [[ "$line" =~ pack:[[:space:]]+(.+) ]]; then
+        local_packs+=("${BASH_REMATCH[1]}")
+      fi
+    done < "$manifest"
+    while IFS= read -r line; do
+      if [[ "$line" =~ slug:[[:space:]]+(.+) ]]; then
+        local_slugs+=("${BASH_REMATCH[1]}")
+      fi
+    done < "$manifest"
+
+    sum_minutes=0
+    for (( bp_i=0; bp_i<${#local_packs[@]}; bp_i++ )); do
+      bp_pack="${local_packs[$bp_i]}"
+      bp_slug="${local_slugs[$bp_i]:-}"
+      bp_qdir="$CKA_SIM_ROOT/packs/$bp_pack/$bp_slug"
+      if [[ ! -d "$bp_qdir" ]]; then
+        err "BLUEPRINT: $manifest: question dir not found: packs/$bp_pack/$bp_slug"
+        errors=$(( errors + 1 ))
+      else
+        bp_est=$(grep -oE 'estimatedMinutes: [0-9]+' "$bp_qdir/metadata.yaml" 2>/dev/null | grep -oE '[0-9]+' || echo 0)
+        sum_minutes=$(( sum_minutes + bp_est ))
+      fi
+    done
+
+    # Check sum estimatedMinutes in [120, 130]
+    if (( sum_minutes < 120 || sum_minutes > 130 )); then
+      err "BLUEPRINT: $manifest: estimatedMinutes sum=$sum_minutes not in [120, 130]"
+      errors=$(( errors + 1 ))
+    fi
+
+    # Check disclaimer in manifest
+    if ! grep -qF "Not real CKA exam content; independently authored" "$manifest"; then
+      err "BLUEPRINT: $manifest: missing MOCK-03 disclaimer in manifest"
+      errors=$(( errors + 1 ))
+    fi
+
+    # Check README disclaimer
+    local_readme="$local_bp_dir/README.md"
+    if [[ -r "$local_readme" ]]; then
+      if ! grep -qF "Not real CKA exam content; independently authored" "$local_readme"; then
+        err "BLUEPRINT: $local_readme: missing MOCK-03 disclaimer in README"
+        errors=$(( errors + 1 ))
+      fi
+    else
+      err "BLUEPRINT: $local_bp_dir: missing README.md"
+      errors=$(( errors + 1 ))
+    fi
+  done < <(find "$EXAMS_DIR" -mindepth 2 -maxdepth 2 -name manifest.yaml 2>/dev/null)
+fi
+
 printf '\n' >&2
 if (( errors > 0 )); then
   err "$errors pack lint error(s) across $checked check(s). Fix before pushing."
