@@ -52,6 +52,8 @@ if echo "$lint_out" | grep -q 'pack lint passed'; then
   pass "Test 3b: lint-packs pass H passes"
 else
   fail "Test 3b: lint-packs pass H" "lint failed"
+  log_result "[phase7] lint-packs output (last 20 lines):"
+  log_result "$(echo "$lint_out" | tail -20)"
 fi
 
 # ─────────────────────────────────────────────────────────────────────
