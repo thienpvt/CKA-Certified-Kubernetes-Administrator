@@ -85,8 +85,6 @@ for i in $(seq 1 17); do input+=$'\n'; done
 input+="y"
 
 exam_out=$(printf '%s' "$input" | timeout 600 bash "$CKA_SIM" exam blueprint-alpha 2>&1) || true
-exam_rc=$?
-log_result "[phase7] exam exit code: $exam_rc"
 
 # Find session timestamp
 session_ts=$(echo "$exam_out" | grep -oE 'Session: [0-9T]+Z' | grep -oE '[0-9T]+Z' | head -1 || true)

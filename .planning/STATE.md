@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-13T16:43:00.000Z"
-last_activity: 2026-05-13 -- Phases 2/3/4 UAT complete (all pass)
+last_updated: "2026-05-13T17:18:00.000Z"
+last_activity: 2026-05-13 -- Phase 7 UAT complete (9/9 automated tests pass, 2 interactive skipped)
 progress:
   total_phases: 8
-  completed_phases: 6
-  total_plans: 69
-  completed_plans: 64
-  percent: 93
+  completed_phases: 8
+  total_plans: 74
+  completed_plans: 74
+  percent: 100
 ---
 
 # State
 
 ## Current Position
 
-Phase: 06 (Troubleshooting Pack) — COMPLETE
-Plan: 9 of 9
-Status: Ready to execute
-Last activity: 2026-05-13 -- Phases 2/3/4/5/6 UAT complete (all pass)
+Phase: 08 (Blueprint Bravo + Banners + Docs + CI) — COMPLETE
+Plan: 5 of 5
+Status: All phases complete
+Last activity: 2026-05-14 -- Phase 8 complete (all plans executed, 38 tests + 264 lint checks pass)
 
 ### Deferred Verification
 
@@ -30,6 +30,7 @@ These are intentionally deferred, not blockers for advancing.
    - Tracking: `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-HUMAN-UAT.md`
    - Scope: bootstrap idempotency, passwordless SSH to workers, and `cka-sim doctor` green.
    - Resume with: `$gsd-verify-work 1`
+   - Mistakes: passwordless SSH to workers is not yet supported because all nodes are set up manually with 3 vm instances on GCP. 
 
 2. **Phase 2 UAT** — CLOSED (2026-05-13). All 5 tests pass (unit suite, catalog lint, assertion helpers, detectors, RFC 1123).
    - Tracking: `.planning/phases/02-trap-framework-assertion-library/02-UAT.md`
@@ -47,6 +48,10 @@ These are intentionally deferred, not blockers for advancing.
 6. **Phase 6 live drill verification** — CLOSED (2026-05-13). All 6 troubleshooting drills + host-safety sweep pass on live 1+2 cluster.
    - Tracking: `.planning/phases/06-troubleshooting-pack/06-HUMAN-UAT.md` and `06-VERIFICATION.md`
    - Final result: 22/22 PASS (6 drills × pre-fix + post-fix + host-safety, plus post-sweep with idempotency). Q04 ref-solution fixed (replaced `kubectl debug node` with explicit privileged debug pod manifest carrying same `kubectl.kubernetes.io/debug-source` label).
+
+7. **Phase 7 UAT** — CLOSED (2026-05-13). 9/9 automated tests pass. 2 interactive tests (timer/signals) skipped.
+   - Tracking: `.planning/phases/07-exam-mode-blueprint-alpha-reporting/07-UAT.md`
+   - Bugs fixed: missing check_jq (53f0d0b), EOF infinite loop (4f49f9a), stdin leak to setup/grade (314cdc0), subshell losing QDIRS array (d196d46), cmd scripts not executable (9ff8312).
 
 ### Phase 4 automated verification (2026-05-11, all green)
 
@@ -89,11 +94,7 @@ These are intentionally deferred, not blockers for advancing.
 
 ### Pending Todos
 
-- Start Phase 06: `$gsd-discuss-phase 6`
 - Later: run `$gsd-verify-work 1` on the CP node to close Phase 1 live bootstrap UAT
-- Phase 8 docs deferral: document final bootstrap worker-SSH setup after Phase 1 live verification succeeds
 - WR-01 deferred: full vendoring of CSI + metrics-server manifests under `cka-sim/vendor/` with recorded SHA256
 - IN-04 deferred: `cka_sim::grade::assert_custom` helper + 6-grader retrofit (library API addition, not a correctness bug)
-
 ---
-*Reset for milestone v1.0 on 2026-05-07. Phase 4 bug notes cleaned on 2026-05-12 after BUG-1 and BUG-3 were confirmed fixed. Phase 1 and Phase 5 live verification deferred on 2026-05-12.*
