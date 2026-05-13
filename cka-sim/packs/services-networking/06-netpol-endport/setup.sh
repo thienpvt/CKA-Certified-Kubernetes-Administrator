@@ -25,8 +25,8 @@ spec:
         - /bin/bash
         - -c
         - |
-          for p in $(seq 8080 8090); do
-            while true; do printf 'HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\nok\n' | nc -l -p "$p"; done &
+          for p in \$(seq 8080 8090); do
+            while true; do printf 'HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\nok\n' | nc -l -p "\$p"; done &
           done
           wait
       ports:
