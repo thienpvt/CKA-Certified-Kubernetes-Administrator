@@ -2,6 +2,17 @@
 
 Bash-only, kubectl-driven exam simulator for the CKA v1.35 syllabus. Runs against your own 1+2 kubeadm cluster.
 
+## Setup
+
+Clone the repo on your control-plane node and add the `bin/` directory to your PATH:
+
+```bash
+git clone <repo-url> ~/CKA-Certified-Kubernetes-Administrator
+export PATH="$HOME/CKA-Certified-Kubernetes-Administrator/cka-sim/bin:$PATH"
+```
+
+To make it permanent, add the `export` line to your `~/.bashrc`.
+
 ## Quickstart
 
 ```bash
