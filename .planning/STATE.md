@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-12T18:14:40.472Z"
-last_activity: 2026-05-12 -- Phase 06 execution started
+last_updated: "2026-05-13T09:53:00Z"
+last_activity: 2026-05-13 -- Phase 05 live UAT closed (14/14 pass)
 progress:
   total_phases: 8
   completed_phases: 5
@@ -31,10 +31,9 @@ These are intentionally deferred, not blockers for continuing Phase 06 work.
    - Scope: bootstrap idempotency, passwordless SSH to workers, and `cka-sim doctor` green.
    - Resume with: `$gsd-verify-work 1`
 
-2. **Phase 5 live drill verification** — deferred until live 1+2 kubeadm cluster time is available.
+2. **Phase 5 live drill verification** — CLOSED (2026-05-13). All 14 drills pass on live 1+2 cluster.
    - Tracking: `.planning/phases/05-services-networking-cluster-architecture-packs/05-VERIFICATION.md`
-   - Scope: Services-Networking Q01-Q06 and Cluster-Architecture Q01-Q08 live drill round-trips.
-   - Resume with: `$gsd-verify-work 5`
+   - Final result: 14/14 PASS (6 S&N + 8 CA). Q06 heredoc bug fixed (815e19a). Gaps 1-4,15 closed by plans 05-17..05-20.
 
 ### Phase 4 automated verification (2026-05-11, all green)
 
@@ -73,13 +72,12 @@ These are intentionally deferred, not blockers for continuing Phase 06 work.
 
 ### Blockers
 
-- None. Phase 1 and Phase 5 live verification are deferred and tracked above.
+- None. Phase 1 live verification is deferred and tracked above.
 
 ### Pending Todos
 
 - Start Phase 06: `$gsd-discuss-phase 6`
 - Later: run `$gsd-verify-work 1` on the CP node to close Phase 1 live bootstrap UAT
-- Later: run `$gsd-verify-work 5` on the live 1+2 kubeadm cluster to close Phase 5 live drill UAT
 - Phase 8 docs deferral: document final bootstrap worker-SSH setup after Phase 1 live verification succeeds
 - WR-01 deferred: full vendoring of CSI + metrics-server manifests under `cka-sim/vendor/` with recorded SHA256
 - IN-04 deferred: `cka_sim::grade::assert_custom` helper + 6-grader retrofit (library API addition, not a correctness bug)
