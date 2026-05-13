@@ -12,12 +12,18 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 # Wait up to 90s for Available (scheduler needs time after candidate patch rolls out).
 kubectl wait --for=condition=Available deployment/q08-gpu-sim -n "$CKA_SIM_LAB_NS" --timeout=90s 2>/dev/null || true
 
-# Wait for rollout to complete so old-RS pods are fully terminated.
+# Wait for rollout to complete and old-RS pods to terminate. rollout status returns
+# when new RS is satisfied, but old pods may still be Running. Poll until pod count
+# matches the desired replicas (2) so assertion 3 doesn't see stale pods.
 kubectl rollout status deployment/q08-gpu-sim -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
-
-# Wait for all pods in the current RS to be Ready (covers the 2-replica case where
-# Available fires after minReadySeconds on the first pod but the second is still scheduling).
-kubectl wait pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim --for=condition=Ready --timeout=60s 2>/dev/null || true
+desired=$(kubectl get deployment q08-gpu-sim -n "$CKA_SIM_LAB_NS" \
+  -o jsonpath='{.spec.replicas}' 2>/dev/null || echo "2")
+for _i in $(seq 1 15); do
+  count=$(kubectl get pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim \
+    --field-selector=status.phase=Running --no-headers 2>/dev/null | wc -l | tr -d ' ')
+  (( count <= desired )) && break
+  sleep 2
+done
 
 # Discover target worker. Identical idiom to setup.sh / reset.sh / ref-solution.sh.
 # On failure the discovery-dependent assertions auto-FAIL (soft fail -- do not exit).
@@ -34,8 +40,7 @@ cka_sim::grade::assert_field_eq deployment q08-gpu-sim \
   '{.spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[?(@.key=="gpu")].operator}' \
   'In' -n "$CKA_SIM_LAB_NS"
 
-# Assertion 3: every replica lands on the target worker (no other node names).
-# Filter to Running pods only — Terminating pods from a prior RS may still appear briefly.
+# Assertion 3: every Running replica lands on the target worker.
 nodes=$(kubectl get pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim \
   --field-selector=status.phase=Running -o jsonpath='{.items[*].spec.nodeName}' 2>/dev/null || echo "")
 unique_nodes=$(echo "$nodes" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
