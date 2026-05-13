@@ -4,46 +4,35 @@ set -euo pipefail
 
 sandbox="/tmp/q04-pss-enforce"
 mkdir -p "$sandbox"
-cat > "$sandbox/violator.yaml" <<EOF
-apiVersion: apps/v1
-kind: Deployment
+
+# Ref-solution owns ONLY the candidate submission file. Setup owns the
+# admission log, the reference violator Pod, the compliant Deployment,
+# and the namespace PSS labels — ref-solution must NOT touch any of them.
+#
+# Compliant Pod shape: runs nginx-unprivileged (non-root image), declares
+# runAsNonRoot at pod level, seccompProfile=RuntimeDefault, and at container
+# level drops ALL capabilities with allowPrivilegeEscalation=false.
+# Contains neither trigger string (no legacy PSS wording reference, no
+# fictional pod-label exemption key) so both detectors in grade.sh
+# return empty and no traps fire.
+cat > "$sandbox/candidate-violator.yaml" <<EOF
+apiVersion: v1
+kind: Pod
 metadata:
-  name: q04-violator
+  name: q04-candidate
   namespace: ${CKA_SIM_LAB_NS}
+  labels:
+    app: q04-candidate
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: q04-violator
-  template:
-    metadata:
-      labels:
-        app: q04-violator
-    spec:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: nginxinc/nginx-unprivileged:1.27-alpine
       securityContext:
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-      containers:
-        - name: app
-          image: nginxinc/nginx-unprivileged:1.27-alpine
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-EOF
-kubectl apply --dry-run=server -f "$sandbox/violator.yaml" 2>&1 | tee "$sandbox/violator-admission.log" >/dev/null || true
-cat > "$sandbox/admission-config.yaml" <<'EOF'
-# Reference only. This file is not applied to the live apiserver.
-apiVersion: apiserver.config.k8s.io/v1
-kind: AdmissionConfiguration
-plugins:
-  - name: PodSecurity
-    configuration:
-      apiVersion: pod-security.admission.config.k8s.io/v1
-      kind: PodSecurityConfiguration
-      exemptions:
-        usernames: []
-        runtimeClasses: []
-        namespaces: []
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
 EOF
