@@ -13,6 +13,25 @@ export PATH="$HOME/CKA-Certified-Kubernetes-Administrator/cka-sim/bin:$PATH"
 
 To make it permanent, add the `export` line to your `~/.bashrc`.
 
+## SSH to Worker Nodes
+
+Some questions (e.g., static-pod placement) require passwordless SSH from the control-plane to worker nodes. If `cka-sim bootstrap` cannot run `ssh-copy-id` automatically (common on manually provisioned GCP VMs), distribute the key manually:
+
+```bash
+# On the control-plane node — generate the key if it doesn't exist:
+[ -f ~/.ssh/cka_sim_ed25519 ] || ssh-keygen -t ed25519 -N '' -f ~/.ssh/cka_sim_ed25519
+
+# Copy the public key:
+cat ~/.ssh/cka_sim_ed25519.pub
+
+# On each worker node — paste into authorized_keys:
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+echo "<paste-pubkey-here>" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+
+Verify with: `ssh -i ~/.ssh/cka_sim_ed25519 -o BatchMode=yes <worker-ip> true`
+
 ## Quickstart
 
 ```bash
