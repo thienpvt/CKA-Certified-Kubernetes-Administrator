@@ -80,5 +80,36 @@ EOF
 
 cka_sim::setup::seed_netpol_skeleton "$CKA_SIM_LAB_NS" q06-baseline app=q06-client
 
+# Supplemental client-egress NetworkPolicy: UNIONs with the q06-baseline DNS
+# egress so q06-client can resolve names AND reach q06-server on TCP 8080-8090.
+# The DNS-only baseline from seed_netpol_skeleton stays untouched (shared helper
+# signature is locked per 05-01-SUMMARY.md). Without this egress allowance the
+# ref-solution's ingress policy alone cannot grade 6/6: baseline denies all
+# non-DNS egress from q06-client so the 8085 probe (assertion 5) times out.
+# Topping out at endPort 8090 keeps the 8095 out-of-range probe (assertion 6)
+# failing from the client side even in the broken state.
+kubectl apply -f - <<EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: q06-client-egress
+  namespace: ${CKA_SIM_LAB_NS}
+spec:
+  podSelector:
+    matchLabels:
+      app: q06-client
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: q06-server
+      ports:
+        - protocol: TCP
+          port: 8080
+          endPort: 8090
+EOF
+
 kubectl wait --for=condition=Ready pod/q06-server -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
 kubectl wait --for=condition=Ready pod/q06-client -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
