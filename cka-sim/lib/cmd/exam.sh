@@ -324,7 +324,7 @@ cka_sim::exam::start_new() {
 
   cka_sim::preflight::check_kubeconfig >/dev/null \
     || die "no readable kubeconfig (run 'cka-sim doctor')"
-  cka_sim::preflight::check_jq >/dev/null \
+  command -v jq >/dev/null 2>&1 \
     || die "jq not found (required for exam mode)"
 
   info "Loading blueprint: $blueprint_name"
