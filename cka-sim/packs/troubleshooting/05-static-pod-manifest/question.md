@@ -2,9 +2,9 @@
 
 **Domain:** Troubleshooting  |  **Estimated time:** 10 minutes
 
-Candidate static-pod manifest lives in sandbox. When manifest is placed in kubelet's static-pod directory, intended Pod `q05-cache` never appears in `kubectl get pods -A` or never reaches `Running`.
+Candidate static-pod manifest lives in sandbox. When manifest is placed in node-agent static workload directory, intended Pod `q05-cache` never appears in `kubectl get pods -A` or never reaches `Running`.
 
-Repair sandbox manifest so that when kubelet picks it up, Pod reaches `Running`.
+Repair sandbox manifest so that when the node agent picks it up, Pod reaches `Running`.
 
 ## Sandbox
 
@@ -21,8 +21,8 @@ Repair sandbox manifest so that when kubelet picks it up, Pod reaches `Running`.
 ## Constraints
 
 - Do NOT place manifest into `/etc/kubernetes/manifests/`.
-- Do NOT restart kubelet.
-- Do NOT run `systemctl`.
+- Do NOT restart node services.
+- Do NOT run live-service restart commands.
 - `metadata.name` must remain `q05-cache`.
 
 ## Verify yourself
