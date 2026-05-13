@@ -3,6 +3,9 @@
 # Sourced by: lib/log.sh and any subcommand that prints colored output
 # Style: matches scripts/validate-local.sh (RED, GREEN, YELLOW + NC)
 
+[[ -n "${_CKA_COLORS_LOADED+x}" ]] && return 0
+_CKA_COLORS_LOADED=1
+
 # Only emit colors when stdout is a terminal. Pipes and redirects get plain text.
 if [[ -t 1 ]] && [[ -n "${TERM:-}" ]] && [[ "${TERM}" != "dumb" ]]; then
   readonly RED=$'\033[31m'

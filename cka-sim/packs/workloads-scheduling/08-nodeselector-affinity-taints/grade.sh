@@ -12,10 +12,12 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 # Wait up to 90s for Available (scheduler needs time after candidate patch rolls out).
 kubectl wait --for=condition=Available deployment/q08-gpu-sim -n "$CKA_SIM_LAB_NS" --timeout=90s 2>/dev/null || true
 
-# Wait for all pods to be Running and scheduled (rollout status alone doesn't guarantee
-# old pods are fully terminated and new pods have nodeName assigned).
+# Wait for rollout to complete so old-RS pods are fully terminated.
 kubectl rollout status deployment/q08-gpu-sim -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
-sleep 5
+
+# Wait for all pods in the current RS to be Ready (covers the 2-replica case where
+# Available fires after minReadySeconds on the first pod but the second is still scheduling).
+kubectl wait pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim --for=condition=Ready --timeout=60s 2>/dev/null || true
 
 # Discover target worker. Identical idiom to setup.sh / reset.sh / ref-solution.sh.
 # On failure the discovery-dependent assertions auto-FAIL (soft fail -- do not exit).
@@ -33,8 +35,9 @@ cka_sim::grade::assert_field_eq deployment q08-gpu-sim \
   'In' -n "$CKA_SIM_LAB_NS"
 
 # Assertion 3: every replica lands on the target worker (no other node names).
-# jsonpath emits a space-separated stream of nodeName values.
-nodes=$(kubectl get pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim -o jsonpath='{.items[*].spec.nodeName}' 2>/dev/null || echo "")
+# Filter to Running pods only — Terminating pods from a prior RS may still appear briefly.
+nodes=$(kubectl get pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim \
+  --field-selector=status.phase=Running -o jsonpath='{.items[*].spec.nodeName}' 2>/dev/null || echo "")
 unique_nodes=$(echo "$nodes" | tr ' ' '\n' | sort -u | tr '\n' ',' | sed 's/,$//')
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
 if [[ -n "$nodes" ]] && [[ -n "$target_node" ]] && [[ "$unique_nodes" == "$target_node" ]]; then
