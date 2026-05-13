@@ -277,9 +277,17 @@ if [[ -d "$EXAMS_DIR" ]]; then
       fi
     done
 
-    # Check sum estimatedMinutes in [120, 130]
-    if (( sum_minutes < 120 || sum_minutes > 130 )); then
-      err "BLUEPRINT: $manifest: estimatedMinutes sum=$sum_minutes not in [120, 130]"
+    # Check sum estimatedMinutes against manifest's estimatedMinutesBudget field
+    budget_line=$(grep -oE 'estimatedMinutesBudget: \[([0-9]+), ([0-9]+)\]' "$manifest" || true)
+    if [[ "$budget_line" =~ \[([0-9]+),\ ([0-9]+)\] ]]; then
+      budget_lo="${BASH_REMATCH[1]}"
+      budget_hi="${BASH_REMATCH[2]}"
+    else
+      budget_lo=120
+      budget_hi=130
+    fi
+    if (( sum_minutes < budget_lo || sum_minutes > budget_hi )); then
+      err "BLUEPRINT: $manifest: estimatedMinutes sum=$sum_minutes not in [$budget_lo, $budget_hi]"
       errors=$(( errors + 1 ))
     fi
 
