@@ -150,8 +150,8 @@ cka_sim::exam::setup_question() {
 
   if (( ! already_setup )); then
     info "Setting up Q$((idx + 1))..."
-    bash "$qdir/reset.sh" 2>/dev/null || true
-    bash "$qdir/setup.sh"
+    bash "$qdir/reset.sh" </dev/null 2>/dev/null || true
+    bash "$qdir/setup.sh" </dev/null
     CKA_SIM_EXAM_SETUP_IDXS+=("$idx")
   fi
 }
@@ -253,7 +253,7 @@ cka_sim::exam::batch_grade() {
     info "Grading Q$((i+1))..."
     tmp=$(mktemp -t "cka-sim-grade.XXXXXX")
     rc=0
-    bash "$qdir/grade.sh" > "$tmp" 2>&1 || rc=$?
+    bash "$qdir/grade.sh" </dev/null > "$tmp" 2>&1 || rc=$?
     capture=$(cat "$tmp")
     rm -f "$tmp"
 
