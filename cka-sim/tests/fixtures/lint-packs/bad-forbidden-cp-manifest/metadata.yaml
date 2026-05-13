@@ -1,0 +1,12 @@
+id: test-troubleshoot-fixture
+domain: troubleshooting
+estimatedMinutes: 5
+verified_against: "1.35"
+traps:
+  - default-sa-used
+  - missing-dns-egress
+  - service-selector-empty-endpoints
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/debug/debug-application/
+    note: Troubleshooting fixture reference

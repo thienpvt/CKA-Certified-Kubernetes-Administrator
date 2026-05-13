@@ -194,6 +194,12 @@ if [[ -d "$PACKS_DIR/troubleshooting" ]]; then
       ">[[:space:]]*/etc/kubernetes/|write into /etc/kubernetes/ (covers /etc/kubernetes/manifests/ via prefix)"
       ">[[:space:]]*/var/lib/kubelet/|write into /var/lib/kubelet/"
       "cp[[:space:]]+([^#][^[:space:]]*[[:space:]]+)+/etc/kubernetes/manifests/|copy into /etc/kubernetes/manifests/"
+      ">>[[:space:]]*[\"']?/etc/kubernetes/|append into /etc/kubernetes/"
+      ">>[[:space:]]*[\"']?/var/lib/kubelet/|append into /var/lib/kubelet/"
+      "tee([[:space:]]+-a)?[[:space:]]+[\"']?/etc/kubernetes/|tee into /etc/kubernetes/"
+      "tee([[:space:]]+-a)?[[:space:]]+[\"']?/var/lib/kubelet/|tee into /var/lib/kubelet/"
+      "cp[[:space:]][^#]*[\"'][[:space:]]*/etc/kubernetes/manifests/|quoted cp into /etc/kubernetes/manifests/"
+      "install[[:space:]][^#]*[\"']?/etc/kubernetes/manifests/|install into /etc/kubernetes/manifests/"
     )
     for pattern_label in "${forbidden_patterns[@]}"; do
       pattern="${pattern_label%%|*}"

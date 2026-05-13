@@ -42,6 +42,9 @@ RC:%d' $?)
 run_bad_fixture bad-forbidden-systemctl
 run_bad_fixture bad-forbidden-coredns-edit
 run_bad_fixture bad-forbidden-varlibkubelet-write
+run_bad_fixture bad-forbidden-append-kubelet
+run_bad_fixture bad-forbidden-tee-manifest
+run_bad_fixture bad-forbidden-cp-manifest
 
 root=$(mktemp -d -t lint-packs-forbidden-XXXXXX)
 mkdir -p "$root/troubleshooting/01-test"
