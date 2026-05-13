@@ -3,28 +3,28 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-13T09:53:00Z"
-last_activity: 2026-05-13 -- Phase 05 live UAT closed (14/14 pass)
+last_updated: "2026-05-13T10:30:00Z"
+last_activity: 2026-05-13 -- Phase 06 live UAT closed (22/22 pass, Q04 ref-solution fixed)
 progress:
   total_phases: 8
-  completed_phases: 5
-  total_plans: 59
-  completed_plans: 51
-  percent: 86
+  completed_phases: 6
+  total_plans: 60
+  completed_plans: 60
+  percent: 75
 ---
 
 # State
 
 ## Current Position
 
-Phase: 06 (Troubleshooting Pack) — EXECUTING
-Plan: 1 of 9
-Status: Executing Phase 06
-Last activity: 2026-05-12 -- Phase 06 execution started
+Phase: 06 (Troubleshooting Pack) — COMPLETE
+Plan: 9 of 9
+Status: Phase 06 verification complete; ready to plan Phase 07
+Last activity: 2026-05-13 -- Phase 06 live UAT closed (22/22 pass)
 
 ### Deferred Verification
 
-These are intentionally deferred, not blockers for continuing Phase 06 work.
+These are intentionally deferred, not blockers for advancing.
 
 1. **Phase 1 live bootstrap verification** — deferred until the candidate next works on the control-plane node.
    - Tracking: `.planning/phases/01-cluster-bootstrap-runner-skeleton/01-HUMAN-UAT.md`
@@ -34,6 +34,10 @@ These are intentionally deferred, not blockers for continuing Phase 06 work.
 2. **Phase 5 live drill verification** — CLOSED (2026-05-13). All 14 drills pass on live 1+2 cluster.
    - Tracking: `.planning/phases/05-services-networking-cluster-architecture-packs/05-VERIFICATION.md`
    - Final result: 14/14 PASS (6 S&N + 8 CA). Q06 heredoc bug fixed (815e19a). Gaps 1-4,15 closed by plans 05-17..05-20.
+
+3. **Phase 6 live drill verification** — CLOSED (2026-05-13). All 6 troubleshooting drills + host-safety sweep pass on live 1+2 cluster.
+   - Tracking: `.planning/phases/06-troubleshooting-pack/06-HUMAN-UAT.md` and `06-VERIFICATION.md`
+   - Final result: 22/22 PASS (6 drills × pre-fix + post-fix + host-safety, plus post-sweep with idempotency). Q04 ref-solution fixed (replaced `kubectl debug node` with explicit privileged debug pod manifest carrying same `kubectl.kubernetes.io/debug-source` label).
 
 ### Phase 4 automated verification (2026-05-11, all green)
 
