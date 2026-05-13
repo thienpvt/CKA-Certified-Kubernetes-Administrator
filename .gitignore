@@ -34,3 +34,7 @@ __pycache__/
 *.tfstate
 *.tfstate.backup
 .terraform/
+
+# UAT runtime output (regenerated each run)
+.planning/phases/*/results.txt
+cka-sim/results.txt
