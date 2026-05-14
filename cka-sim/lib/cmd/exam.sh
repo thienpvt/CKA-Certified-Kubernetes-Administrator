@@ -25,6 +25,20 @@ declare -ag CKA_SIM_EXAM_SETUP_IDXS=()
 declare -ag CKA_SIM_EXAM_QDIRS=()
 declare -g CKA_SIM_EXAM_QUESTION_COUNT=0
 declare -g CKA_SIM_EXAM_ENDED=0
+declare -g CKA_SIM_LAB_NS=""
+
+# Exports CKA_SIM_LAB_NS for the question at $idx so its setup/grade/reset
+# scripts see the same per-question lab namespace the drill runner gives them.
+# Convention matches drill.sh: cka-sim-<pack>-<NN> (NN = slug's leading number).
+cka_sim::exam::export_lab_ns() {
+  local idx="$1"
+  local pack slug num
+  pack=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" | jq -r ".[$idx].pack")
+  slug=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" | jq -r ".[$idx].slug")
+  num="${slug%%-*}"
+  CKA_SIM_LAB_NS="cka-sim-${pack}-${num}"
+  export CKA_SIM_LAB_NS
+}
 
 cka_sim::exam::usage() {
   cat >&2 <<'EOF'
@@ -79,6 +93,7 @@ cka_sim::exam::on_exit() {
   for i in "${CKA_SIM_EXAM_SETUP_IDXS[@]:-}"; do
     [[ -z "$i" ]] && continue
     qdir="${CKA_SIM_EXAM_QDIRS[$i]:-}"
+    cka_sim::exam::export_lab_ns "$i"
     [[ -n "$qdir" && -x "$qdir/reset.sh" ]] && bash "$qdir/reset.sh" 2>/dev/null || true
   done
   exit "$rc"
@@ -150,6 +165,7 @@ cka_sim::exam::setup_question() {
 
   if (( ! already_setup )); then
     info "Setting up Q$((idx + 1))..."
+    cka_sim::exam::export_lab_ns "$idx"
     bash "$qdir/reset.sh" </dev/null 2>/dev/null || true
     bash "$qdir/setup.sh" </dev/null
     CKA_SIM_EXAM_SETUP_IDXS+=("$idx")
@@ -251,6 +267,7 @@ cka_sim::exam::batch_grade() {
     fi
 
     info "Grading Q$((i+1))..."
+    cka_sim::exam::export_lab_ns "$i"
     tmp=$(mktemp -t "cka-sim-grade.XXXXXX")
     rc=0
     bash "$qdir/grade.sh" </dev/null > "$tmp" 2>&1 || rc=$?

@@ -12,7 +12,7 @@ cd ~/CKA-Certified-Kubernetes-Administrator
 
 # Ensure scripts are executable (some checkouts drop the exec bit):
 chmod +x cka-sim/bin/cka-sim
-find cka-sim/packs cka-sim/tests/fixtures -name reset.sh -exec chmod +x {} +
+find cka-sim/packs cka-sim/tests/fixtures \( -name setup.sh -o -name grade.sh -o -name reset.sh -o -name ref-solution.sh \) -exec chmod +x {} +
 
 export PATH="$HOME/CKA-Certified-Kubernetes-Administrator/cka-sim/bin:$PATH"
 ```
