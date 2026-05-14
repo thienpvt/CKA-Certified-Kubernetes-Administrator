@@ -189,9 +189,13 @@ cka_sim::exam::setup_question() {
   if (( ! already_setup )); then
     info "Setting up Q$((idx + 1))..."
     cka_sim::exam::export_lab_ns "$idx"
+    # Defer TSTP during setup — kubectl children in the foreground process group
+    # get confused by mid-operation stops. Queue the stop for after setup finishes.
+    trap '' TSTP
     bash "$qdir/reset.sh" </dev/null 2>/dev/null || true
     local setup_rc=0
     bash "$qdir/setup.sh" </dev/null || setup_rc=$?
+    trap 'cka_sim::exam::on_tstp' TSTP
     if (( setup_rc != 0 )); then
       warn "Q$((idx + 1)) setup interrupted or failed (rc=$setup_rc) — question flagged"
       cka_sim::state::set_question_status "$idx" "flagged"
