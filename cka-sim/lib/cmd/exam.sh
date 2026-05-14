@@ -167,7 +167,13 @@ cka_sim::exam::setup_question() {
     info "Setting up Q$((idx + 1))..."
     cka_sim::exam::export_lab_ns "$idx"
     bash "$qdir/reset.sh" </dev/null 2>/dev/null || true
-    bash "$qdir/setup.sh" </dev/null
+    local setup_rc=0
+    bash "$qdir/setup.sh" </dev/null || setup_rc=$?
+    if (( setup_rc != 0 )); then
+      warn "Q$((idx + 1)) setup interrupted or failed (rc=$setup_rc) — question flagged"
+      cka_sim::state::set_question_status "$idx" "flagged"
+      return 1
+    fi
     CKA_SIM_EXAM_SETUP_IDXS+=("$idx")
   fi
 }
@@ -195,7 +201,14 @@ cka_sim::exam::question_loop() {
   while (( CKA_SIM_EXAM_CUR_IDX < CKA_SIM_EXAM_QUESTION_COUNT && CKA_SIM_EXAM_ENDED == 0 )); do
     cka_sim::exam::check_time_remaining || break
 
-    cka_sim::exam::setup_question "$CKA_SIM_EXAM_CUR_IDX"
+    local setup_ok=0
+    cka_sim::exam::setup_question "$CKA_SIM_EXAM_CUR_IDX" && setup_ok=1 || true
+    if (( ! setup_ok )); then
+      # Setup interrupted/failed — question already flagged; advance to next
+      CKA_SIM_EXAM_CUR_IDX=$(( CKA_SIM_EXAM_CUR_IDX + 1 ))
+      continue
+    fi
+
     cka_sim::exam::present_question "$CKA_SIM_EXAM_CUR_IDX"
 
     CKA_SIM_EXAM_QUESTIONS_JSON=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" \
@@ -205,11 +218,24 @@ cka_sim::exam::question_loop() {
     cka_sim::state::save
 
     local action=""
-    printf '> '
-    if ! read -r action; then
-      CKA_SIM_EXAM_ENDED=1
-      break
-    fi
+    cka_sim::timer::gate_on
+    while true; do
+      printf '> '
+      local rc=0
+      read -r action || rc=$?
+      if (( rc == 0 )); then
+        break
+      elif (( rc > 128 )); then
+        # Trap-interrupted read — re-prompt
+        continue
+      else
+        # Genuine EOF
+        cka_sim::timer::gate_off
+        CKA_SIM_EXAM_ENDED=1
+        break 2
+      fi
+    done
+    cka_sim::timer::gate_off
 
     cka_sim::exam::handle_action "$action"
   done
@@ -238,8 +264,23 @@ cka_sim::exam::confirm_submit() {
   printf 'Flagged: %d  Skipped: %d  Pending: %d\n' "$flagged" "$skipped" "$pending"
 
   local confirm=""
-  printf '\nSubmit for grading? [y/n] '
-  read -r confirm || confirm="y"
+  cka_sim::timer::gate_on
+  while true; do
+    printf '\nSubmit for grading? [y/n] '
+    local rc=0
+    read -r confirm || rc=$?
+    if (( rc == 0 )); then
+      break
+    elif (( rc > 128 )); then
+      # Trap-interrupted — re-prompt
+      continue
+    else
+      # Genuine EOF — default to submit
+      confirm="y"
+      break
+    fi
+  done
+  cka_sim::timer::gate_off
 
   if [[ "$confirm" != "y" && "$confirm" != "Y" && "$confirm" != "" ]]; then
     CKA_SIM_EXAM_ENDED=0
