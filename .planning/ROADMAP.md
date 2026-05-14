@@ -195,6 +195,17 @@ Plans:
 
 **Depends on:** Phase 6 (all 5 packs must exist before a 17-question blueprint can reference them).
 
+**Plans:** 7 plans
+
+Plans:
+- [x] 07-01-PLAN.md — Foundation: exam-state.sh + exam-blueprint.sh + Wave-0 test fixtures + 4 unit tests
+- [x] 07-02-PLAN.md — exam-report.sh Markdown score report renderer + golden-file test
+- [x] 07-03-PLAN.md — Full exam orchestrator (lib/cmd/exam.sh) + exam-timer.sh: question loop, signal handling, batch grading, --resume
+- [x] 07-04-PLAN.md — cka-sim score + list history subcommands
+- [x] 07-05-PLAN.md — blueprint-alpha exam content: manifest.yaml (17 questions) + README
+- [x] 07-06-PLAN.md — lint-packs.sh pass H: blueprint manifest validation + test fixtures
+- [ ] 07-07-PLAN.md — Gap closure: harden exam signal handling (restartable read, re-entrant-safe TSTP/CONT, stty hygiene, interrupt-contained setup)
+
 ---
 
 ## Phase 8: Blueprint Bravo + Banners + Docs + CI
