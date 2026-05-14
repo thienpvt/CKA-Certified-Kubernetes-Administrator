@@ -79,38 +79,37 @@ cka_sim::exam::on_int() {
 }
 
 cka_sim::exam::on_tstp() {
-  # Minimal pre-stop work: record pause time and kill the timer.
-  # Do NOT self-stop here — let the default disposition handle it.
-  # The CONT handler (on_cont) does all resume work after `fg`.
+  # Pre-stop: record pause time, kill timer, restore terminal.
   cka_sim::state::set_pause
   kill "${CKA_SIM_TIMER_PID:-}" 2>/dev/null || true
   CKA_SIM_TIMER_PID=""
   rm -f "${CKA_SIM_TIMER_GATE:-}" 2>/dev/null || true
   stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
-  # Now let the default TSTP stop us. Restore default, re-deliver, re-arm.
+  # Default-stop: restore default disposition, self-deliver TSTP.
   trap - TSTP
   kill -TSTP $$
-  # Execution continues here after SIGCONT (fg).
-  # But we do resume work in on_cont instead for reliability.
+  # === resumes here after fg ===
   trap 'cka_sim::exam::on_tstp' TSTP
-}
-
-cka_sim::exam::on_cont() {
-  # All resume work lives here — fires reliably on fg.
-  # Guard: only act if we were actually paused.
-  (( CKA_SIM_EXAM_PAUSED_AT == 0 )) && return || true
+  trap 'cka_sim::exam::on_int'  INT
+  # Resume: always do resume work (no PAUSED_AT guard — handles double-^Z).
   cka_sim::state::add_pause_delta
   cka_sim::state::save
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
-  cka_sim::timer::gate_on
   printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
 }
 
+cka_sim::exam::on_cont() {
+  return 0
+}
+
 cka_sim::exam::on_exit() {
   local rc=$?
+  # Kill timer — both by PID and by killing any child processes
   cka_sim::timer::stop
+  # Belt-and-suspenders: kill any remaining child processes of this shell
+  kill 0 2>/dev/null || true
   cka_sim::state::save 2>/dev/null || true
   local i qdir
   for i in "${CKA_SIM_EXAM_SETUP_IDXS[@]:-}"; do
