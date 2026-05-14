@@ -1,13 +1,13 @@
 ---
 phase: 07
 phase_name: exam-mode-blueprint-alpha-reporting
-status: passed
+status: testing
 created: 2026-05-13
-last_updated: 2026-05-13
-tests_total: 9
-tests_passed: 9
-tests_failed: 0
-tests_skipped: 2
+last_updated: 2026-05-14
+tests_total: 11
+tests_passed: 10
+tests_failed: 1
+tests_skipped: 0
 ---
 
 # Phase 7 UAT — Exam Mode + Blueprint Alpha + Reporting
@@ -18,8 +18,8 @@ Derived from ROADMAP Phase 7 success criteria + CONTEXT.md decisions.
 
 | # | Test | Criteria | Status |
 |---|------|----------|--------|
-| 1 | Timer renders during exam | Visible countdown updates every second without blocking input; survives Ctrl-Z pause + fg resume | ⬜ manual |
-| 2 | Signal handling (Ctrl-C / Ctrl-Z) | Ctrl-C flags current question + persists state (does NOT kill exam); Ctrl-Z pauses; fg resumes with correct time | ⬜ manual |
+| 1 | Timer renders during exam | Visible countdown updates every second without blocking input; survives Ctrl-Z pause + fg resume | ✅ |
+| 2 | Signal handling (Ctrl-C / Ctrl-Z) | Ctrl-C flags current question + persists state (does NOT kill exam); Ctrl-Z pauses; fg resumes with correct time | ❌ |
 | 3a | Blueprint composition — question count | `exams/blueprint-alpha/manifest.yaml` has 17 questions | ✅ |
 | 3b | Blueprint composition — lint | `lint-packs.sh` passes all checks | ✅ |
 | 4a | Score report — file created | Report at `~/.cka-sim/sessions/<ts>.md` exists after exam run | ✅ |
@@ -61,9 +61,16 @@ Derived from ROADMAP Phase 7 success criteria + CONTEXT.md decisions.
 ### Test 6b: Blueprint disclaimer — manifest — ✅ PASS (2026-05-13)
 - manifest.yaml contains disclaimer string
 
-### Tests 1 & 2: Timer + Signals — ⬜ SKIPPED (interactive)
-- Requires manual verification in interactive terminal
-- Instructions: `bash cka-sim/bin/cka-sim exam blueprint-alpha`
+### Test 1: Timer renders during exam — ✅ PASS (2026-05-14)
+- Countdown timer rendered and updated during exam
+- Survived Ctrl-Z pause + `fg` resume — showed correct remaining time (`1:59:53` / `59:54`)
+
+### Test 2: Signal handling (Ctrl-C / Ctrl-Z) — ❌ ISSUE (2026-05-14)
+- reported: "when i press Ctrl+Z, it paused, but I press some buttons and Ctrl+C again, it stop for the 1st time. For the second time, it stuck and haven't replied anything until now"
+- severity: blocker
+- First run: Ctrl-Z paused, `fg` resumed OK, Ctrl-C flagged Q1 and continued, then process showed `[1]+ Stopped` again
+- Second run: Ctrl-Z during "Setting up Q1..." (kubectl commands running), `fg` resumed, then repeated `^C^Z` / `^C^C...` / `fg` left the exam **hung with no response** — unrecoverable
+- Signals arriving during the question setup phase (kubectl provisioning) are not handled — process group stops mid-kubectl, nested SIGTSTP/SIGINT corrupt state
 
 ---
 
@@ -81,6 +88,18 @@ Derived from ROADMAP Phase 7 success criteria + CONTEXT.md decisions.
 
 ## Summary
 
-**9/9 automated tests passed. 2 interactive tests skipped (timer/signals require manual terminal).**
+**10/11 tests passed. 1 issue found (Test 2 — signal handling).**
 
-Phase 7 UAT complete. Exam mode runs end-to-end: blueprint loading → question presentation → grading → report generation → score/list commands all functional.
+Exam mode runs end-to-end (blueprint loading → grading → reporting). Timer renders correctly. Signal handling is broken: repeated/nested Ctrl-Z + Ctrl-C — especially during the kubectl question-setup phase — hangs the exam unrecoverably.
+
+## Gaps
+
+- truth: "Ctrl-C flags current question + persists state without killing exam; Ctrl-Z pauses; fg resumes — robust to repeated/nested signals and signals during question setup"
+  status: failed
+  reason: "User reported: when i press Ctrl+Z, it paused, but I press some buttons and Ctrl+C again, it stop for the 1st time. For the second time, it stuck and haven't replied anything until now"
+  severity: blocker
+  test: 2
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
