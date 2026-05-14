@@ -26,6 +26,8 @@ declare -ag CKA_SIM_EXAM_QDIRS=()
 declare -g CKA_SIM_EXAM_QUESTION_COUNT=0
 declare -g CKA_SIM_EXAM_ENDED=0
 declare -g CKA_SIM_LAB_NS=""
+declare -g CKA_SIM_EXAM_STTY_SAVED=""
+declare -g CKA_SIM_EXAM_IN_SIGHANDLER=0
 
 # Exports CKA_SIM_LAB_NS for the question at $idx so its setup/grade/reset
 # scripts see the same per-question lab namespace the drill runner gives them.
@@ -70,17 +72,38 @@ cka_sim::exam::on_int() {
 }
 
 cka_sim::exam::on_tstp() {
+  # Re-entry guard — nested TSTP while handler runs returns immediately
+  (( CKA_SIM_EXAM_IN_SIGHANDLER )) && return
+  CKA_SIM_EXAM_IN_SIGHANDLER=1
+
+  # Block further INT and TSTP for the duration of this handler
+  trap '' INT TSTP
+
+  # 1. Record pause timestamp
   cka_sim::state::set_pause
-  cka_sim::state::save
+  # 2. Stop timer (kills background redraw_loop + waits — no orphan)
   cka_sim::timer::stop
-  trap - TSTP
-  kill -STOP $$
+  # 3. Save state (now safe — INT/TSTP are ignored)
+  cka_sim::state::save
+  # 4. Restore terminal to known-good mode before stopping
+  stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
+  # 5. Re-arm real handlers BEFORE the stop so they catch the next CONT/TSTP
   trap 'cka_sim::exam::on_tstp' TSTP
+  trap 'cka_sim::exam::on_int'  INT
+  # 6. Clear re-entry guard
+  CKA_SIM_EXAM_IN_SIGHANDLER=0
+  # 7. Stop the process — MUST be last
+  kill -STOP $$
 }
 
 cka_sim::exam::on_cont() {
+  # No-op if not actually paused
+  (( CKA_SIM_EXAM_PAUSED_AT == 0 )) && return || true
+  # Sole resume path: delta accounting + timer respawn
   cka_sim::state::add_pause_delta
   cka_sim::state::save
+  # Re-save terminal mode after resume
+  CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
   printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
 }
@@ -402,6 +425,7 @@ cka_sim::exam::start_new() {
   info "Starting exam..."
   printf '\n'
 
+  CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
   cka_sim::exam::question_loop 0
 }
@@ -437,6 +461,7 @@ cka_sim::exam::resume() {
 
   cka_sim::exam::setup_question "$CKA_SIM_EXAM_CUR_IDX"
 
+  CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
   cka_sim::exam::question_loop "$CKA_SIM_EXAM_CUR_IDX"
 }
