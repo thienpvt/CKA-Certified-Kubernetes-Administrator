@@ -79,50 +79,33 @@ cka_sim::exam::on_int() {
 }
 
 cka_sim::exam::on_tstp() {
-  # Re-entry guard — spans the WHOLE handler; effective because no early
-  # frame-clearing kill happens before the guard is reset at the end.
-  (( CKA_SIM_EXAM_IN_SIGHANDLER )) && return
-  CKA_SIM_EXAM_IN_SIGHANDLER=1
-
-  # Block INT/TSTP during the interruptible cleanup work below.
-  trap '' INT TSTP
-
-  # --- pause / save / terminal-restore (all before the stop) ---
+  # Minimal pre-stop work: record pause time and kill the timer.
+  # Do NOT self-stop here — let the default disposition handle it.
+  # The CONT handler (on_cont) does all resume work after `fg`.
   cka_sim::state::set_pause
-  cka_sim::timer::stop
-  cka_sim::state::save
+  kill "${CKA_SIM_TIMER_PID:-}" 2>/dev/null || true
+  CKA_SIM_TIMER_PID=""
+  rm -f "${CKA_SIM_TIMER_GATE:-}" 2>/dev/null || true
   stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
-
-  # Restore DEFAULT TSTP disposition, then self-stop. The kernel does the
-  # stop with NO handler installed → no nesting, no stop sandwich.
+  # Now let the default TSTP stop us. Restore default, re-deliver, re-arm.
   trap - TSTP
   kill -TSTP $$
-
-  # ===== SIGCONT (fg) resumes execution HERE, same frame =====
-
-  # Re-arm the real handlers now that we are running again.
+  # Execution continues here after SIGCONT (fg).
+  # But we do resume work in on_cont instead for reliability.
   trap 'cka_sim::exam::on_tstp' TSTP
-  trap 'cka_sim::exam::on_int'  INT
+}
 
-  # --- resume accounting / timer respawn / terminal re-save ---
+cka_sim::exam::on_cont() {
+  # All resume work lives here — fires reliably on fg.
+  # Guard: only act if we were actually paused.
+  (( CKA_SIM_EXAM_PAUSED_AT == 0 )) && return || true
   cka_sim::state::add_pause_delta
   cka_sim::state::save
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
-  # Keep the respawned timer silent — we are resuming back into a `read` that
-  # owns the terminal (timer::spawn cleared the gate via its internal stop).
   cka_sim::timer::gate_on
   printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
-  # `read` restarts in-place after this trap returns — re-print the prompt.
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
-
-  CKA_SIM_EXAM_IN_SIGHANDLER=0
-}
-
-cka_sim::exam::on_cont() {
-  # Resume logic now lives in on_tstp (in-place after kill -TSTP). This
-  # no-op exists only so a stray SIGCONT cannot run resume logic twice.
-  return 0
 }
 
 cka_sim::exam::on_exit() {
