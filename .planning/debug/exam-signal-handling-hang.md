@@ -140,3 +140,98 @@ root_cause: |
 fix: ""  # diagnose-only mode — planner will design the fix
 verification: ""
 files_changed: []
+
+## Re-diagnosis 2026-05-14 — after 07-07 fix (commits dfd9cc5, 30db50f)
+
+The 07-07 fix resolved defects 1, 4, 5 and partially 2/3. UAT re-run #2 confirms
+Ctrl-C flag+continue works, rapid Ctrl-C works, single Ctrl-Z/`fg` works. But
+**nested Ctrl-Z still hangs unrecoverably** — Test 2 still ❌.
+
+remaining_root_cause: |
+  The 07-07 fix kept the structural design of `kill -STOP $$` (last line of on_tstp)
+  plus a separate `on_cont` CONT-trap handler for resume. That design cannot survive
+  a nested SIGTSTP:
+
+  1. STOP SANDWICH. on_tstp clears its re-entry guard (CKA_SIM_EXAM_IN_SIGHANDLER=0,
+     exam.sh:94) and re-arms `trap on_tstp TSTP` (exam.sh:91) BEFORE `kill -STOP $$`
+     (exam.sh:96). A SIGTSTP arriving in that few-instruction window re-enters on_tstp.
+     Result: two `kill -STOP $$` frames stacked on the call stack, each requiring its
+     own `fg`. The re-entry guard is useless because it is cleared before the stop.
+
+  2. on_cont RESETS PAUSED_AT. After the first `fg`, the pending CONT trap runs
+     on_cont, which calls add_pause_delta → PAUSED_AT=0. When the second `fg` clears
+     the outer stop, on_cont runs again but `(( PAUSED_AT == 0 ))` → early return:
+     NO timer respawn, NO "✓ Resumed." printed. The user sees no resume confirmation
+     and a `read` that looks dead.
+
+  3. TIMER DRAWS WHILE STOPPED. `kill -STOP $$` stops only the main shell PID, not
+     the background redraw_loop. Between the inner resume (on_cont respawns timer B)
+     and the outer `kill -STOP $$`, the process stops again WITH timer B running →
+     timer keeps issuing tput escapes to the terminal while the shell is stopped →
+     garbled display; combined with (2) the terminal appears hung. User must
+     force-kill all cka processes.
+
+fix_direction: |
+  Replace the `kill -STOP $$` + separate `on_cont` split with the canonical
+  self-contained job-control-pause idiom, entirely inside on_tstp:
+
+    on_tstp() {
+      (( CKA_SIM_EXAM_IN_SIGHANDLER )) && return
+      CKA_SIM_EXAM_IN_SIGHANDLER=1
+      trap '' INT TSTP                       # block during cleanup
+      set_pause; timer::stop; save; stty restore
+      trap - TSTP                            # restore DEFAULT disposition
+      kill -TSTP $$                          # kernel does the normal stop
+      # ===== execution resumes HERE in-place on SIGCONT (fg) =====
+      trap 'cka_sim::exam::on_tstp' TSTP      # re-arm
+      trap 'cka_sim::exam::on_int'  INT
+      add_pause_delta; save
+      CKA_SIM_EXAM_STTY_SAVED=$(stty -g ...)  # re-save
+      timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
+      printf '✓ Resumed.'
+      CKA_SIM_EXAM_IN_SIGHANDLER=0
+    }
+
+  Key: `kill -TSTP $$` AFTER `trap - TSTP` means the kernel performs the default
+  stop (no handler runs, nothing to nest); on SIGCONT execution continues at the
+  next line WITHIN THE SAME handler frame. No CONT trap, no second handler, no
+  stop sandwich. one `^Z` = one stop = one `fg` = in-place resume.
+  Drop `on_cont` entirely OR reduce it to a pure no-op (`return 0`) safety net so a
+  stray SIGCONT does nothing. Keep the re-entry guard set across the whole handler
+  (it is now genuinely effective because no `kill -STOP` clears the frame early).
+
+## Re-diagnosis 2026-05-14 (#2) — after Task 4 — false premise in Task 1
+
+Task 4's on_tstp rewrite works (single Ctrl-Z + fg resumes in-place). But the Task 5
+checkpoint re-run surfaced a SEPARATE defect that was masked all along.
+
+empirical_test: |
+  trap 'echo TRAP' INT; ( sleep .3; kill -INT $$ ) & ; read -r x
+  → TRAP fires, then `read` BLOCKS AGAIN (test timed out). bash re-issues an
+  interrupted `read` in-place after a trapped signal — it does NOT return >128.
+
+root_cause_2: |
+  Task 1 was built on a false premise. The Evidence entry claiming "read returns a
+  NON-ZERO exit status (interrupted)" is WRONG for the trapped case: with a trap
+  installed, bash restarts `read` on EINTR; it only returns non-zero on genuine EOF
+  or `-t` timeout. Consequences:
+    - The `(( rc > 128 ))` branch in question_loop's retry loop is DEAD code for
+      signals — never triggers, so `printf '> '` never re-runs.
+    - After Ctrl-C: on_int prints "✓ Q1 flagged. Continuing…", returns; `read`
+      silently restarts. No `> ` re-printed → exam looks hung though it still
+      accepts input. (UAT re-run #3, step 1.)
+    - After Ctrl-Z + fg: on_tstp resumes in-place, prints "✓ Resumed.", returns;
+      `read` restarts. Same missing-prompt symptom.
+    - on_tstp's timer::stop cleared the timer gate; the respawned timer then drew
+      over the (invisible) resumed read prompt.
+
+fix_applied_2: |
+  Commit e014e81. Signal handlers now re-print the prompt themselves:
+    - New global CKA_SIM_EXAM_PROMPT (default '> '); question_loop sets it to '> ',
+      confirm_submit sets it to 'Submit for grading? [y/n] '.
+    - on_int re-prints "$CKA_SIM_EXAM_PROMPT" after its flag message.
+    - on_tstp re-prints "$CKA_SIM_EXAM_PROMPT" after "✓ Resumed." and calls
+      cka_sim::timer::gate_on after timer::spawn so the respawned timer stays
+      silent while the restarted `read` owns the terminal.
+  Retry loops stay as-is — rc>128 branch is a harmless safety net; the rc==1 EOF
+  branch is still needed for piped stdin. Awaiting UAT re-run #4.

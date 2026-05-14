@@ -112,3 +112,181 @@ Exam mode runs end-to-end (blueprint loading → grading → reporting). Timer r
     - "Add stty save on exam start / restore on resume; gate background timer output while read/pause active"
     - "Wrap setup.sh invocation with `|| true` (or interrupt-aware wrapper) so a signal during setup aborts the question, not the exam"
   debug_session: .planning/debug/exam-signal-handling-hang.md
+
+### Test 2 response
+## current state
+Plan: 07-07 Exam Signal Handling Fix
+Progress: 2/3 tasks complete
+
+Tasks 1 & 2 are committed in the worktree — all 5 signal-handling defects fixed:
+- Defect 1 — read now retries on signal-interrupt (rc>128), only exits on genuine EOF
+- Defect 5 — setup.sh wrapped so an interrupted setup flags the question instead of killing the exam
+- Defects 2+3 — re-entrancy guard on on_tstp, traps blocked during handler, single on_cont resume path
+- Defect 4 — stty save/restore + a gate file that pauses the background timer during read
+
+Awaiting — run this UAT on your live cluster
+
+bash cka-sim/bin/cka-sim exam blueprint-alpha
+
+Then, in order:
+1. At >  prompt: Ctrl-C → expect "Q1 flagged. Continuing…" and the >  prompt returns (no exit, no
+   "[1]+ Stopped")
+2. Ctrl-C 2–3 more times rapidly → each flags + prompt returns; no hang
+3. Ctrl-Z → shell shows "[1]+ Stopped" → fg → expect "✓ Resumed." + correct countdown
+4. Ctrl-Z, then immediately Ctrl-Z again (nested) → fg → fg → clean resume, timer correct, terminal
+   echoes
+5. Type n to advance to Q2; during "Setting up Q2..." press Ctrl-Z → fg → Ctrl-C → Ctrl-C again — exam
+   stays alive
+6. Confirm typing is visible (echo on), then q → y ends and grades normally
+
+## results from cluster
+```
+root@master:~# cka-sim exam blueprint-alpha
+  Loading blueprint: blueprint-alpha
+  Questions: 17
+  Duration: 120 minutes
+  Session: 20260514T142958Z
+  Starting exam...
+
+  Setting up Q1...
+namespace/cka-sim-storage-01 created
+persistentvolume/q01-app-pv created
+persistentvolumeclaim/app-data created
+
+[Question 1/17 — storage — ~8m]
+─────────────────────────────────────────
+# storage/01-pvc-binding
+
+**Domain:** Storage  |  **Estimated time:** 8 minutes
+
+A `PersistentVolumeClaim` named `app-data` exists in your lab namespace and references a `PersistentVolume` named `q01-app-pv`. The PVC is stuck `Pending`.
+
+## Tasks
+
+1. Inspect the PVC `app-data` in `${CKA_SIM_LAB_NS}` and the PV `q01-app-pv` (cluster-scoped).
+2. Diagnose why the PVC is not binding. Read the PV spec and events carefully.
+3. Modify the PV in place so the PVC can bind successfully.
+
+## Constraints
+
+- Do NOT delete or recreate the PV — modify it in place.
+- Do NOT modify the PVC.
+- The lab cluster has 1 control-plane + 2 worker nodes. The PV must remain usable on any worker.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get pvc app-data -n ${CKA_SIM_LAB_NS}    # STATUS should be Bound
+kubectl get pv q01-app-pv                        # STATUS should be Bound
+```
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^C
+✓ Q1 flagged. Continuing…
+return
+! Unknown action: 'return'. Use Enter/n/f/s/p/q.
+
+[Question 1/17 — storage — ~8m] 🚩
+─────────────────────────────────────────
+# storage/01-pvc-binding
+
+**Domain:** Storage  |  **Estimated time:** 8 minutes
+
+A `PersistentVolumeClaim` named `app-data` exists in your lab namespace and references a `PersistentVolume` named `q01-app-pv`. The PVC is stuck `Pending`.
+
+## Tasks
+
+1. Inspect the PVC `app-data` in `${CKA_SIM_LAB_NS}` and the PV `q01-app-pv` (cluster-scoped).
+2. Diagnose why the PVC is not binding. Read the PV spec and events carefully.
+3. Modify the PV in place so the PVC can bind successfully.
+
+## Constraints
+
+- Do NOT delete or recreate the PV — modify it in place.
+- Do NOT modify the PVC.
+- The lab cluster has 1 control-plane + 2 worker nodes. The PV must remain usable on any worker.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get pvc app-data -n ${CKA_SIM_LAB_NS}    # STATUS should be Bound
+kubectl get pv q01-app-pv                        # STATUS should be Bound
+```
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^C
+✓ Q1 flagged. Continuing…
+^C
+✓ Q1 flagged. Continuing…
+^C
+✓ Q1 flagged. Continuing…
+return
+! Unknown action: 'return'. Use Enter/n/f/s/p/q.
+
+[Question 1/17 — storage — ~8m] 🚩
+─────────────────────────────────────────
+# storage/01-pvc-binding
+
+**Domain:** Storage  |  **Estimated time:** 8 minutes
+
+A `PersistentVolumeClaim` named `app-data` exists in your lab namespace and references a `PersistentVolume` named `q01-app-pv`. The PVC is stuck `Pending`.
+
+## Tasks
+
+1. Inspect the PVC `app-data` in `${CKA_SIM_LAB_NS}` and the PV `q01-app-pv` (cluster-scoped).
+2. Diagnose why the PVC is not binding. Read the PV spec and events carefully.
+3. Modify the PV in place so the PVC can bind successfully.
+
+## Constraints
+
+- Do NOT delete or recreate the PV — modify it in place.
+- Do NOT modify the PVC.
+- The lab cluster has 1 control-plane + 2 worker nodes. The PV must remain usable on any worker.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get pvc app-data -n ${CKA_SIM_LAB_NS}    # STATUS should be Bound
+kubectl get pv q01-app-pv                        # STATUS should be Bound
+```
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^Z
+[1]+  Stopped                 cka-sim exam blueprint-alpha
+root@master:~# fg
+cka-sim exam blueprint-alpha
+
+✓ Resumed.
+^Z^Zfg59:22 remaining
+fg
+n
+^Z
+fg
+^C
+^C
+q
+y
+
+```
+
+### Re-run #2 verdict (2026-05-14) — ❌ STILL FAILING (nested Ctrl-Z)
+
+- Steps 1–3 PASS: Ctrl-C flags + continues (no exit, no "[1]+ Stopped"); rapid Ctrl-C OK; single Ctrl-Z → `fg` → "✓ Resumed." with correct time.
+- **Step 4 FAILS**: nested Ctrl-Z (`^Z` `^Z` then `fg`) — exam resumes (timer redraws `59:22 remaining`) but `read` never accepts input again. "type anything" does nothing. User had to force-kill all cka processes.
+- severity: blocker
+- Remaining root cause: the 07-07 fix kept the `kill -STOP $$` + separate `on_cont` design. A second SIGTSTP arriving in the window between on_tstp clearing its re-entry guard (`CKA_SIM_EXAM_IN_SIGHANDLER=0`) and `kill -STOP $$` re-enters on_tstp → "stop sandwich": two `kill -STOP $$` frames stacked, each needs its own `fg`. `on_cont` runs after the FIRST `fg` and resets `PAUSED_AT=0`, so after the SECOND `fg` `on_cont` early-returns — no timer reconcile, no "✓ Resumed.", and the background timer keeps drawing while the main shell is stopped → garbled terminal + apparently-dead `read`.
+- Fix direction: replace the `kill -STOP $$` + `on_cont` split with the canonical self-contained idiom inside on_tstp — `trap - TSTP; kill -TSTP $$; trap on_tstp TSTP` — so the kernel does the default stop and execution resumes IN-PLACE in the same handler frame on SIGCONT. No CONT trap, no nesting, no sandwich. Resume work (delta, timer respawn, stty re-save, "Resumed") moves inline after `kill -TSTP $$`; `on_cont` is dropped or reduced to a pure no-op safety net.
+- Fix committed: Task 4 (949e08b) — on_tstp canonical idiom, on_cont no-op.
+
+### Re-run #3 verdict (2026-05-14) — ❌ STILL FAILING (different defect — missing prompt)
+
+- Step 1 FAILS: Ctrl-C → `✓ Q1 flagged. Continuing…` prints, but the `> ` prompt does NOT reappear. Exam still accepts input but shows no prompt cue → looks hung.
+- New root cause: Task 1's premise was false. Verified empirically — bash **restarts** an interrupted `read` in-place after a trapped signal; it does NOT return >128. So the `rc > 128` branch in the question_loop retry loop is dead code and `printf '> '` never re-runs. Same applies to on_tstp's resume side (`✓ Resumed.` printed, no `> `).
+- Fix committed: e014e81 — new global `CKA_SIM_EXAM_PROMPT`; `on_int` and `on_tstp` re-print it after their message; `on_tstp` also re-gates the respawned timer. Awaiting UAT re-run #4.
+
