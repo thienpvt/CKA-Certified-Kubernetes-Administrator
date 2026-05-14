@@ -1,7 +1,7 @@
 ---
 phase: 07
 phase_name: exam-mode-blueprint-alpha-reporting
-status: testing
+status: diagnosed
 created: 2026-05-13
 last_updated: 2026-05-14
 tests_total: 11
@@ -99,7 +99,16 @@ Exam mode runs end-to-end (blueprint loading → grading → reporting). Timer r
   reason: "User reported: when i press Ctrl+Z, it paused, but I press some buttons and Ctrl+C again, it stop for the 1st time. For the second time, it stuck and haven't replied anything until now"
   severity: blocker
   test: 2
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Four compounding signal-handling defects in exam.sh: (1) PRIMARY — `read` not restarted after trap: exam.sh:209 treats trap-interrupted non-zero `read` as EOF and ends the exam; (2) on_tstp re-arms TSTP trap only after resume and does interruptible state::save work → nested signals deadlock before `kill -STOP $$`; (3) on_tstp tail + on_cont race over timer spawn/stop → orphaned redraw_loop; (4) no stty save/restore + background timer tput collides with foreground read → terminal left in bad mode. Plus setup.sh runs as foreground child (exam.sh:169) with no `|| true` under `set -e` → interrupted setup kills exam."
+  artifacts:
+    - path: "cka-sim/lib/cmd/exam.sh"
+      issue: "read at :209 and :242 treats trap-interrupt as EOF; on_int/on_tstp/on_cont/on_exit (:64-100) re-entrant and racy; setup.sh child at :169 has no `|| true` under set -e"
+    - path: "cka-sim/lib/exam-timer.sh"
+      issue: "redraw_loop (:14-51) writes tput to terminal from background job with no coordination; CKA_SIM_TIMER_PID (:53-68) tracks only last spawn → leaked timers"
+  missing:
+    - "Loop `read` until success or genuine EOF; distinguish trap-interrupt from real EOF"
+    - "Make on_tstp self-contained and re-entrancy-safe: block INT/TSTP for handler duration, do state work, stop timer, re-arm before `kill -STOP $$`, guard flag against re-entry"
+    - "Consolidate pause/resume timer + delta logic into one path (not on_tstp + on_cont racing)"
+    - "Add stty save on exam start / restore on resume; gate background timer output while read/pause active"
+    - "Wrap setup.sh invocation with `|| true` (or interrupt-aware wrapper) so a signal during setup aborts the question, not the exam"
+  debug_session: .planning/debug/exam-signal-handling-hang.md
