@@ -91,11 +91,11 @@ cka_sim::exam::on_tstp() {
   # === resumes here after fg ===
   trap 'cka_sim::exam::on_tstp' TSTP
   trap 'cka_sim::exam::on_int'  INT
-  # Resume: always do resume work (no PAUSED_AT guard — handles double-^Z).
+  # Resume work — no timer spawn here; let the read loop or next iteration
+  # handle the timer. This avoids timer drawing over setup output or the prompt.
   cka_sim::state::add_pause_delta
   cka_sim::state::save
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
-  cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
   printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
 }
@@ -106,10 +106,11 @@ cka_sim::exam::on_cont() {
 
 cka_sim::exam::on_exit() {
   local rc=$?
-  # Kill timer — both by PID and by killing any child processes
-  cka_sim::timer::stop
-  # Belt-and-suspenders: kill any remaining child processes of this shell
-  kill 0 2>/dev/null || true
+  # Kill timer child explicitly
+  kill "${CKA_SIM_TIMER_PID:-}" 2>/dev/null || true
+  wait "${CKA_SIM_TIMER_PID:-}" 2>/dev/null || true
+  CKA_SIM_TIMER_PID=""
+  rm -f "${CKA_SIM_TIMER_GATE:-}" 2>/dev/null || true
   cka_sim::state::save 2>/dev/null || true
   local i qdir
   for i in "${CKA_SIM_EXAM_SETUP_IDXS[@]:-}"; do
@@ -227,6 +228,8 @@ cka_sim::exam::question_loop() {
   while (( CKA_SIM_EXAM_CUR_IDX < CKA_SIM_EXAM_QUESTION_COUNT && CKA_SIM_EXAM_ENDED == 0 )); do
     cka_sim::exam::check_time_remaining || break
 
+    # Kill timer during setup so it doesn't draw over kubectl output
+    cka_sim::timer::stop
     local setup_ok=0
     cka_sim::exam::setup_question "$CKA_SIM_EXAM_CUR_IDX" && setup_ok=1 || true
     if (( ! setup_ok )); then
@@ -243,6 +246,8 @@ cka_sim::exam::question_loop() {
            'if .[$i].started_at == null then .[$i].started_at = $ts else . end')
     cka_sim::state::save
 
+    # Spawn timer AFTER question is displayed, gate it during read
+    cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
     local action=""
     CKA_SIM_EXAM_PROMPT='> '
     cka_sim::timer::gate_on
