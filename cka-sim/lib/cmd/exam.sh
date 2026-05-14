@@ -28,6 +28,10 @@ declare -g CKA_SIM_EXAM_ENDED=0
 declare -g CKA_SIM_LAB_NS=""
 declare -g CKA_SIM_EXAM_STTY_SAVED=""
 declare -g CKA_SIM_EXAM_IN_SIGHANDLER=0
+# Active input prompt — signal handlers re-print this because bash restarts an
+# interrupted `read` in-place (it does NOT return on a trapped signal), so the
+# read loop never gets a chance to re-print the prompt itself.
+declare -g CKA_SIM_EXAM_PROMPT='> '
 
 # Exports CKA_SIM_LAB_NS for the question at $idx so its setup/grade/reset
 # scripts see the same per-question lab namespace the drill runner gives them.
@@ -68,6 +72,9 @@ cka_sim::exam::on_int() {
   cka_sim::state::save
   printf '\n\033[33m✓ Q%d flagged. Continuing…\033[0m\n' \
     "$(( CKA_SIM_EXAM_CUR_IDX + 1 ))" >&2
+  # `read` restarts in-place after this trap returns — re-print the prompt so
+  # the user sees the exam is still waiting for input.
+  printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
   return 0
 }
 
@@ -102,7 +109,12 @@ cka_sim::exam::on_tstp() {
   cka_sim::state::save
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
+  # Keep the respawned timer silent — we are resuming back into a `read` that
+  # owns the terminal (timer::spawn cleared the gate via its internal stop).
+  cka_sim::timer::gate_on
   printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
+  # `read` restarts in-place after this trap returns — re-print the prompt.
+  printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
 
   CKA_SIM_EXAM_IN_SIGHANDLER=0
 }
@@ -246,6 +258,7 @@ cka_sim::exam::question_loop() {
     cka_sim::state::save
 
     local action=""
+    CKA_SIM_EXAM_PROMPT='> '
     cka_sim::timer::gate_on
     while true; do
       printf '> '
@@ -292,6 +305,7 @@ cka_sim::exam::confirm_submit() {
   printf 'Flagged: %d  Skipped: %d  Pending: %d\n' "$flagged" "$skipped" "$pending"
 
   local confirm=""
+  CKA_SIM_EXAM_PROMPT='Submit for grading? [y/n] '
   cka_sim::timer::gate_on
   while true; do
     printf '\nSubmit for grading? [y/n] '
