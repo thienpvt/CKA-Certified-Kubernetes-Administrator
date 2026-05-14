@@ -8,7 +8,8 @@
 
 set -euo pipefail
 
-CKA_SIM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Resolve symlinks so invocation via /usr/local/bin/cka-sim still finds lib/.
+CKA_SIM_ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 export CKA_SIM_ROOT
 
 # shellcheck source=../lib/colors.sh disable=SC1091

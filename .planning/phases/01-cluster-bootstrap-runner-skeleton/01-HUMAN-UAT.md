@@ -1,50 +1,67 @@
 ---
-status: partial
+status: complete
 phase: 01-cluster-bootstrap-runner-skeleton
 source:
   - 01-VERIFICATION.md
 started: 2026-05-12
-updated: 2026-05-12
+updated: 2026-05-14
 ---
 
 # Phase 1 Human UAT
 
+## Prerequisites
+
+Passwordless SSH from the control-plane to **both** workers must be working before these tests can run. `cka-sim bootstrap` runs `ssh-copy-id` automatically, but on manually provisioned GCP VMs it usually fails (password SSH disabled).
+
+To unblock: with root console access to each worker, paste `~/.ssh/cka_sim_ed25519.pub` from the control-plane into **root's** `~/.ssh/authorized_keys` on each worker (the login user must match the user you run `cka-sim` as on the control-plane — root↔root). No password-auth changes needed. See cka-sim/README.md → "SSH to Worker Nodes".
+
+Confirm before testing:
+```bash
+ssh -i ~/.ssh/cka_sim_ed25519 -o BatchMode=yes root@<worker-1-ip> hostname
+ssh -i ~/.ssh/cka_sim_ed25519 -o BatchMode=yes root@<worker-2-ip> hostname
+```
+Both must print a hostname with no prompt.
+
 ## Current Test
 
-[testing paused - 3 blocked items outstanding]
+[testing complete]
 
 ## Tests
 
 ### 1. Bootstrap idempotency
 expected: Running `./cka-sim/bin/cka-sim bootstrap` twice creates no duplicate sentinel blocks in `~/.bashrc` or `~/.ssh/config`.
-result: blocked
-blocked_by: ssh-prerequisite
-reason: "results.txt shows `ssh-copy-id` failed for worker-1; root must first be able to SSH to 10.140.0.13 with a password, or `/root/.ssh/cka_sim_ed25519.pub` must be manually copied to worker authorized_keys. Sentinel counts were 1 for both ~/.bashrc and ~/.ssh/config."
-latest: "After `ssh-keyscan -H worker-1 worker-2`, `ssh-copy-id` failed for both `root@10.140.0.13/.14` and `ubuntu@10.140.0.13/.14` with `Permission denied (publickey)`. Bootstrap still stops at worker-1 pubkey distribution."
+result: pass
+note: "Both runs completed cleanly; `grep -c '# === cka-sim BEGIN'` printed 1 for both ~/.bashrc and ~/.ssh/config. Required `chmod +x cka-sim/bin/cka-sim` first — exec bit was missing from the git index; now fixed via git update-index and README Setup section."
 
 ### 2. Worker SSH
-expected: `ssh -o BatchMode=yes node-01 hostname` and `ssh -o BatchMode=yes node-02 hostname` succeed without password prompts.
-result: blocked
-blocked_by: ssh-prerequisite
-reason: "User ran `ssh -o BatchMode=yes node-01 hostname` and `ssh -o BatchMode=yes node-02 hostname`; both failed with `Host key verification failed.`"
-latest: "Host keys were added for worker-1 and worker-2. Remaining blocker is no accepted login principal (`root` and `ubuntu` both rejected) to append the pubkey on workers."
+expected: `ssh -o BatchMode=yes worker-1 hostname` and `ssh -o BatchMode=yes worker-2 hostname` succeed without password prompts.
+result: pass
+note: "Both SSH commands returned hostnames (`worker-1`, `worker-2`) with no password or host-key prompt. Node aliases are `worker-1`/`worker-2` (kubectl node names), not `node-01`/`node-02` as the original UAT text said."
 
 ### 3. Doctor readiness
 expected: `cka-sim doctor` exits `0` on the healthy 1+2 cluster after bootstrap and `source ~/.bashrc`.
-result: blocked
-blocked_by: ssh-prerequisite
-reason: "User ran `source ~/.bashrc`; `cka-sim doctor` was not on PATH, likely because bootstrap stops before symlink installation. `./cka-sim/bin/cka-sim doctor` ran and passed binaries, kubeconfig, API livez, topology, state dirs, SSH key, bashrc sentinel, and ETCDCTL_API, but failed SSH BatchMode for worker-1 and worker-2."
-latest: "`cka-sim` is still not on PATH because bootstrap exits before reaching symlink installation after `ssh-copy-id` fails."
+result: pass
+note: "Initially failed via the PATH symlink (`/usr/local/lib/colors.sh: No such file or directory`, exit 1). Root cause: bin/cka-sim computed CKA_SIM_ROOT from BASH_SOURCE[0] without resolving the symlink. Fixed inline with `readlink -f` (bin/cka-sim:12). Re-tested: `cka-sim doctor` exits 0."
 
 ## Summary
 
 total: 3
-passed: 0
+passed: 3
 issues: 0
 pending: 0
 skipped: 0
-blocked: 3
+blocked: 0
 
 ## Gaps
 
-None recorded yet.
+- truth: "`cka-sim doctor` exits 0 when invoked via the PATH symlink after bootstrap"
+  status: resolved
+  reason: "User reported: `/usr/local/bin/cka-sim: line 15: /usr/local/lib/colors.sh: No such file or directory`, exit 1"
+  severity: blocker
+  test: 3
+  root_cause: "bin/cka-sim:11 computed CKA_SIM_ROOT from dirname of BASH_SOURCE[0] without resolving the symlink; via /usr/local/bin/cka-sim it resolved to /usr/local instead of the repo cka-sim/ dir"
+  resolution: "Fixed inline at bin/cka-sim:12 using `readlink -f` to resolve the symlink before deriving CKA_SIM_ROOT. Re-tested: `cka-sim doctor` exits 0."
+  artifacts:
+    - path: "cka-sim/bin/cka-sim"
+      issue: "CKA_SIM_ROOT did not resolve symlinks before computing repo root"
+  debug_session: ""
