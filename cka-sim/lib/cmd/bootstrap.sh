@@ -4,7 +4,7 @@
 # What this does (all idempotent):
 #   1. Verify cluster reachable (≥3 Ready nodes, 1 CP + ≥2 workers)
 #   2. Install jq if missing (with sudo, prompted)
-#   3. Create ~/.cka-sim/{sessions,history,reports,logs}
+#   3. Create ~/.cka-sim/{sessions,reports,logs}
 #   4. Write sentinel-fenced env-export block to ~/.bashrc
 #   5. Generate ~/.ssh/cka_sim_ed25519 if absent
 #   6. Write sentinel-fenced Host stanzas to ~/.ssh/config for each worker
@@ -84,7 +84,7 @@ fi
 
 info "ensuring ~/.cka-sim state directories"
 cka_sim::preflight::ensure_state_dirs
-ok "state dirs: ~/.cka-sim/{sessions,history,reports,logs}"
+ok "state dirs: ~/.cka-sim/{sessions,reports,logs}"
 
 # ---------- Step 4: ~/.bashrc env block ----------
 

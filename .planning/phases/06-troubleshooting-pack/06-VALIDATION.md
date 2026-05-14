@@ -1,13 +1,19 @@
 ---
 phase: 6
 slug: troubleshooting-pack
-status: draft
+status: superseded
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-05-12
+superseded: 2026-05-14
 ---
 
 # Phase 6 — Validation Strategy
+
+> **Superseded (2026-05-14).** This draft validation contract was not marked up
+> during execution. Phase 6 verification was instead carried by `06-VERIFICATION.md`
+> (status: verified) and `06-HUMAN-UAT.md` (22/22 pass on the 1+2 cluster). The
+> per-task table below is retained for historical reference only.
 
 > Per-phase validation contract for feedback sampling during Phase 6 (Troubleshooting Pack) execution.
 

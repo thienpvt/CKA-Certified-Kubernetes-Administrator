@@ -18,9 +18,11 @@ cka_sim::score::usage() {
   cat >&2 <<'EOF'
 usage: cka-sim score [<ts>]
 
-  <ts>   Session timestamp (e.g., 20260510T090000Z)
-         If omitted, shows the most recent session's report.
+  <ts>   Exam session timestamp (e.g., 20260510T090000Z)
+         If omitted, shows the most recent exam session's report.
 
+Operates on exam sessions only (~/.cka-sim/sessions/). Drill reports
+(~/.cka-sim/reports/) are not surfaced here — review those files directly.
 If the .md report is missing but the .json session exists, regenerates the report.
 EOF
 }

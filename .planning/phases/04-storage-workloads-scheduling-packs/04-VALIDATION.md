@@ -1,13 +1,20 @@
 ---
 phase: 4
 slug: storage-workloads-scheduling-packs
-status: draft
+status: superseded
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-05-10
+superseded: 2026-05-14
 ---
 
 # Phase 4 — Validation Strategy
+
+> **Superseded (2026-05-14).** This draft validation contract was not marked up
+> during execution. Phase 4 verification was instead carried by `04-VERIFICATION.md`
+> (status: verified) and `04-UAT.md` (7/7 pass on the live 1+2 cluster). The
+> per-task table below is retained for historical reference only — its `⬜ pending`
+> markers do not reflect built state.
 
 > Per-phase validation contract for feedback sampling during execution of the Storage and Workloads & Scheduling pack authoring phase.
 

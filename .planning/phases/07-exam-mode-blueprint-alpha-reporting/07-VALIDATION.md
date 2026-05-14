@@ -1,13 +1,30 @@
 ---
 phase: 7
 slug: exam-mode-blueprint-alpha-reporting
-status: draft
+status: superseded
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-05-13
+superseded: 2026-05-14
 ---
 
 # Phase 7 — Validation Strategy
+
+> **Superseded (2026-05-14).** This draft validation contract was not marked up
+> during execution. Phase 7 verification was instead carried by `07-UAT.md`
+> (9/9 automated pass, 2 interactive skipped) and `07-VERIFICATION.md`
+> (status: human_needed — 2 interactive items outstanding).
+>
+> **Known coverage gap (recorded in `.planning/v1.0-MILESTONE-AUDIT.md`):** of the
+> 15 automated test files declared in the per-task table below, only 5 were
+> committed — the wave-1/2 unit tests now in `cka-sim/tests/exam/`
+> (`state_atomic_write.sh`, `state_schema.sh`, `blueprint_load.sh`,
+> `blueprint_validate.sh`, `report_golden.sh`). The 7 wave-3/4/5 integration
+> tests (`timer_render`, `signal_handlers`, `exam_resume_after_int`,
+> `exam_end_to_end`, `score_command`, `list_history`, `lint_blueprint`) were
+> never written; the end-to-end behavior they would cover is instead evidenced
+> by the passing `07-UAT.md` automated run. Closing this gap properly means
+> writing those 7 test files.
 
 > Per-phase validation contract for feedback sampling during execution.
 

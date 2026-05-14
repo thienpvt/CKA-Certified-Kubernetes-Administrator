@@ -3,6 +3,10 @@ pack:
   domain: storage
   weight: 10
   description: "Storage 10% domain pack (PACK-01) -- full v1.35 Tracker coverage."
+# Packs are deliberate supersets of blueprint draws: each 17-question blueprint
+# pulls only ~2 storage questions, so several questions here (e.g.
+# 03-access-modes-reclaim, 04-csi-volumesnapshot) are reachable via
+# `cka-sim drill storage` but appear in no blueprint by design.
 questions:
   - id: storage-pvc-binding
     path: 01-pvc-binding

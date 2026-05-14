@@ -1,13 +1,19 @@
 ---
 phase: 05
 slug: services-networking-cluster-architecture-packs
-status: draft
+status: superseded
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-05-12
+superseded: 2026-05-14
 ---
 
 # Phase 05 — Validation Strategy
+
+> **Superseded (2026-05-14).** This draft validation contract was not marked up
+> during execution. Phase 5 verification was instead carried by `05-VERIFICATION.md`
+> (status: verified) and live-drill UAT (14/14 pass on the 1+2 cluster). The
+> per-task table below is retained for historical reference only.
 
 > Per-phase validation contract for feedback sampling during execution. Phase 5 is content-authoring (no new runtime code); validation is pack-lint + round-trip tests + live-drill checklist.
 

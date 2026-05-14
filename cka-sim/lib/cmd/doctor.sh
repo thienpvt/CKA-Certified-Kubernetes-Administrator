@@ -79,7 +79,7 @@ fi
 # ---------- Check 6: ~/.cka-sim state dirs ----------
 
 if cka_sim::preflight::check_state_dirs; then
-  _pass "state dirs present: ~/.cka-sim/{sessions,history,reports,logs}"
+  _pass "state dirs present: ~/.cka-sim/{sessions,reports,logs}"
 else
   _fail "missing ~/.cka-sim state subdirs — run 'cka-sim bootstrap' (it runs 'mkdir -p' idempotently)"
 fi

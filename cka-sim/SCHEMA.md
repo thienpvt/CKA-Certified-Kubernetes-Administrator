@@ -76,3 +76,18 @@ Enforced by: lint-packs.sh pass E (trap ID registration)
   domain: storage
   source: "CONCERNS.md D-13"
 ```
+
+## Runtime State Layout
+
+`cka-sim bootstrap` creates `~/.cka-sim/` with three subdirectories. They are
+**not** interchangeable — each command writes to a fixed location:
+
+| Path | Written by | Read by | Contents |
+|------|-----------|---------|----------|
+| `~/.cka-sim/sessions/` | `cka-sim exam` (`exam-state.sh`) | `cka-sim score`, `cka-sim list history` | Exam session records: `<ts>.json` + rendered `<ts>.md` report |
+| `~/.cka-sim/reports/` | `cka-sim drill` (`drill.sh`) | — (read manually) | Single-question drill reports: `<ts>-<pack>-<qid>.md` |
+| `~/.cka-sim/logs/` | reserved | — | Reserved for future command logging |
+
+**Exam reports live under `sessions/`, not `reports/`.** `cka-sim score` and
+`cka-sim list history` operate only on exam sessions. Drill output is written to
+`reports/` for manual review and is not surfaced by `score` or `list`.

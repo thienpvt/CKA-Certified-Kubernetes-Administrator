@@ -102,7 +102,7 @@ cka_sim::preflight::check_ssh_batchmode() {
 
 cka_sim::preflight::check_state_dirs() {
   local sub
-  for sub in sessions history reports logs; do
+  for sub in sessions reports logs; do
     [[ -d "$HOME/.cka-sim/$sub" ]] || return 1
   done
   return 0
@@ -110,7 +110,7 @@ cka_sim::preflight::check_state_dirs() {
 
 cka_sim::preflight::ensure_state_dirs() {
   local sub
-  for sub in sessions history reports logs; do
+  for sub in sessions reports logs; do
     mkdir -p "$HOME/.cka-sim/$sub"
   done
 }
