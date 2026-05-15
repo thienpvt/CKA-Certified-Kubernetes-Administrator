@@ -22,7 +22,7 @@ if [[ -n "${target_node}" ]]; then
   kubectl label nodes "${target_node}" gpu- 2>/dev/null || true
 fi
 
-# 3. Remove per-question baseline dir
-rm -rf "/tmp/cka-sim/workloads-nodeselector-affinity-taints/"
+# Phase 07.1 AUDIT-01: clean per-question tmp scratch (baseline + transient artefacts).
+rm -rf /tmp/cka-sim/08-nodeselector-affinity-taints/
 
 exit 0

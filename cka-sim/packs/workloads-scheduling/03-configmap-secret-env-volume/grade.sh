@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — no leak (setup creates CM+Secret only; Pod is candidate-authored) → header added
 # workloads-scheduling/03-configmap-secret-env-volume/grade.sh — read-only assertions.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"

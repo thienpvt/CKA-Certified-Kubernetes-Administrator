@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — assert_resource_exists leak (setup creates Deployment) → assert_changed_since_setup
 # workloads-scheduling/07-native-sidecar/grade.sh
 # GRADE-02 compliance note: uses `wc -w` on space-separated jsonpath output
 # to count containers -- the banned pipe-to-grep pattern is rejected by
@@ -15,8 +16,9 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 # Wait up to 60s for Available before reading spec (new rollout from candidate patch).
 kubectl wait --for=condition=Available deployment/q07-app -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
 
-# Assertion 1: Deployment exists.
-cka_sim::grade::assert_resource_exists deployment q07-app -n "$CKA_SIM_LAB_NS"
+# Assertion 1: Deployment has been modified since setup (candidate patched it).
+# Replaces assert_resource_exists which leaked 1 point on empty submission since setup creates the broken Deployment.
+cka_sim::grade::assert_changed_since_setup deployment q07-app -n "$CKA_SIM_LAB_NS"
 
 # Assertion 2: initContainer log-tailer exists and restartPolicy=Always (native sidecar shape).
 cka_sim::grade::assert_field_eq deployment q07-app \

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — assert_resource_exists leak (setup creates Deployment) → assert_changed_since_setup
 # workloads-scheduling/01-deployment-requests/grade.sh
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
@@ -12,8 +13,9 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 # Wait up to 60s for the Deployment to be Available before reading pod state (RESEARCH Assumption A4).
 kubectl wait --for=condition=Available deployment/load-app -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
 
-# Assertion 1: deployment exists
-cka_sim::grade::assert_resource_exists deployment load-app -n "$CKA_SIM_LAB_NS"
+# Assertion 1: deployment has been modified since setup (candidate patched it).
+# Replaces assert_resource_exists which leaked 1 point on empty submission since setup creates the Deployment.
+cka_sim::grade::assert_changed_since_setup deployment load-app -n "$CKA_SIM_LAB_NS"
 
 # Assertion 2: deployment uses dedicated SA "load-app-sa"
 cka_sim::grade::assert_field_eq deployment load-app \

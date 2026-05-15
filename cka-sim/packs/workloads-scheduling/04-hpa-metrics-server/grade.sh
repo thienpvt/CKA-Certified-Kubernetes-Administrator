@@ -1,7 +1,8 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — no leak (HPA is candidate-authored; setup only creates Deployment) → header added
 # workloads-scheduling/04-hpa-metrics-server/grade.sh — read-only grader.
 # Assertions:
-#   1. HPA q04-load exists in lab ns
+#   1. HPA q04-load exists in lab ns (candidate-authored)
 #   2. minReplicas == 1
 #   3. maxReplicas == 5
 #   4. spec.metrics[type=Resource].resource.name == cpu
@@ -16,8 +17,8 @@ source "$CKA_SIM_ROOT/lib/grade.sh"
 # shellcheck source=../../../lib/traps.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/traps.sh"
 
-# Assertion 1: HPA exists.
-cka_sim::grade::assert_resource_exists hpa q04-load -n "$CKA_SIM_LAB_NS"
+# Assertion 1: HPA exists (candidate-authored — not in setup baseline).
+cka_sim::grade::assert_resource_candidate_authored hpa q04-load -n "$CKA_SIM_LAB_NS"
 
 # Assertion 2: minReplicas == 1.
 cka_sim::grade::assert_field_eq hpa q04-load \

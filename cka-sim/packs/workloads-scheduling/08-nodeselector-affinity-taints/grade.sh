@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — field-eq checks correctly empty on setup-only; gate Deployment edits via assert_changed_since_setup
 # workloads-scheduling/08-nodeselector-affinity-taints/grade.sh
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
@@ -29,6 +30,10 @@ done
 # On failure the discovery-dependent assertions auto-FAIL (soft fail -- do not exit).
 target_node=$(kubectl get nodes -l '!node-role.kubernetes.io/control-plane' \
   --no-headers -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+
+# Assertion 0: Deployment has been modified since setup (candidate patched it).
+# Gates the remaining field checks — empty submission cannot pass on setup-state alone.
+cka_sim::grade::assert_changed_since_setup deployment q08-gpu-sim -n "$CKA_SIM_LAB_NS"
 
 # Assertion 1: Deployment has a toleration for key=gpu with effect=NoSchedule.
 cka_sim::grade::assert_field_eq deployment q08-gpu-sim \

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — no leak (DaemonSet candidate-authored; setup creates ns only) → header + candidate-authored assertion
 # workloads-scheduling/05-daemonset/grade.sh — assert DaemonSet covers every Ready node, CP toleration present.
 # Read-only: uses kubectl get + jsonpath only (no get|grep, no -A).
 set -uo pipefail
@@ -13,8 +14,8 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 # Wait up to 60s for the DaemonSet to settle before reading status (RESEARCH A4).
 kubectl rollout status daemonset/q05-node-agent -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
 
-# Assertion 1: DaemonSet exists
-cka_sim::grade::assert_resource_exists daemonset q05-node-agent -n "$CKA_SIM_LAB_NS"
+# Assertion 1: DaemonSet is candidate-authored (not pre-seeded by setup).
+cka_sim::grade::assert_resource_candidate_authored daemonset q05-node-agent -n "$CKA_SIM_LAB_NS"
 
 # Assertion 2: desiredNumberScheduled equals the cluster's node count (dynamic).
 # `kubectl get nodes --no-headers` is read-only metadata, not a grep pattern.

@@ -8,7 +8,7 @@ set -uo pipefail
 
 kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
 
-# 3. Remove per-question baseline dir
-rm -rf "/tmp/cka-sim/workloads-hpa-metrics-server/"
+# Phase 07.1 AUDIT-01: clean per-question tmp scratch (baseline + transient artefacts).
+rm -rf /tmp/cka-sim/04-hpa-metrics-server/
 
 exit 0
