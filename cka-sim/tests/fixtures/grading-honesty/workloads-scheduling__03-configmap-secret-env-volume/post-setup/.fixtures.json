@@ -1,0 +1,12 @@
+{
+  "wait --for=condition=Ready pod/q03-app -n cka-sim-workloads-scheduling-03 --timeout=60s": {"stdout": "", "rc": 1},
+  "get pod q03-app -n cka-sim-workloads-scheduling-03 -o jsonpath={.status.conditions[?(@.type==\"Ready\")].status}": {"stdout": "", "rc": 0},
+  "get pod q03-app -n cka-sim-workloads-scheduling-03 -o jsonpath={.spec.containers[0].env[?(@.name==\"APP_MODE\")].valueFrom.configMapKeyRef.name}": {"stdout": "", "rc": 0},
+  "get pod q03-app -n cka-sim-workloads-scheduling-03 -o jsonpath={.spec.containers[0].env[?(@.name==\"APP_MODE\")].valueFrom.configMapKeyRef.key}": {"stdout": "", "rc": 0},
+  "get pod q03-app -n cka-sim-workloads-scheduling-03 -o jsonpath={.spec.containers[0].volumeMounts[?(@.mountPath==\"/etc/app-secrets\")].readOnly}": {"stdout": "", "rc": 0},
+  "exec -n cka-sim-workloads-scheduling-03 q03-app -- printenv APP_MODE": {"stdout": "", "rc": 1},
+  "exec -n cka-sim-workloads-scheduling-03 q03-app -- cat /etc/app-secrets/api-key": {"stdout": "", "rc": 1},
+  "get pod q03-app -n cka-sim-workloads-scheduling-03 -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get pod q03-app -n cka-sim-workloads-scheduling-03 -o jsonpath={.metadata.resourceVersion}": {"stdout": "0", "rc": 0},
+  "get pod q03-app -n cka-sim-workloads-scheduling-03 -o jsonpath={.spec.serviceAccountName}": {"stdout": "", "rc": 0}
+}

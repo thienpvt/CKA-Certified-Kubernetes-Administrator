@@ -1,0 +1,13 @@
+{
+  "wait --for=condition=Available deployment/q08-gpu-sim -n cka-sim-workloads-scheduling-08 --timeout=90s": {"stdout": "", "rc": 1},
+  "rollout status deployment/q08-gpu-sim -n cka-sim-workloads-scheduling-08 --timeout=60s": {"stdout": "", "rc": 1},
+  "get deployment q08-gpu-sim -n cka-sim-workloads-scheduling-08 -o jsonpath={.spec.replicas}": {"stdout": "2", "rc": 0},
+  "get pod -n cka-sim-workloads-scheduling-08 -l app=q08-gpu-sim --field-selector=status.phase=Running --no-headers": {"stdout": "", "rc": 0},
+  "get nodes -l !node-role.kubernetes.io/control-plane --no-headers -o jsonpath={.items[0].metadata.name}": {"stdout": "node-02", "rc": 0},
+  "get deployment q08-gpu-sim -n cka-sim-workloads-scheduling-08 -o jsonpath={.metadata.generation}": {"stdout": "1", "rc": 0},
+  "get deployment q08-gpu-sim -n cka-sim-workloads-scheduling-08 -o jsonpath={.metadata.resourceVersion}": {"stdout": "100", "rc": 0},
+  "get deployment q08-gpu-sim -n cka-sim-workloads-scheduling-08 -o jsonpath={.spec.template.spec.tolerations[?(@.key==\"gpu\")].effect}": {"stdout": "", "rc": 0},
+  "get deployment q08-gpu-sim -n cka-sim-workloads-scheduling-08 -o jsonpath={.spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[?(@.key==\"gpu\")].operator}": {"stdout": "", "rc": 0},
+  "get pod -n cka-sim-workloads-scheduling-08 -l app=q08-gpu-sim --field-selector=status.phase=Running -o jsonpath={.items[*].spec.nodeName}": {"stdout": "", "rc": 0},
+  "get node node-02 -o jsonpath={.metadata.labels.gpu}": {"stdout": "", "rc": 0}
+}

@@ -1,0 +1,17 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-workloads-scheduling-07",
+  "resources": [
+    {
+      "kind": "Deployment",
+      "name": "q07-app",
+      "namespace": "cka-sim-workloads-scheduling-07",
+      "generation": 1,
+      "resourceVersion": "100",
+      "labels": {"app": "q07-app"}
+    }
+  ],
+  "resource_list": [
+    "deployment/q07-app"
+  ]
+}

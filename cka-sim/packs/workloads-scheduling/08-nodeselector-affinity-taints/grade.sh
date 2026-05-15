@@ -16,14 +16,18 @@ kubectl wait --for=condition=Available deployment/q08-gpu-sim -n "$CKA_SIM_LAB_N
 # Wait for rollout to complete and old-RS pods to terminate. rollout status returns
 # when new RS is satisfied, but old pods may still be Running. Poll until pod count
 # matches the desired replicas (2) so assertion 3 doesn't see stale pods.
+# Phase 07.1 D-22 audit-escape: retries + sleep are env-overridable so kubectl-stub fixture
+# tests don't pay the 30s wall-clock cost; defaults preserve production cluster behaviour.
 kubectl rollout status deployment/q08-gpu-sim -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
 desired=$(kubectl get deployment q08-gpu-sim -n "$CKA_SIM_LAB_NS" \
   -o jsonpath='{.spec.replicas}' 2>/dev/null || echo "2")
-for _i in $(seq 1 15); do
+poll_retries="${CKA_SIM_GRADE_POLL_RETRIES:-15}"
+poll_sleep="${CKA_SIM_GRADE_POLL_SLEEP:-2}"
+for _i in $(seq 1 "$poll_retries"); do
   count=$(kubectl get pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim \
     --field-selector=status.phase=Running --no-headers 2>/dev/null | wc -l | tr -d ' ')
   (( count <= desired )) && break
-  sleep 2
+  sleep "$poll_sleep"
 done
 
 # Discover target worker. Identical idiom to setup.sh / reset.sh / ref-solution.sh.

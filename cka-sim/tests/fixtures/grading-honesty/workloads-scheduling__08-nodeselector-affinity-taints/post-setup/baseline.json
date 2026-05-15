@@ -1,0 +1,17 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-workloads-scheduling-08",
+  "resources": [
+    {
+      "kind": "Deployment",
+      "name": "q08-gpu-sim",
+      "namespace": "cka-sim-workloads-scheduling-08",
+      "generation": 1,
+      "resourceVersion": "100",
+      "labels": {"app": "q08-gpu-sim"}
+    }
+  ],
+  "resource_list": [
+    "deployment/q08-gpu-sim"
+  ]
+}

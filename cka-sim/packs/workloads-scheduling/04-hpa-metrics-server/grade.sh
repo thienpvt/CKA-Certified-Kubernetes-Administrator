@@ -34,14 +34,18 @@ cka_sim::grade::assert_field_eq hpa q04-load \
 
 # Assertion 5: behavioural — metrics-server returns pod readings.
 # metrics-server needs up to 60s after install for the first scrape to land.
+# Phase 07.1 D-22 audit-escape: retries + sleep are env-overridable so kubectl-stub fixture
+# tests don't pay the 60s wall-clock cost; defaults preserve production cluster behaviour.
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
 top_ok=0
-for i in $(seq 1 12); do
+retries="${CKA_SIM_GRADE_TOP_RETRIES:-12}"
+sleep_s="${CKA_SIM_GRADE_TOP_SLEEP:-5}"
+for i in $(seq 1 "$retries"); do
   if kubectl top pod -n "$CKA_SIM_LAB_NS" -l app=q04-load >/dev/null 2>&1; then
     top_ok=1
     break
   fi
-  sleep 5
+  sleep "$sleep_s"
 done
 if (( top_ok == 1 )); then
   CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))

@@ -1,0 +1,26 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-workloads-scheduling-04",
+  "resources": [
+    {
+      "kind": "Deployment",
+      "name": "q04-load",
+      "namespace": "cka-sim-workloads-scheduling-04",
+      "generation": 1,
+      "resourceVersion": "150",
+      "labels": {"app": "q04-load"}
+    },
+    {
+      "kind": "ServiceAccount",
+      "name": "q04-load-sa",
+      "namespace": "cka-sim-workloads-scheduling-04",
+      "generation": null,
+      "resourceVersion": "140",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "deployment/q04-load",
+    "serviceaccount/q04-load-sa"
+  ]
+}

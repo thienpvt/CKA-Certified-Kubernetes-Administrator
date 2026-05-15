@@ -1,0 +1,8 @@
+{
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o name": {"stdout": "", "rc": 1},
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.minReplicas}": {"stdout": "", "rc": 0},
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.maxReplicas}": {"stdout": "", "rc": 0},
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.metrics[?(@.type==\"Resource\")].resource.name}": {"stdout": "", "rc": 0},
+  "top pod -n cka-sim-workloads-scheduling-04 -l app=q04-load": {"stdout": "", "rc": 1},
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.status.conditions[?(@.type==\"AbleToScale\")].reason}": {"stdout": "", "rc": 0}
+}

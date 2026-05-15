@@ -1,0 +1,8 @@
+{
+  "wait --for=condition=Available deployment/q07-app -n cka-sim-workloads-scheduling-07 --timeout=60s": {"stdout": "deployment.apps/q07-app condition met", "rc": 0},
+  "get deployment q07-app -n cka-sim-workloads-scheduling-07 -o jsonpath={.metadata.generation}": {"stdout": "2", "rc": 0},
+  "get deployment q07-app -n cka-sim-workloads-scheduling-07 -o jsonpath={.metadata.resourceVersion}": {"stdout": "200", "rc": 0},
+  "get deployment q07-app -n cka-sim-workloads-scheduling-07 -o jsonpath={.spec.template.spec.initContainers[?(@.name==\"log-tailer\")].restartPolicy}": {"stdout": "Always", "rc": 0},
+  "get deployment q07-app -n cka-sim-workloads-scheduling-07 -o jsonpath={.spec.template.spec.containers[*].name}": {"stdout": "app", "rc": 0},
+  "get deployment q07-app -n cka-sim-workloads-scheduling-07 -o jsonpath={.spec.template.spec.containers[?(@.name==\"log-tailer\")].name}": {"stdout": "", "rc": 0}
+}

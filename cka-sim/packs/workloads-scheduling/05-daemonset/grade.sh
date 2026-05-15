@@ -59,10 +59,14 @@ if [[ -n "$pod" ]]; then
 fi
 
 # Trap: DaemonSet missing control-plane toleration (primary trap for this scenario).
-cp_toleration=$(kubectl get daemonset q05-node-agent -n "$CKA_SIM_LAB_NS" \
-  -o jsonpath='{.spec.template.spec.tolerations[?(@.key=="node-role.kubernetes.io/control-plane")].key}' 2>/dev/null || echo "")
-if [[ -z "$cp_toleration" ]]; then
-  cka_sim::grade::record_trap daemonset-missing-control-plane-toleration
+# Phase 07.1 AUDIT-01: gate on DS existence so empty submission doesn't fire a spurious trap.
+ds_exists=$(kubectl get daemonset q05-node-agent -n "$CKA_SIM_LAB_NS" -o name 2>/dev/null || echo "")
+if [[ -n "$ds_exists" ]]; then
+  cp_toleration=$(kubectl get daemonset q05-node-agent -n "$CKA_SIM_LAB_NS" \
+    -o jsonpath='{.spec.template.spec.tolerations[?(@.key=="node-role.kubernetes.io/control-plane")].key}' 2>/dev/null || echo "")
+  if [[ -z "$cp_toleration" ]]; then
+    cka_sim::grade::record_trap daemonset-missing-control-plane-toleration
+  fi
 fi
 
 cka_sim::grade::emit_result
