@@ -208,7 +208,7 @@ Plans:
 
 ---
 
-### Phase 07.1: Grading Honesty Rebuild (INSERTED — URGENT)
+### Phase 07.1: Grading Honesty Rebuild (INSERTED — URGENT) ✓ Complete (2026-05-16)
 
 **Goal:** Make graders score candidate work, not setup state. Empty exam submissions must score 0/100 across all 17 blueprint-alpha questions; currently they score 10/100 (7 raw points) because `grade.sh` checks absolute end-state that `setup.sh` already satisfies.
 
