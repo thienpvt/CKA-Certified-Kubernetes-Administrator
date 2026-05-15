@@ -243,11 +243,11 @@ Plans:
 - [x] 07.1-05-PLAN.md -- Fix: services-networking/06 NP authorship gate (Wave 3)
 - [x] 07.1-06-PLAN.md -- Fix: cluster-architecture/04 audit-escape + candidate Pod (Wave 3)
 - [x] 07.1-07-PLAN.md -- CI: kubectl stub extension + 4 offender test cases (Wave 4)
-- [ ] 07.1-08-PLAN.md -- Audit: storage pack (5 Qs) + fixtures + tests (Wave 5)
-- [ ] 07.1-09-PLAN.md -- Audit: workloads-scheduling pack (7 Qs) + fixtures + tests (Wave 5)
-- [ ] 07.1-10-PLAN.md -- Audit: services-networking pack (5 Qs) + fixtures + tests (Wave 5)
-- [ ] 07.1-11-PLAN.md -- Audit: cluster-architecture pack (7 Qs) + fixtures + tests (Wave 5)
-- [ ] 07.1-12-PLAN.md -- Audit: troubleshooting pack (6 Qs) + fixtures + tests (Wave 5)
+- [x] 07.1-08-PLAN.md -- Audit: storage pack (5 Qs) + fixtures + tests (Wave 5)
+- [x] 07.1-09-PLAN.md -- Audit: workloads-scheduling pack (7 Qs) + fixtures + tests (Wave 5)
+- [x] 07.1-10-PLAN.md -- Audit: services-networking pack (5 Qs) + fixtures + tests (Wave 5)
+- [x] 07.1-11-PLAN.md -- Audit: cluster-architecture pack (7 Qs) + fixtures + tests (Wave 5)
+- [x] 07.1-12-PLAN.md -- Audit: troubleshooting pack (6 Qs) + fixtures + tests (Wave 5)
 - [ ] 07.1-13-PLAN.md -- Docs: GRADING-HONESTY.md + README caveat removal + VERIFICATION.md (Wave 6)
 
 ## Phase 8: Blueprint Bravo + Banners + Docs + CI
