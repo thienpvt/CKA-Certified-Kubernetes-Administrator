@@ -279,22 +279,21 @@ cka_sim::exam::question_loop() {
       if (( CKA_SIM_EXAM_RESUME_PENDING == 1 )); then
         CKA_SIM_EXAM_RESUME_PENDING=0
         cka_sim::state::save
+        # Drain any chars the candidate typed between Ctrl-Z and fg so they
+        # don't auto-consume the next read.
+        local _drain=""
+        while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
         printf '\n\033[32m✓ Resumed. (⏱  %s remaining)\033[0m\n' \
           "$(cka_sim::exam::format_remaining)" >&2
         cka_sim::exam::present_question "$CKA_SIM_EXAM_CUR_IDX"
       fi
       printf '> '
-      CKA_SIM_EXAM_SIGNAL_FIRED=0
       local rc=0
       read -r action || rc=$?
-      # If a signal fired and read returned with empty input, that's a spurious
-      # wake — don't treat it as bare-Enter advance.
-      if (( CKA_SIM_EXAM_SIGNAL_FIRED == 1 )) && (( rc == 0 )) && [[ -z "$action" ]]; then
-        CKA_SIM_EXAM_SIGNAL_FIRED=0
-        continue
-      fi
       if (( rc != 0 )); then
         if (( rc > 128 )); then
+          # Signal-interrupted read — top of loop will re-prompt (and
+          # redisplay if RESUME_PENDING was just set).
           continue
         else
           CKA_SIM_EXAM_ENDED=1
@@ -363,6 +362,10 @@ cka_sim::exam::confirm_submit() {
 }
 
 cka_sim::exam::batch_grade() {
+  # Disable Ctrl-C (which would otherwise flag a stale CUR_IDX as "flagged")
+  # and Ctrl-Z (suspending in the middle of grading is not sensible) for the
+  # duration of grading.
+  trap '' INT TSTP
   cka_sim::timer::stop
   printf '\n%s━━━ Grading ━━━%s\n' "$BOLD" "$NC" >&2
 
