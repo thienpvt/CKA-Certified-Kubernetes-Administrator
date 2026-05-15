@@ -1,0 +1,17 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-services-networking-03",
+  "resources": [
+    {
+      "kind": "Pod",
+      "name": "q03-dnsclient",
+      "namespace": "cka-sim-services-networking-03",
+      "generation": null,
+      "resourceVersion": "400",
+      "labels": {"app": "q03-dnsclient"}
+    }
+  ],
+  "resource_list": [
+    "pod/q03-dnsclient"
+  ]
+}

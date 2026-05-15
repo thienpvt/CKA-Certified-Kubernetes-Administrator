@@ -1,0 +1,26 @@
+{
+  "get ingress q04-web -n cka-sim-services-networking-04 -o name": {
+    "stdout": "ingress.networking.k8s.io/q04-web",
+    "rc": 0
+  },
+  "get ingress q04-web -n cka-sim-services-networking-04 -o jsonpath={.spec.ingressClassName}": {
+    "stdout": "q04-nginx",
+    "rc": 0
+  },
+  "get ingress q04-web -n cka-sim-services-networking-04 -o jsonpath={.metadata.annotations.kubernetes\\.io/ingress\\.class}": {
+    "stdout": "",
+    "rc": 0
+  },
+  "get ingress q04-web -n cka-sim-services-networking-04 -o jsonpath={.spec.rules[0].host}": {
+    "stdout": "api.example.local",
+    "rc": 0
+  },
+  "get ingress q04-web -n cka-sim-services-networking-04 -o jsonpath={.spec.rules[0].http.paths[0].path}": {
+    "stdout": "/",
+    "rc": 0
+  },
+  "get ingress q04-web -n cka-sim-services-networking-04 -o jsonpath={.spec.rules[0].http.paths[0].backend.service.name}": {
+    "stdout": "q04-web",
+    "rc": 0
+  }
+}

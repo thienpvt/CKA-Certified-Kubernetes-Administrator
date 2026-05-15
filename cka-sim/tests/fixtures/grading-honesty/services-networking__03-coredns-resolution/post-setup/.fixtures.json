@@ -1,0 +1,6 @@
+{
+  "get pod q03-dnsclient -n cka-sim-services-networking-03 -o jsonpath={.metadata.resourceVersion}": {
+    "stdout": "400",
+    "rc": 0
+  }
+}

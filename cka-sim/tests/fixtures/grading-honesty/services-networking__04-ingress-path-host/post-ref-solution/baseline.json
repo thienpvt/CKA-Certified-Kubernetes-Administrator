@@ -1,0 +1,26 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-services-networking-04",
+  "resources": [
+    {
+      "kind": "Deployment",
+      "name": "q04-web",
+      "namespace": "cka-sim-services-networking-04",
+      "generation": 1,
+      "resourceVersion": "500",
+      "labels": {"app": "q04-web"}
+    },
+    {
+      "kind": "Service",
+      "name": "q04-web",
+      "namespace": "cka-sim-services-networking-04",
+      "generation": null,
+      "resourceVersion": "510",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "deployment/q04-web",
+    "service/q04-web"
+  ]
+}
