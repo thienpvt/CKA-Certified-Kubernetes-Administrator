@@ -286,10 +286,6 @@ cka_sim::exam::question_loop() {
     while true; do
       # If we just came back from a Ctrl-Z/fg cycle, redisplay context here
       # (NOT inside the trap, where set -e + jq can break the read path).
-      # No stdin drain — it eats the candidate's intentional post-fg Enter
-      # within its 50ms window. Stale buffered chars typed during suspend will
-      # land at the next prompt as-is, which is fine: they either act as a
-      # valid action (n/f/s/p/t/q) or print "Unknown action".
       if (( CKA_SIM_EXAM_RESUME_PENDING == 1 )); then
         CKA_SIM_EXAM_RESUME_PENDING=0
         cka_sim::state::save
@@ -300,6 +296,16 @@ cka_sim::exam::question_loop() {
       printf '> '
       local rc=0
       read -r action || rc=$?
+      # IMPORTANT: also check RESUME_PENDING AFTER read returns. Some bash
+      # versions restart read in-place after a trap (so the loop never
+      # iterates and the top-of-loop redisplay block never fires), and the
+      # candidate's first post-fg Enter would otherwise be swallowed as a
+      # bare-Enter advance to the NEXT question instead of triggering a
+      # redisplay of the CURRENT one. continue here so the next iteration's
+      # top-of-loop check fires the redisplay before consuming any input.
+      if (( CKA_SIM_EXAM_RESUME_PENDING == 1 )); then
+        continue
+      fi
       if (( rc != 0 )); then
         if (( rc > 128 )); then
           # Signal-interrupted read — top of loop will re-prompt (and
