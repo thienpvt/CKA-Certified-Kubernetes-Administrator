@@ -1,7 +1,8 @@
 # cka-sim/traps/catalog.yaml — registry of named content-bug traps.
 # Schema (per CONTEXT D-13/D-14, lint-enforced by scripts/lint-traps.sh):
-#   id, name, description, remediation_hint, severity, domain, source, references
+#   id, name, description, remediation_hint, severity, domain, source, ownership, references
 # references: list of {kind, target, note}
+# ownership: optional. Values: candidate-required (default -- detector gates on baseline), setup-allowed (text-based content-bug traps fire on setup state).
 # Field order MUST match the above for diff/lint readability.
 # All 8 seeded entries come from REQUIREMENTS.md GRADE-05 + .planning/codebase/CONCERNS.md.
 
@@ -13,6 +14,7 @@ traps:
     severity: error
     domain: cluster-architecture
     source: concerns-md
+    ownership: setup-allowed
     references:
       - kind: concerns-md
         target: .planning/codebase/CONCERNS.md
@@ -31,6 +33,7 @@ traps:
     severity: error
     domain: cluster-architecture
     source: concerns-md
+    ownership: setup-allowed
     references:
       - kind: concerns-md
         target: .planning/codebase/CONCERNS.md
@@ -49,6 +52,7 @@ traps:
     severity: error
     domain: cluster-architecture
     source: concerns-md
+    ownership: setup-allowed
     references:
       - kind: concerns-md
         target: .planning/codebase/CONCERNS.md
@@ -64,6 +68,7 @@ traps:
     severity: error
     domain: cluster-architecture
     source: concerns-md
+    ownership: setup-allowed
     references:
       - kind: concerns-md
         target: .planning/codebase/CONCERNS.md
@@ -100,6 +105,7 @@ traps:
     severity: error
     domain: cluster-architecture
     source: concerns-md
+    ownership: setup-allowed
     references:
       - kind: concerns-md
         target: .planning/codebase/CONCERNS.md

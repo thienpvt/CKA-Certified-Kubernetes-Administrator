@@ -12,6 +12,8 @@
 source "$CKA_SIM_ROOT/lib/log.sh"
 # shellcheck source=traps.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/traps.sh"
+# shellcheck source=baseline.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/baseline.sh"
 
 # ---------- Accumulator state (shared across every sourced grader) ----------
 #
@@ -235,6 +237,209 @@ cka_sim::grade::assert_endpoints_nonempty() {
   fi
   CKA_SIM_GRADE_FAILS+=("endpoints for service '$svc' are empty (no Ready pods backing it)")
   err "endpoints for service '$svc' are empty (no Ready pods backing it)"
+  return 1
+}
+
+# ---------- Baseline-aware assertion helpers (3; added by 07.1-01) ----------
+#
+# These helpers use lib/baseline.sh to compare current cluster state against
+# the captured baseline, enabling grading honesty (detect setup-state vs candidate work).
+
+# cka_sim::grade::assert_changed_since_setup <kind> <name> [-n <ns>] [<weight>]
+#   Passes iff the resource has been modified since baseline capture.
+#   Uses generation-first/rv-fallback logic via is_candidate_modified.
+#   On missing baseline: FAIL (caller asked for a delta on something untrackable).
+cka_sim::grade::assert_changed_since_setup() {
+  local kind="$1" name="$2"
+  shift 2
+  local ns="" weight=""
+  while (( $# > 0 )); do
+    if [[ "$1" == "-n" ]]; then
+      [[ $# -ge 2 ]] || die "assert_changed_since_setup: flag -n requires value"
+      ns="$2"
+      shift 2
+    elif [[ "$1" =~ ^[0-9]+$ ]]; then
+      weight="$1"
+      shift
+      (( $# == 0 )) || die "assert_changed_since_setup: unexpected argument after weight: $1"
+    else
+      die "assert_changed_since_setup: unexpected argument: $1"
+    fi
+  done
+  : "${weight:=1}"
+  CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + weight ))
+
+  # If no baseline available, fail (can't prove delta)
+  if [[ -z "${CKA_SIM_BASELINE_PATH:-}" ]] || [[ ! -r "${CKA_SIM_BASELINE_PATH:-}" ]]; then
+    CKA_SIM_GRADE_FAILS+=("$kind/$name unchanged since setup (no baseline available)")
+    err "$kind/$name unchanged since setup (no baseline available)"
+    return 1
+  fi
+
+  local -a mod_args=("$kind" "$name")
+  [[ -n "$ns" ]] && mod_args+=("-n" "$ns")
+
+  if cka_sim::baseline::is_candidate_modified "${mod_args[@]}"; then
+    CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + weight ))
+    CKA_SIM_GRADE_PASSES+=("$kind/$name changed since setup")
+    ok "$kind/$name changed since setup"
+    return 0
+  fi
+
+  CKA_SIM_GRADE_FAILS+=("$kind/$name unchanged since setup")
+  err "$kind/$name unchanged since setup"
+  return 1
+}
+
+# cka_sim::grade::assert_generation_delta_ge <kind> <name> <N> [-n <ns>] [<weight>]
+#   Passes iff (current.generation - baseline.generation) >= N.
+#   Fails if resource not in baseline or generation is null (per D-07).
+cka_sim::grade::assert_generation_delta_ge() {
+  local kind="$1" name="$2" threshold="$3"
+  shift 3
+  local ns="" weight=""
+  while (( $# > 0 )); do
+    if [[ "$1" == "-n" ]]; then
+      [[ $# -ge 2 ]] || die "assert_generation_delta_ge: flag -n requires value"
+      ns="$2"
+      shift 2
+    elif [[ "$1" =~ ^[0-9]+$ ]]; then
+      weight="$1"
+      shift
+      (( $# == 0 )) || die "assert_generation_delta_ge: unexpected argument after weight: $1"
+    else
+      die "assert_generation_delta_ge: unexpected argument: $1"
+    fi
+  done
+  : "${weight:=1}"
+  CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + weight ))
+
+  # Must have baseline
+  if [[ -z "${CKA_SIM_BASELINE_PATH:-}" ]] || [[ ! -r "${CKA_SIM_BASELINE_PATH:-}" ]]; then
+    CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (no baseline)")
+    err "$kind/$name generation delta undefined (no baseline)"
+    return 1
+  fi
+
+  # Canonical lookup key
+  local lookup_key
+  lookup_key="$(printf '%s' "$kind" | tr '[:upper:]' '[:lower:]')/$name"
+
+  # Check resource is in baseline
+  local in_baseline
+  in_baseline=$(jq -r --arg key "$lookup_key" \
+    '(.resource_list // []) | if index($key) != null then "true" else "false" end' \
+    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+
+  if [[ "$in_baseline" != "true" ]]; then
+    CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (not in baseline)")
+    err "$kind/$name generation delta undefined (not in baseline)"
+    return 1
+  fi
+
+  # Read baseline generation
+  local baseline_gen
+  baseline_gen=$(jq -r --arg key "$lookup_key" \
+    '[.resources[] | select(("\(.kind | ascii_downcase)/\(.name)" == $key))] | .[0].generation // ""' \
+    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+
+  if [[ -z "$baseline_gen" ]] || [[ "$baseline_gen" == "null" ]]; then
+    CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (baseline generation is null)")
+    err "$kind/$name generation delta undefined (baseline generation is null)"
+    return 1
+  fi
+
+  # Fetch current generation
+  local current_gen
+  if [[ -n "$ns" ]]; then
+    current_gen=$(kubectl get "$kind" "$name" -n "$ns" -o jsonpath='{.metadata.generation}' 2>/dev/null)
+  else
+    current_gen=$(kubectl get "$kind" "$name" -o jsonpath='{.metadata.generation}' 2>/dev/null)
+  fi
+
+  if [[ -z "$current_gen" ]]; then
+    CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (current generation unavailable)")
+    err "$kind/$name generation delta undefined (current generation unavailable)"
+    return 1
+  fi
+
+  local delta=$(( current_gen - baseline_gen ))
+
+  if (( delta >= threshold )); then
+    CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + weight ))
+    CKA_SIM_GRADE_PASSES+=("$kind/$name generation delta=$delta (>=$threshold)")
+    ok "$kind/$name generation delta=$delta (>=$threshold)"
+    return 0
+  fi
+
+  CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta=$delta (need >=$threshold; baseline=$baseline_gen current=$current_gen)")
+  err "$kind/$name generation delta=$delta (need >=$threshold; baseline=$baseline_gen current=$current_gen)"
+  return 1
+}
+
+# cka_sim::grade::assert_resource_candidate_authored <kind> <name> [-n <ns>] [<weight>]
+#   Passes iff the resource was NOT in baseline AND currently exists.
+#   Fails if resource pre-existed in baseline OR does not exist now.
+cka_sim::grade::assert_resource_candidate_authored() {
+  local kind="$1" name="$2"
+  shift 2
+  local ns="" weight=""
+  while (( $# > 0 )); do
+    if [[ "$1" == "-n" ]]; then
+      [[ $# -ge 2 ]] || die "assert_resource_candidate_authored: flag -n requires value"
+      ns="$2"
+      shift 2
+    elif [[ "$1" =~ ^[0-9]+$ ]]; then
+      weight="$1"
+      shift
+      (( $# == 0 )) || die "assert_resource_candidate_authored: unexpected argument after weight: $1"
+    else
+      die "assert_resource_candidate_authored: unexpected argument: $1"
+    fi
+  done
+  : "${weight:=1}"
+  CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + weight ))
+
+  # Must have baseline
+  if [[ -z "${CKA_SIM_BASELINE_PATH:-}" ]] || [[ ! -r "${CKA_SIM_BASELINE_PATH:-}" ]]; then
+    CKA_SIM_GRADE_FAILS+=("$kind/$name candidate-authored check failed (no baseline)")
+    err "$kind/$name candidate-authored check failed (no baseline)"
+    return 1
+  fi
+
+  # Canonical lookup key
+  local lookup_key
+  lookup_key="$(printf '%s' "$kind" | tr '[:upper:]' '[:lower:]')/$name"
+
+  # Check if resource was in baseline
+  local in_baseline
+  in_baseline=$(jq -r --arg key "$lookup_key" \
+    '(.resource_list // []) | if index($key) != null then "true" else "false" end' \
+    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+
+  if [[ "$in_baseline" == "true" ]]; then
+    CKA_SIM_GRADE_FAILS+=("$kind/$name pre-existed in baseline (not candidate-authored)")
+    err "$kind/$name pre-existed in baseline (not candidate-authored)"
+    return 1
+  fi
+
+  # Verify resource currently exists
+  local out
+  if [[ -n "$ns" ]]; then
+    out=$(kubectl get "$kind" "$name" -n "$ns" -o name 2>/dev/null)
+  else
+    out=$(kubectl get "$kind" "$name" -o name 2>/dev/null)
+  fi
+
+  if [[ -n "$out" ]]; then
+    CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + weight ))
+    CKA_SIM_GRADE_PASSES+=("$kind/$name created by candidate")
+    ok "$kind/$name created by candidate"
+    return 0
+  fi
+
+  CKA_SIM_GRADE_FAILS+=("$kind/$name does not exist (candidate has not created it)")
+  err "$kind/$name does not exist (candidate has not created it)"
   return 1
 }
 
