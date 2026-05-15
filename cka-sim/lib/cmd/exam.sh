@@ -28,6 +28,7 @@ declare -g CKA_SIM_EXAM_ENDED=0
 declare -g CKA_SIM_LAB_NS=""
 declare -g CKA_SIM_EXAM_STTY_SAVED=""
 declare -g CKA_SIM_EXAM_IN_SIGHANDLER=0
+declare -g CKA_SIM_EXAM_SIGNAL_FIRED=0
 # Active input prompt — signal handlers re-print this because bash restarts an
 # interrupted `read` in-place (it does NOT return on a trapped signal), so the
 # read loop never gets a chance to re-print the prompt itself.
@@ -68,6 +69,7 @@ EOF
 }
 
 cka_sim::exam::on_int() {
+  CKA_SIM_EXAM_SIGNAL_FIRED=1
   cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "flagged"
   cka_sim::state::save
   printf '\n\033[33m✓ Q%d flagged. Continuing…\033[0m\n' \
@@ -79,6 +81,7 @@ cka_sim::exam::on_int() {
 }
 
 cka_sim::exam::on_tstp() {
+  CKA_SIM_EXAM_SIGNAL_FIRED=1
   # Pre-stop: record pause time, kill timer. DO NOT touch stty here — bash
   # will reclaim the terminal once we stop and may change its modes, so any
   # restore we do now is wasted. Restore stty AFTER resume instead.
@@ -92,11 +95,14 @@ cka_sim::exam::on_tstp() {
   # === resumes here after fg ===
   trap 'cka_sim::exam::on_tstp' TSTP
   trap 'cka_sim::exam::on_int'  INT
-  # Restore the terminal modes we captured at exam start (icanon on, echo on,
-  # etc.) — bash may have flipped icanon/echo while we were stopped, which is
-  # how repeated Ctrl-Z/fg cycles can leave `read` waiting forever for a line
-  # terminator that the TTY no longer delivers.
+  # Restore terminal modes — bash flips icanon/echo while we're stopped, and
+  # repeated Ctrl-Z/fg cycles can compound the drift until `read` is waiting
+  # forever for a line terminator the TTY no longer delivers. Belt-and-
+  # suspenders: stty sane first (known-good baseline), then re-apply our
+  # captured state, then force the absolute minimum we depend on.
+  stty sane 2>/dev/null || true
   stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
+  stty echo icanon isig 2>/dev/null || true
   cka_sim::state::add_pause_delta
   cka_sim::state::save
   # Drain stdin so a stray Enter typed between Ctrl-Z and fg doesn't
@@ -273,8 +279,15 @@ cka_sim::exam::question_loop() {
     CKA_SIM_EXAM_PROMPT='> '
     while true; do
       printf '> '
+      CKA_SIM_EXAM_SIGNAL_FIRED=0
       local rc=0
       read -r action || rc=$?
+      # If a signal fired and read returned with empty input, that's a spurious
+      # wake — don't treat it as bare-Enter advance.
+      if (( CKA_SIM_EXAM_SIGNAL_FIRED == 1 )) && (( rc == 0 )) && [[ -z "$action" ]]; then
+        CKA_SIM_EXAM_SIGNAL_FIRED=0
+        continue
+      fi
       if (( rc == 0 )); then
         break
       elif (( rc > 128 )); then
