@@ -91,13 +91,14 @@ cka_sim::exam::on_tstp() {
   # === resumes here after fg ===
   trap 'cka_sim::exam::on_tstp' TSTP
   trap 'cka_sim::exam::on_int'  INT
-  # Resume work — no timer spawn here; let the read loop or next iteration
-  # handle the timer. This avoids timer drawing over setup output or the prompt.
   cka_sim::state::add_pause_delta
   cka_sim::state::save
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
+  # Respawn the live timer so the bottom status row keeps ticking after fg.
+  # Deadline has been adjusted by add_pause_delta so paused time is excluded.
+  cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
 }
 
 cka_sim::exam::on_cont() {
@@ -246,11 +247,12 @@ cka_sim::exam::question_loop() {
            'if .[$i].started_at == null then .[$i].started_at = $ts else . end')
     cka_sim::state::save
 
-    # Spawn timer AFTER question is displayed, gate it during read
+    # Spawn timer AFTER question is displayed. Timer draws live to the bottom
+    # status row over the read prompt — `>` only accepts single-char actions
+    # (n/f/s/p/q), so the tput sc/cup/el/rc redraw rarely collides with input.
     cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
     local action=""
     CKA_SIM_EXAM_PROMPT='> '
-    cka_sim::timer::gate_on
     while true; do
       printf '> '
       local rc=0
@@ -262,12 +264,10 @@ cka_sim::exam::question_loop() {
         continue
       else
         # Genuine EOF
-        cka_sim::timer::gate_off
         CKA_SIM_EXAM_ENDED=1
         break 2
       fi
     done
-    cka_sim::timer::gate_off
 
     cka_sim::exam::handle_action "$action"
   done
@@ -297,7 +297,6 @@ cka_sim::exam::confirm_submit() {
 
   local confirm=""
   CKA_SIM_EXAM_PROMPT='Submit for grading? [y/n] '
-  cka_sim::timer::gate_on
   while true; do
     printf '\nSubmit for grading? [y/n] '
     local rc=0
@@ -313,7 +312,6 @@ cka_sim::exam::confirm_submit() {
       break
     fi
   done
-  cka_sim::timer::gate_off
 
   if [[ "$confirm" != "y" && "$confirm" != "Y" && "$confirm" != "" ]]; then
     CKA_SIM_EXAM_ENDED=0
