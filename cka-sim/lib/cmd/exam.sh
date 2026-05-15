@@ -125,10 +125,23 @@ cka_sim::exam::on_tstp() {
   # this trap. set -e + pipefail inside a trap can corrupt the interrupted
   # read's return path and make subsequent setup output disappear. The main
   # loop checks CKA_SIM_EXAM_RESUME_PENDING and does redisplay there.
+  # Send SIGUSR1 to self so that bash's `read` returns with rc>128 (instead
+  # of restarting in-place on some bash versions). That guarantees the main
+  # loop iterates and the redisplay block fires without requiring an extra
+  # candidate Enter.
+  kill -USR1 $$ 2>/dev/null || true
   return 0
 }
 
 cka_sim::exam::on_cont() {
+  return 0
+}
+
+# No-op USR1 handler. We send SIGUSR1 to ourselves at the end of on_tstp so
+# that bash's `read` returns with rc>128 (instead of restarting in-place on
+# bash versions that prefer to). That forces the main loop to iterate and
+# fire the RESUME_PENDING redisplay block — no candidate Enter required.
+cka_sim::exam::on_usr1() {
   return 0
 }
 
@@ -186,11 +199,11 @@ cka_sim::exam::handle_action() {
       CKA_SIM_EXAM_CUR_IDX=$(( CKA_SIM_EXAM_CUR_IDX + 1 ))
       ;;
     f)
-      cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "flagged"
+      cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "flagged" || true
       CKA_SIM_EXAM_CUR_IDX=$(( CKA_SIM_EXAM_CUR_IDX + 1 ))
       ;;
     s)
-      cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "skipped"
+      cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "skipped" || true
       CKA_SIM_EXAM_CUR_IDX=$(( CKA_SIM_EXAM_CUR_IDX + 1 ))
       ;;
     p)
@@ -260,6 +273,7 @@ cka_sim::exam::question_loop() {
   trap 'cka_sim::exam::on_int' INT
   trap 'cka_sim::exam::on_tstp' TSTP
   trap 'cka_sim::exam::on_cont' CONT
+  trap 'cka_sim::exam::on_usr1' USR1
   trap 'cka_sim::exam::on_exit' EXIT
 
   while (( CKA_SIM_EXAM_CUR_IDX < CKA_SIM_EXAM_QUESTION_COUNT && CKA_SIM_EXAM_ENDED == 0 )); do
