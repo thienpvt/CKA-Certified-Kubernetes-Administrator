@@ -208,6 +208,36 @@ Plans:
 
 ---
 
+### Phase 07.1: Grading Honesty Rebuild (INSERTED — URGENT)
+
+**Goal:** Make graders score candidate work, not setup state. Empty exam submissions must score 0/100 across all 17 blueprint-alpha questions; currently they score 10/100 (7 raw points) because `grade.sh` checks absolute end-state that `setup.sh` already satisfies.
+
+**Spec input:** `.planning/phases/07-exam-mode-blueprint-alpha-reporting/07-UAT.md` (Test 12 Gaps section — full per-question artifact list + missing-pieces inventory).
+
+**Requirements (derived from Test 12 diagnosis):**
+1. **Baselining primitives** in `cka-sim/lib/grade.sh`: capture post-setup snapshot (generation, labels, resource list, hash); expose delta helpers (`assert_changed_since_setup`, `assert_generation_delta_ge N`, `assert_resource_candidate_authored`).
+2. **Per-question fixes** — confirmed offenders:
+   - `workloads-scheduling/02-rolling-update-rollback` (4/4 free): grader checks `generation >= 3` but `setup.sh` already bumps generation to >=3.
+   - `storage/02-storageclass-dynamic` (1/3 free): grader asserts `pvc.spec.storageClassName == fast-ssd` but setup writes that field verbatim.
+   - `services-networking/06-netpol-endport` (1/6 free): reachability assertion passes via default-allow with no candidate NetworkPolicy.
+   - `cluster-architecture/04-pss-enforce` (1/5 free): setup-created ns label or admission log matches one assertion.
+3. **Full audit** of remaining 13 questions: run empty-submission test on each, classify every passing assertion (setup-collision / default-allow / trap-on-setup), fix.
+4. **Trap-detector ownership check** in `cka-sim/lib/traps.sh`: detector must confirm the resource was modified after `setup.sh` completed before recording the trap (e.g., Q3 `default-sa-used` currently fires on setup's Deployment).
+5. **CI regression**: per-question "empty submission scores 0" test in `cka-sim/scripts/test.sh` (or a new `lint-grading-honesty.sh`); runs in `.github/workflows/validate.yml`.
+6. **README caveat removal**: once rebuild lands and CI passes, remove the scoring-honesty caveat the Phase 7 ship added.
+
+**Success criteria:**
+1. Empty exam submission of `blueprint-alpha` scores 0/100, 0 raw points, 0 traps across all 17 questions on a live cluster.
+2. CI gate fails the build if any question's empty-submission score is non-zero.
+3. Reference-solution round-trip still passes for every question (fixes do not regress the happy path).
+4. Documentation: `cka-sim/AUTHORING.md` (or new `GRADING-HONESTY.md`) documents the baselining contract authors must follow.
+
+**Depends on:** Phase 7 (signal-handling fixes in 07-07 must remain green).
+**Plans:** 0 plans (run `/gsd-plan-phase 07.1` to break down)
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 07.1 to break down)
+
 ## Phase 8: Blueprint Bravo + Banners + Docs + CI
 
 **Goal:** Ship the second mock-exam pack so the candidate can retake without repetition, add the superseded-content banners, deliver full documentation (README/AUTHORING/SCHEMA/CONTRIBUTING), and wire the CI extension that gates all the invariants the earlier phases established.
