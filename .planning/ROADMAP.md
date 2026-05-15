@@ -204,7 +204,7 @@ Plans:
 - [x] 07-04-PLAN.md — cka-sim score + list history subcommands
 - [x] 07-05-PLAN.md — blueprint-alpha exam content: manifest.yaml (17 questions) + README
 - [x] 07-06-PLAN.md — lint-packs.sh pass H: blueprint manifest validation + test fixtures
-- [ ] 07-07-PLAN.md — Gap closure: harden exam signal handling (restartable read, re-entrant-safe TSTP/CONT, stty hygiene, interrupt-contained setup)
+- [x] 07-07-PLAN.md — Gap closure: harden exam signal handling (restartable read, re-entrant-safe TSTP/CONT, stty hygiene, interrupt-contained setup)
 
 ---
 
@@ -233,10 +233,22 @@ Plans:
 4. Documentation: `cka-sim/AUTHORING.md` (or new `GRADING-HONESTY.md`) documents the baselining contract authors must follow.
 
 **Depends on:** Phase 7 (signal-handling fixes in 07-07 must remain green).
-**Plans:** 0 plans (run `/gsd-plan-phase 07.1` to break down)
+**Plans:** 13 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 07.1 to break down)
+- [ ] 07.1-01-PLAN.md -- TDD: lib/baseline.sh + 3 grade helpers + catalog ownership schema (Wave 1)
+- [ ] 07.1-02-PLAN.md -- TDD: traps.sh ownership refactor + drill.sh/exam.sh baseline hooks (Wave 2)
+- [ ] 07.1-03-PLAN.md -- Fix: workloads-scheduling/02 generation-delta assertion (Wave 3)
+- [ ] 07.1-04-PLAN.md -- Fix: storage/02 candidate-authored StorageClass (Wave 3)
+- [ ] 07.1-05-PLAN.md -- Fix: services-networking/06 NP authorship gate (Wave 3)
+- [ ] 07.1-06-PLAN.md -- Fix: cluster-architecture/04 audit-escape + candidate Pod (Wave 3)
+- [ ] 07.1-07-PLAN.md -- CI: kubectl stub extension + 4 offender test cases (Wave 4)
+- [ ] 07.1-08-PLAN.md -- Audit: storage pack (5 Qs) + fixtures + tests (Wave 5)
+- [ ] 07.1-09-PLAN.md -- Audit: workloads-scheduling pack (7 Qs) + fixtures + tests (Wave 5)
+- [ ] 07.1-10-PLAN.md -- Audit: services-networking pack (5 Qs) + fixtures + tests (Wave 5)
+- [ ] 07.1-11-PLAN.md -- Audit: cluster-architecture pack (7 Qs) + fixtures + tests (Wave 5)
+- [ ] 07.1-12-PLAN.md -- Audit: troubleshooting pack (6 Qs) + fixtures + tests (Wave 5)
+- [ ] 07.1-13-PLAN.md -- Docs: GRADING-HONESTY.md + README caveat removal + VERIFICATION.md (Wave 6)
 
 ## Phase 8: Blueprint Bravo + Banners + Docs + CI
 
