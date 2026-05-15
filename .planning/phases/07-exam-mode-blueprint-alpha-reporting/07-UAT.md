@@ -1,12 +1,13 @@
 ---
 phase: 07
 phase_name: exam-mode-blueprint-alpha-reporting
-status: diagnosed
+status: complete_with_acknowledged_gaps
 created: 2026-05-13
 last_updated: 2026-05-15
 tests_total: 12
 tests_passed: 11
-tests_failed: 1
+tests_acknowledged: 1
+tests_failed: 0
 tests_skipped: 0
 ---
 
@@ -29,7 +30,7 @@ Derived from ROADMAP Phase 7 success criteria + CONTEXT.md decisions.
 | 5b | List command | `cka-sim list history` shows sessions | ✅ |
 | 6a | Blueprint disclaimer — README | README has "Not real CKA exam content; independently authored" | ✅ |
 | 6b | Blueprint disclaimer — manifest | manifest.yaml has disclaimer | ✅ |
-| 12 | Scoring honesty — empty submission | Empty exam run (no candidate work) MUST score 0/100. Graders must distinguish setup-state from candidate-state. | ❌ |
+| 12 | Scoring honesty — empty submission | Empty exam run (no candidate work) MUST score 0/100. Graders must distinguish setup-state from candidate-state. | ⚠ ACK |
 
 ---
 
@@ -89,9 +90,15 @@ Derived from ROADMAP Phase 7 success criteria + CONTEXT.md decisions.
 
 ## Summary
 
-**11/12 tests passed. 1 issue found (Test 12 — scoring honesty).** Test 2 (signal handling) PASSED on re-run #4 after 15 fix commits.
+**11/12 tests passed; 1 acknowledged gap (Test 12 — scoring honesty, deferred to new phase).** Test 2 (signal handling) PASSED on re-run #4 after 15 fix commits.
 
-Exam mode runs end-to-end (blueprint loading → grading → reporting). Timer renders correctly. Signal handling robust against repeated/nested Ctrl-C/Ctrl-Z. New blocker: graders award points for setup-created state — empty submission scored 10/100 (7 raw), undermining exam credibility.
+Exam mode runs end-to-end (blueprint loading → grading → reporting). Timer renders correctly. Signal handling robust against repeated/nested Ctrl-C/Ctrl-Z.
+
+**Acknowledged scoring-honesty gap (Test 12):** graders award points for setup-created state — empty submission scored 10/100 (7 raw). Phase 7 ships with this caveat; full rebuild deferred to a new phase (see Acknowledged Gaps below).
+
+## Acknowledged Gaps
+
+- **Test 12 — Scoring honesty:** Routed to new phase per user decision (2026-05-15). README must carry a scoring-honesty caveat noting "current grader scores reflect setup-state in some questions; will be rebuilt in a future phase". The full diagnosis, per-question artifact list, and missing-pieces inventory remain in the Gaps section below as the spec input for the new phase.
 
 ## Gaps
 
