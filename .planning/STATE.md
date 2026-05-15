@@ -3,24 +3,24 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-15T12:24:52.655Z"
-last_activity: 2026-05-14 -- 07-07 Task 4 done (949e08b); paused at Task 5 human-verify checkpoint
+last_updated: "2026-05-15T16:23:07.595Z"
+last_activity: 2026-05-15 -- Phase 07.1 planning complete
 progress:
   total_phases: 9
   completed_phases: 6
-  total_plans: 75
-  completed_plans: 64
-  percent: 85
+  total_plans: 88
+  completed_plans: 65
+  percent: 74
 ---
 
 # State
 
 ## Current Position
 
-Phase: 07 (exam-mode-blueprint-alpha-reporting) — EXECUTING
-Plan: 7 of 7 (gap-closure 07-07 — in progress, at human-verify checkpoint)
-Status: Executing Phase 07
-Last activity: 2026-05-14 -- 07-07 Task 4 done (949e08b); paused at Task 5 human-verify checkpoint
+Phase: 07.1 (grading-honesty-rebuild) — READY (next phase; not yet planned)
+Plan: 0 of 0 (run `/gsd-plan-phase 07.1` to break down)
+Status: Ready to execute
+Last activity: 2026-05-15 -- Phase 07.1 planning complete
 
 ### Deferred Verification
 
@@ -45,9 +45,10 @@ These are intentionally deferred, not blockers for advancing.
    - Tracking: `.planning/phases/06-troubleshooting-pack/06-HUMAN-UAT.md` and `06-VERIFICATION.md`
    - Final result: 22/22 PASS (6 drills × pre-fix + post-fix + host-safety, plus post-sweep with idempotency). Q04 ref-solution fixed (replaced `kubectl debug node` with explicit privileged debug pod manifest carrying same `kubectl.kubernetes.io/debug-source` label).
 
-7. **Phase 7 UAT** — CLOSED (2026-05-13). 9/9 automated tests pass. 2 interactive tests (timer/signals) skipped.
+7. **Phase 7 UAT** — CLOSED (2026-05-15). 11/12 pass; Test 12 (scoring honesty) acknowledged and routed to Phase 07.1. Test 2 (signal handling) PASS on re-run #4 after 15 fix commits (be88426 → 62c8c34). Both interactive tests (timer/signals) now verified on live cluster.
    - Tracking: `.planning/phases/07-exam-mode-blueprint-alpha-reporting/07-UAT.md`
-   - Bugs fixed: missing check_jq (53f0d0b), EOF infinite loop (4f49f9a), stdin leak to setup/grade (314cdc0), subshell losing QDIRS array (d196d46), cmd scripts not executable (9ff8312).
+   - Bugs fixed (initial wave): missing check_jq (53f0d0b), EOF infinite loop (4f49f9a), stdin leak to setup/grade (314cdc0), subshell losing QDIRS array (d196d46), cmd scripts not executable (9ff8312).
+   - Bugs fixed (07-07 gap-closure wave, signal handling): dfd9cc5, 30db50f, 949e08b, plus 15-commit empirical chain be88426 → 62c8c34. See `07-07-SUMMARY.md`.
 
 ### Phase 4 automated verification (2026-05-11, all green)
 
@@ -64,6 +65,7 @@ These are intentionally deferred, not blockers for advancing.
 ### Roadmap Evolution
 
 - Phase 07.1 inserted after Phase 7: Grading honesty rebuild — empty submissions must score 0/100 (Phase 7 UAT Test 12) (URGENT)
+- 2026-05-15 — Phase 07 COMPLETE. All 7 plans landed (07-01..07-07). UAT Test 2 (signal handling) closed via 07-07 + 15-commit follow-up chain (re-run #4 ✅). Test 12 acknowledged + deferred to 07.1. Next: `/gsd-discuss-phase 07.1` or `/gsd-plan-phase 07.1`.
 
 ### Decisions
 
