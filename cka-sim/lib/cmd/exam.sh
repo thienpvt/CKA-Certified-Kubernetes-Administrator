@@ -94,6 +94,10 @@ cka_sim::exam::on_tstp() {
   cka_sim::state::add_pause_delta
   cka_sim::state::save
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
+  # Drain stdin so a stray Enter typed between Ctrl-Z and fg doesn't
+  # immediately consume the in-place read and auto-advance the question.
+  local _drain=""
+  while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
   printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
   # Respawn the live timer so the bottom status row keeps ticking after fg.
