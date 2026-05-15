@@ -36,6 +36,7 @@ valid_severity=("info" "warn" "error")
 valid_domain=("troubleshooting" "cluster-architecture" "services-networking" "workloads-scheduling" "storage")
 valid_source=("cncf-curriculum" "concerns-md" "community")
 valid_ref_kind=("concerns-md" "k8s-doc" "prior-art-exercise" "exam-objective" "blog-post")
+valid_ownership=("candidate-required" "setup-allowed")
 
 # Required seed IDs per GRADE-05 (D-15(h)).
 seed_ids=(
@@ -95,6 +96,10 @@ _validate_entry() {
   _in_array "${current_fields[severity]}" "${valid_severity[@]}" || { err "trap[$current_id]: severity '${current_fields[severity]}' not in enum"; errors=$(( errors + 1 )); }
   _in_array "${current_fields[domain]}" "${valid_domain[@]}" || { err "trap[$current_id]: domain '${current_fields[domain]}' not in enum"; errors=$(( errors + 1 )); }
   _in_array "${current_fields[source]}" "${valid_source[@]}" || { err "trap[$current_id]: source '${current_fields[source]}' not in enum"; errors=$(( errors + 1 )); }
+  # ownership: optional field — validate value if present
+  if [[ -n "${current_fields[ownership]:-}" ]]; then
+    _in_array "${current_fields[ownership]}" "${valid_ownership[@]}" || { err "trap[$current_id]: ownership '${current_fields[ownership]}' not in enum {candidate-required, setup-allowed}"; errors=$(( errors + 1 )); }
+  fi
   # references[].kind enum + path-existence for concerns-md/prior-art-exercise
   local i
   for (( i=0; i<${#current_ref_kinds[@]}; i++ )); do
@@ -152,7 +157,7 @@ while IFS= read -r line; do
       continue
     fi
     # Only stash if it's a known top-level field
-    for f in "${required_fields[@]}" id; do
+    for f in "${required_fields[@]}" id ownership; do
       if [[ "$f" == "$local_key" ]]; then
         current_fields[$local_key]="$local_val"
         break
