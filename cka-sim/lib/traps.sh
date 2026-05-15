@@ -10,6 +10,8 @@
 [[ -z "${RED+x}" ]] && source "$CKA_SIM_ROOT/lib/colors.sh"
 # shellcheck source=log.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/log.sh"
+# shellcheck source=baseline.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/baseline.sh"
 
 # ---------- Catalog state ----------
 #
@@ -170,6 +172,8 @@ cka_sim::trap::format_line() {
 cka_sim::trap::detect_default_sa_used() {
   local ns="${1:?detect_default_sa_used: namespace required}"
   local pod="${2:?detect_default_sa_used: pod name required}"
+  # Ownership gate (Phase 07.1): skip setup-owned unchanged resources.
+  cka_sim::baseline::is_candidate_modified pod "$pod" -n "$ns" || return 0
   local sa
   sa=$(kubectl get pod "$pod" -n "$ns" -o jsonpath='{.spec.serviceAccountName}' 2>/dev/null)
   if [[ -z "$sa" || "$sa" == "default" ]]; then
@@ -186,6 +190,8 @@ cka_sim::trap::detect_default_sa_used() {
 cka_sim::trap::detect_missing_dns_egress() {
   local ns="${1:?detect_missing_dns_egress: namespace required}"
   local np="${2:?detect_missing_dns_egress: netpol name required}"
+  # Ownership gate (Phase 07.1): skip setup-owned unchanged resources.
+  cka_sim::baseline::is_candidate_modified networkpolicy "$np" -n "$ns" || return 0
   local json
   json=$(kubectl get networkpolicy "$np" -n "$ns" -o json 2>/dev/null) || return 0
   [[ -n "$json" ]] || return 0
@@ -213,6 +219,8 @@ cka_sim::trap::detect_missing_dns_egress() {
 #   the problem; multi-node clusters hit it the first time the pod reschedules.
 cka_sim::trap::detect_hostpath_pv_without_nodeaffinity() {
   local pv="${1:?detect_hostpath_pv_without_nodeaffinity: pv name required}"
+  # Ownership gate (Phase 07.1): skip setup-owned unchanged resources (cluster-scoped).
+  cka_sim::baseline::is_candidate_modified pv "$pv" || return 0
   local json
   json=$(kubectl get pv "$pv" -o json 2>/dev/null) || return 0
   [[ -n "$json" ]] || return 0
@@ -312,6 +320,8 @@ cka_sim::trap::detect_as_flag_format_wrong() {
 cka_sim::trap::detect_rbac_viewer_role_mismatch() {
   local ns="${1:?detect_rbac_viewer_role_mismatch: namespace required}"
   local role="${2:?detect_rbac_viewer_role_mismatch: role name required}"
+  # Ownership gate (Phase 07.1): skip setup-owned unchanged resources.
+  cka_sim::baseline::is_candidate_modified role "$role" -n "$ns" || return 0
   local json
   json=$(kubectl get role "$role" -n "$ns" -o json 2>/dev/null) || return 0
   [[ -n "$json" ]] || return 0
@@ -357,6 +367,8 @@ cka_sim::trap::detect_rbac_viewer_role_mismatch() {
 cka_sim::trap::detect_service_label_mismatch() {
   local ns="${1:?detect_service_label_mismatch: namespace required}"
   local svc="${2:?detect_service_label_mismatch: service name required}"
+  # Ownership gate (Phase 07.1): skip setup-owned unchanged resources.
+  cka_sim::baseline::is_candidate_modified service "$svc" -n "$ns" || return 0
   # Service must exist for the detector to fire (otherwise different problem)
   kubectl get service "$svc" -n "$ns" -o name >/dev/null 2>&1 || return 0
   local addr_count
