@@ -1,0 +1,17 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-storage-02",
+  "resources": [
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "app-cache",
+      "namespace": "cka-sim-storage-02",
+      "generation": null,
+      "resourceVersion": "200",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "persistentvolumeclaim/app-cache"
+  ]
+}

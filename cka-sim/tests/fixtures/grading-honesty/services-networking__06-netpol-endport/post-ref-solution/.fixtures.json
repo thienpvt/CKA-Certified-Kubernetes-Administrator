@@ -1,0 +1,10 @@
+{
+  "wait --for=condition=Ready pod/q06-server -n cka-sim-services-networking-06 --timeout=30s": {"stdout": "pod/q06-server condition met", "rc": 0},
+  "wait --for=condition=Ready pod/q06-client -n cka-sim-services-networking-06 --timeout=30s": {"stdout": "pod/q06-client condition met", "rc": 0},
+  "get networkpolicy q06-allow-range -n cka-sim-services-networking-06 -o name": {"stdout": "networkpolicy.networking.k8s.io/q06-allow-range", "rc": 0},
+  "get networkpolicy q06-allow-range -n cka-sim-services-networking-06 -o jsonpath={.spec.ingress[0].ports[0].port}": {"stdout": "8080", "rc": 0},
+  "get networkpolicy q06-allow-range -n cka-sim-services-networking-06 -o jsonpath={.spec.ingress[0].ports[0].endPort}": {"stdout": "8090", "rc": 0},
+  "get networkpolicy q06-allow-range -n cka-sim-services-networking-06 -o jsonpath={.spec.ingress[0].ports[0].protocol}": {"stdout": "TCP", "rc": 0},
+  "exec -n cka-sim-services-networking-06 q06-client -- wget -qO- --timeout=3 q06-server:8085": {"stdout": "OK", "rc": 0},
+  "exec -n cka-sim-services-networking-06 q06-client -- wget -qO- --timeout=3 q06-server:8095": {"stdout": "", "rc": 1}
+}

@@ -1,0 +1,6 @@
+{
+  "wait --for=jsonpath={.status.phase}=Bound pvc/app-cache -n cka-sim-storage-02 --timeout=60s": {"stdout": "", "rc": 1},
+  "get storageclass fast-ssd -o name": {"stdout": "", "rc": 1},
+  "get pvc app-cache -n cka-sim-storage-02 -o jsonpath={.status.phase}": {"stdout": "Pending", "rc": 0},
+  "get pvc app-cache -n cka-sim-storage-02 -o jsonpath={.spec.storageClassName}": {"stdout": "fast-ssd", "rc": 0}
+}

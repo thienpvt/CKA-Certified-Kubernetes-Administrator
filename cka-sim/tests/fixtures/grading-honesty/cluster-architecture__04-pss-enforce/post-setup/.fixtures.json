@@ -1,0 +1,9 @@
+{
+  "wait --for=condition=Available deployment/q04-compliant -n cka-sim-cluster-architecture-04 --timeout=30s": {"stdout": "", "rc": 1},
+  "get namespace cka-sim-cluster-architecture-04 -o jsonpath={.metadata.labels.pod-security\\.kubernetes\\.io/enforce}": {"stdout": "restricted", "rc": 0},
+  "get namespace cka-sim-cluster-architecture-04 -o jsonpath={.metadata.labels.pod-security\\.kubernetes\\.io/enforce-version}": {"stdout": "v1.35", "rc": 0},
+  "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o name": {"stdout": "deployment.apps/q04-compliant", "rc": 0},
+  "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o jsonpath={.status.readyReplicas}": {"stdout": "0", "rc": 0},
+  "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o jsonpath={.metadata.generation}": {"stdout": "1", "rc": 0},
+  "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o jsonpath={.metadata.resourceVersion}": {"stdout": "601", "rc": 0}
+}
