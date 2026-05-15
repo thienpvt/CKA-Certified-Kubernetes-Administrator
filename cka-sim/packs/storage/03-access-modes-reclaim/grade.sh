@@ -1,6 +1,9 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — assert_pvc_bound q03-rwo-pvc leaked at empty submission
+#   (setup binds it immediately) -> replaced with assert_changed_since_setup pv q03-retain-pv
+#   to gate on actual candidate modification of the PV (the candidate's first deliverable).
 # storage/03-access-modes-reclaim/grade.sh — behavioural grader (GRADE-02).
-# Asserts: both PVCs Bound + q03-retain-pv reclaim=Delete + q03-delete-pv accessModes[0]=ReadWriteMany.
+# Asserts: q03-retain-pv candidate-modified + q03-rwx-pvc Bound + q03-retain-pv reclaim=Delete + q03-delete-pv accessModes[0]=ReadWriteMany.
 # Records traps: pv-accessmodes-mismatch (RWX PVC still Pending AND no PV advertises RWX)
 # and reclaim-policy-retain-when-delete-required (q03-retain-pv still Retain — the
 # business-rule direction; CR-02 realignment vs the old reclaim-policy-delete-data-loss
@@ -20,7 +23,12 @@ kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/q03-rwo-pvc -n "$CKA_SIM
 kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/q03-rwx-pvc -n "$CKA_SIM_LAB_NS" --timeout=60s >/dev/null 2>&1 || true
 
 # Assertions (4, each weight 1).
-cka_sim::grade::assert_pvc_bound "$CKA_SIM_LAB_NS" q03-rwo-pvc
+# Assertion 1 (Phase 07.1 AUDIT-01): q03-retain-pv must be candidate-modified.
+#   Replaces the leaky `assert_pvc_bound q03-rwo-pvc` (setup binds q03-rwo-pvc to
+#   q03-retain-pv immediately because both are RWO + storageClassName=manual + 1Gi).
+#   The candidate's primary deliverable for q03-retain-pv is flipping reclaimPolicy
+#   to Delete; this gate verifies the resource was actually touched.
+cka_sim::grade::assert_changed_since_setup pv q03-retain-pv
 cka_sim::grade::assert_pvc_bound "$CKA_SIM_LAB_NS" q03-rwx-pvc
 cka_sim::grade::assert_field_eq pv q03-retain-pv '{.spec.persistentVolumeReclaimPolicy}' 'Delete'
 cka_sim::grade::assert_field_eq pv q03-delete-pv '{.spec.accessModes[0]}' 'ReadWriteMany'

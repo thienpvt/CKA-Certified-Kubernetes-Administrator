@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — no leak found (PVC stays Pending at setup; PV lacks nodeAffinity at setup)
 # storage/01-pvc-binding/grade.sh — asserts PVC bound + PV has nodeAffinity; records trap if seeded condition still present.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"

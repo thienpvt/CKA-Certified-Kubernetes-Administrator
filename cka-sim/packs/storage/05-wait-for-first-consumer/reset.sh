@@ -12,7 +12,7 @@ kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
 kubectl delete pv q05-wffc-pv --ignore-not-found
 kubectl delete storageclass q05-wffc --ignore-not-found
 
-# 3. Remove per-question baseline dir
-rm -rf "/tmp/cka-sim/storage-wait-for-first-consumer/"
+# 3. Phase 07.1 AUDIT-01: clear per-question tmp dir (baseline + capture artefacts).
+rm -rf /tmp/cka-sim/05-wait-for-first-consumer/
 
 exit 0

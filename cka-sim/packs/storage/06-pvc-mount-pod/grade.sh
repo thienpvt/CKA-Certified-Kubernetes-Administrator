@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — no leak found (Deployment + exec probe all require candidate-authored Deployment)
 # storage/06-pvc-mount-pod/grade.sh — asserts Deployment q06-reader exists,
 # mounts PVC q06-data read-only, and the pod can read /data/marker via exec.
 # Also records default-sa-used trap if the candidate's pod uses the default SA.

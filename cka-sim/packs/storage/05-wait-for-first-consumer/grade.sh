@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — no leak found (Pod + PVC binding all require candidate-authored Pod)
 # storage/05-wait-for-first-consumer/grade.sh — asserts Pod ready + PVC bound + claim ref;
 # records WFFC trap if PVC still Pending without a consumer, records default-sa-used if the
 # candidate's Pod skipped ServiceAccount hygiene.

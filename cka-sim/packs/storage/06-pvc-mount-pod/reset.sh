@@ -9,7 +9,7 @@ kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
 # 2. Cluster-scoped PV (q<NN>- prefix per TRIP-03).
 kubectl delete pv q06-data-pv --ignore-not-found
 
-# 3. Remove per-question baseline dir
-rm -rf "/tmp/cka-sim/storage-pvc-mount-pod/"
+# 3. Phase 07.1 AUDIT-01: clear per-question tmp dir (baseline + capture artefacts).
+rm -rf /tmp/cka-sim/06-pvc-mount-pod/
 
 exit 0

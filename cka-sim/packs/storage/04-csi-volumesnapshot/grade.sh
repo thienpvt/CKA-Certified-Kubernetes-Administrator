@@ -1,4 +1,5 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — no leak found (all asserted resources are candidate-authored)
 # storage/04-csi-volumesnapshot/grade.sh
 # Grades VolumeSnapshotClass + VolumeSnapshot schema authoring (CG-01).
 #
