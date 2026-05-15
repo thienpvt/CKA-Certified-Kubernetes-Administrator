@@ -1,0 +1,17 @@
+{
+  "captured_at": "2026-01-01T00:00:00Z",
+  "lab_namespace": "test-ns",
+  "resources": [
+    {
+      "kind": "Pod",
+      "name": "web-abc123",
+      "namespace": "test-ns",
+      "generation": 1,
+      "resourceVersion": "100",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "pod/web-abc123"
+  ]
+}
