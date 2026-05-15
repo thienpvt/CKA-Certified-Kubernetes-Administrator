@@ -1,0 +1,35 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-cluster-architecture-01",
+  "resources": [
+    {
+      "kind": "Role",
+      "name": "pod-viewer",
+      "namespace": "cka-sim-cluster-architecture-01",
+      "generation": null,
+      "resourceVersion": "500",
+      "labels": {}
+    },
+    {
+      "kind": "RoleBinding",
+      "name": "viewer-binding",
+      "namespace": "cka-sim-cluster-architecture-01",
+      "generation": null,
+      "resourceVersion": "501",
+      "labels": {}
+    },
+    {
+      "kind": "ServiceAccount",
+      "name": "viewer",
+      "namespace": "cka-sim-cluster-architecture-01",
+      "generation": null,
+      "resourceVersion": "502",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "role/pod-viewer",
+    "rolebinding/viewer-binding",
+    "serviceaccount/viewer"
+  ]
+}
