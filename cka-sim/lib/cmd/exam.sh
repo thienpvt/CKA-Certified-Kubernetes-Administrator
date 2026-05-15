@@ -112,6 +112,8 @@ cka_sim::exam::on_exit() {
   wait "${CKA_SIM_TIMER_PID:-}" 2>/dev/null || true
   CKA_SIM_TIMER_PID=""
   rm -f "${CKA_SIM_TIMER_GATE:-}" 2>/dev/null || true
+  # Restore terminal echo/mode in case setup_question left it off mid-error.
+  [[ -n "${CKA_SIM_EXAM_STTY_SAVED:-}" ]] && stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
   cka_sim::state::save 2>/dev/null || true
   local i qdir
   for i in "${CKA_SIM_EXAM_SETUP_IDXS[@]:-}"; do
@@ -188,14 +190,20 @@ cka_sim::exam::setup_question() {
   done
 
   if (( ! already_setup )); then
-    info "Setting up Q$((idx + 1))..."
+    info "Setting up Q$((idx + 1))... (don't type until '>' returns)"
     cka_sim::exam::export_lab_ns "$idx"
     # Defer TSTP during setup — kubectl children in the foreground process group
     # get confused by mid-operation stops. Queue the stop for after setup finishes.
     trap '' TSTP
+    # Silence TTY echo + flush input so stray keystrokes during setup don't
+    # smear across kubectl output OR auto-consume the next read prompt.
+    stty -echo 2>/dev/null || true
     bash "$qdir/reset.sh" </dev/null 2>/dev/null || true
     local setup_rc=0
     bash "$qdir/setup.sh" </dev/null || setup_rc=$?
+    local _drain=""
+    while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
+    stty echo 2>/dev/null || true
     trap 'cka_sim::exam::on_tstp' TSTP
     if (( setup_rc != 0 )); then
       warn "Q$((idx + 1)) setup interrupted or failed (rc=$setup_rc) — question flagged"
