@@ -329,10 +329,16 @@ cka_sim::exam::question_loop() {
 }
 
 cka_sim::exam::confirm_submit() {
+  # Mask Ctrl-C and Ctrl-Z for the entire submit/grade pipeline. Ctrl-C here
+  # makes no sense semantically (we're past the question loop, there's no
+  # "current question" to flag), and SIGINT was killing the jq subprocesses
+  # in the for-loop below — pipefail + set -e then terminated the script
+  # silently. Once we enter confirm/grade, the exam is committing to finish.
+  trap '' INT TSTP
   local flagged=0 skipped=0 answered=0 pending=0
   local i status
   for (( i=0; i<CKA_SIM_EXAM_QUESTION_COUNT; i++ )); do
-    status=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" | jq -r ".[$i].status // \"pending\"")
+    status=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" | jq -r ".[$i].status // \"pending\"" 2>/dev/null || echo "pending")
     case "$status" in
       flagged) flagged=$(( flagged + 1 )) ;;
       skipped) skipped=$(( skipped + 1 )) ;;
