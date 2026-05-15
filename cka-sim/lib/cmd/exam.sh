@@ -118,9 +118,11 @@ cka_sim::exam::on_tstp() {
   # immediately consume the in-place read and auto-advance the question.
   local _drain=""
   while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
-  printf '\n\033[32m✓ Resumed. (still on Q%d/%d, ⏱  %s remaining)\033[0m\n' \
-    "$((CKA_SIM_EXAM_CUR_IDX + 1))" "$CKA_SIM_EXAM_QUESTION_COUNT" \
+  printf '\n\033[32m✓ Resumed. (⏱  %s remaining)\033[0m\n' \
     "$(cka_sim::exam::format_remaining)" >&2
+  # Re-display the question after resume so the candidate isn't staring at
+  # a bare `>` with no context. Goes to stdout (same as initial display).
+  cka_sim::exam::present_question "$CKA_SIM_EXAM_CUR_IDX"
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
 }
 
