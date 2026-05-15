@@ -18,13 +18,13 @@ flags="$sandbox/kubeadm-flags.env"
 kubeconfig="$sandbox/kubelet.conf"
 removed_flag="container-runtime""=remote"
 
-CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+# Phase 07.1 AUDIT-01: setup-collision — setup writes kubeadm-flags.env on disk; existence is setup-state, not candidate-driven.
+#   Demoted to weight=0 (informational only).
 if [[ -s "$flags" ]]; then
-  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
-  ok "kubeadm-flags.env exists"
+  ok "kubeadm-flags.env exists (setup-owned)"
 else
-  CKA_SIM_GRADE_FAILS+=("kubeadm-flags.env missing")
-  err "kubeadm-flags.env missing"
+  CKA_SIM_GRADE_FAILS+=("kubeadm-flags.env missing (setup-owned)")
+  err "kubeadm-flags.env missing (setup-owned)"
 fi
 
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))

@@ -27,7 +27,8 @@ cka_sim::grade::assert_resource_exists service api-svc -n "$ns" 0
 cka_sim::grade::assert_changed_since_setup networkpolicy allow-web-to-api -n "$ns"
 
 if [[ -n "$web_pod" ]]; then
-  cka_sim::grade::assert_pod_ready "$ns" "$web_pod"
+  # Phase 07.1 AUDIT-01: setup-collision — setup creates pod Ready; candidate's deliverable is NP fix, not pod readiness.
+  cka_sim::grade::assert_pod_ready "$ns" "$web_pod" 0
 
   CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
   if kubectl exec -n "$ns" "$web_pod" -- nslookup kubernetes.default.svc.cluster.local >/dev/null 2>&1; then

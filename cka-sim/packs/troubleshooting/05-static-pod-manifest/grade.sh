@@ -18,14 +18,14 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 
 manifest="/tmp/q05-staticpod/manifest.yaml"
 
-CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+# Phase 07.1 AUDIT-01: setup-collision — setup writes manifest.yaml on disk; existence is setup-state, not candidate-driven.
+#   Demoted to weight=0 (informational only; reported via passes/fails arrays but does NOT add to score).
 if [[ -s "$manifest" ]]; then
-  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
-  CKA_SIM_GRADE_PASSES+=("manifest.yaml exists")
-  ok "manifest.yaml exists"
+  CKA_SIM_GRADE_PASSES+=("manifest.yaml exists (setup-owned)")
+  ok "manifest.yaml exists (setup-owned)"
 else
-  CKA_SIM_GRADE_FAILS+=("manifest.yaml missing")
-  err "manifest.yaml missing"
+  CKA_SIM_GRADE_FAILS+=("manifest.yaml missing (setup-owned)")
+  err "manifest.yaml missing (setup-owned)"
 fi
 
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
