@@ -79,26 +79,32 @@ cka_sim::exam::on_int() {
 }
 
 cka_sim::exam::on_tstp() {
-  # Pre-stop: record pause time, kill timer, restore terminal.
+  # Pre-stop: record pause time, kill timer. DO NOT touch stty here — bash
+  # will reclaim the terminal once we stop and may change its modes, so any
+  # restore we do now is wasted. Restore stty AFTER resume instead.
   cka_sim::state::set_pause
   kill "${CKA_SIM_TIMER_PID:-}" 2>/dev/null || true
   CKA_SIM_TIMER_PID=""
   rm -f "${CKA_SIM_TIMER_GATE:-}" 2>/dev/null || true
-  stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
   # Default-stop: restore default disposition, self-deliver TSTP.
   trap - TSTP
   kill -TSTP $$
   # === resumes here after fg ===
   trap 'cka_sim::exam::on_tstp' TSTP
   trap 'cka_sim::exam::on_int'  INT
+  # Restore the terminal modes we captured at exam start (icanon on, echo on,
+  # etc.) — bash may have flipped icanon/echo while we were stopped, which is
+  # how repeated Ctrl-Z/fg cycles can leave `read` waiting forever for a line
+  # terminator that the TTY no longer delivers.
+  stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
   cka_sim::state::add_pause_delta
   cka_sim::state::save
-  CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
   # Drain stdin so a stray Enter typed between Ctrl-Z and fg doesn't
   # immediately consume the in-place read and auto-advance the question.
   local _drain=""
   while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
-  printf '\n\033[32m✓ Resumed.\033[0m\n' >&2
+  printf '\n\033[32m✓ Resumed. (still on Q%d/%d)\033[0m\n' \
+    "$((CKA_SIM_EXAM_CUR_IDX + 1))" "$CKA_SIM_EXAM_QUESTION_COUNT" >&2
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
   # Respawn the live timer so the bottom status row keeps ticking after fg.
   # Deadline has been adjusted by add_pause_delta so paused time is excluded.
