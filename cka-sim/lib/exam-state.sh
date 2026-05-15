@@ -129,8 +129,18 @@ cka_sim::state::save() {
 cka_sim::state::set_question_status() {
   local idx="${1:?set_question_status: idx required}"
   local status="${2:?set_question_status: status required}"
-  CKA_SIM_EXAM_QUESTIONS_JSON=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" \
-    | jq --argjson i "$idx" --arg s "$status" '.[$i].status = $s')
+  # If the jq subprocess is interrupted by a signal delivered to the
+  # foreground process group (Ctrl-C while a trap is mutating state), it
+  # returns empty. Overwriting the global with empty would corrupt state
+  # and trip set -e in unrelated callers later. Capture to a local, verify
+  # it parses as JSON, only then assign.
+  local _new
+  _new=$(printf '%s' "$CKA_SIM_EXAM_QUESTIONS_JSON" \
+    | jq --argjson i "$idx" --arg s "$status" '.[$i].status = $s' 2>/dev/null) \
+    || return 1
+  [[ -n "$_new" ]] || return 1
+  printf '%s' "$_new" | jq -e empty >/dev/null 2>&1 || return 1
+  CKA_SIM_EXAM_QUESTIONS_JSON="$_new"
 }
 
 cka_sim::state::record_grade() {

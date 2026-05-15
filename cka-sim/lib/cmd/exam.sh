@@ -79,22 +79,27 @@ cka_sim::exam::format_remaining() {
 }
 
 cka_sim::exam::on_int() {
-  # Inside a trap, `set -e` + pipefail can poison the interrupted read's
-  # return path if any helper (e.g., jq inside state::save) was also hit by
-  # the SIGINT and exits non-zero — bash then terminates the script. Wrap
-  # every call with `|| true` so the trap always returns cleanly.
+  # Mask further INT for the duration of this trap. Rapid Ctrl-C from the
+  # candidate will otherwise SIGINT the foreground process group — including
+  # the jq subprocess that set_question_status spawns to update the JSON
+  # state — and a killed jq returns empty output, corrupting the global
+  # state. The corruption then trips set -e on the NEXT jq call (in
+  # confirm_submit), which kills the script with no visible error.
+  trap '' INT
   CKA_SIM_EXAM_SIGNAL_FIRED=1
   cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "flagged" || true
   cka_sim::state::save || true
   printf '\n\033[33m✓ Q%d flagged. Continuing…\033[0m\n' \
     "$(( CKA_SIM_EXAM_CUR_IDX + 1 ))" >&2 || true
-  # `read` restarts in-place after this trap returns — re-print the prompt so
-  # the user sees the exam is still waiting for input.
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2 || true
+  trap 'cka_sim::exam::on_int' INT
   return 0
 }
 
 cka_sim::exam::on_tstp() {
+  # Mask INT during the critical pre-stop section so a stray Ctrl-C can't
+  # interrupt set_pause and corrupt timing state.
+  trap '' INT
   CKA_SIM_EXAM_SIGNAL_FIRED=1
   CKA_SIM_EXAM_RESUME_PENDING=1
   # Pre-stop: record pause time. DO NOT touch stty here — bash will reclaim
