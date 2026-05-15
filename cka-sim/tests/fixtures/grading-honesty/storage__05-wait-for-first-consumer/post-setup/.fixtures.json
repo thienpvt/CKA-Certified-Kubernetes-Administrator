@@ -1,0 +1,7 @@
+{
+  "wait --for=condition=Ready pod/q05-consumer -n cka-sim-storage-05 --timeout=60s": {"stdout": "", "rc": 1},
+  "get pod q05-consumer -n cka-sim-storage-05 -o jsonpath={.status.conditions[?(@.type==\"Ready\")].status}": {"stdout": "", "rc": 0},
+  "get pvc q05-claim -n cka-sim-storage-05 -o jsonpath={.status.phase}": {"stdout": "Pending", "rc": 0},
+  "get pod q05-consumer -n cka-sim-storage-05 -o jsonpath={.spec.volumes[0].persistentVolumeClaim.claimName}": {"stdout": "", "rc": 0},
+  "get pod q05-consumer -n cka-sim-storage-05 -o name": {"stdout": "", "rc": 1}
+}

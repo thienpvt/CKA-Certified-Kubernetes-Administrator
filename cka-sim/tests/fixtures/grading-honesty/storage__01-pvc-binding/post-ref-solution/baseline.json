@@ -1,0 +1,29 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-storage-01",
+  "resources": [
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "app-data",
+      "namespace": "cka-sim-storage-01",
+      "generation": null,
+      "resourceVersion": "100",
+      "labels": {}
+    },
+    {
+      "kind": "PersistentVolume",
+      "name": "q01-app-pv",
+      "namespace": null,
+      "generation": null,
+      "resourceVersion": "200",
+      "labels": {
+        "cka-sim/pack": "storage",
+        "cka-sim/question-id": "storage-pvc-binding"
+      }
+    }
+  ],
+  "resource_list": [
+    "persistentvolumeclaim/app-data",
+    "persistentvolume/q01-app-pv"
+  ]
+}

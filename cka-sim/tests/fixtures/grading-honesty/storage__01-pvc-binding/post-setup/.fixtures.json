@@ -1,0 +1,6 @@
+{
+  "get pvc app-data -n cka-sim-storage-01 -o jsonpath={.status.phase}": {"stdout": "Pending", "rc": 0},
+  "get pv q01-app-pv -o jsonpath={.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].key}": {"stdout": "", "rc": 0},
+  "get pv q01-app-pv -o jsonpath={.metadata.resourceVersion}": {"stdout": "200", "rc": 0},
+  "get pv q01-app-pv -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0}
+}

@@ -1,0 +1,8 @@
+{
+  "get volumesnapshotclass q04-snapclass -o name": {"stdout": "volumesnapshotclass.snapshot.storage.k8s.io/q04-snapclass", "rc": 0},
+  "get volumesnapshotclass q04-snapclass -o jsonpath={.driver}": {"stdout": "rancher.io/local-path", "rc": 0},
+  "get volumesnapshot q04-snapshot -n cka-sim-storage-04 -o name": {"stdout": "volumesnapshot.snapshot.storage.k8s.io/q04-snapshot", "rc": 0},
+  "get volumesnapshot q04-snapshot -n cka-sim-storage-04 -o jsonpath={.spec.source.persistentVolumeClaimName}": {"stdout": "app-data", "rc": 0},
+  "get volumesnapshotclass q04-snapclass": {"stdout": "NAME           DRIVER                  DELETIONPOLICY   AGE\nq04-snapclass  rancher.io/local-path   Delete           1m", "rc": 0},
+  "get pvc app-data -n cka-sim-storage-04 -o jsonpath={.spec.storageClassName}": {"stdout": "local-path", "rc": 0}
+}

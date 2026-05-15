@@ -1,0 +1,17 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-storage-05",
+  "resources": [
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "q05-claim",
+      "namespace": "cka-sim-storage-05",
+      "generation": null,
+      "resourceVersion": "100",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "persistentvolumeclaim/q05-claim"
+  ]
+}

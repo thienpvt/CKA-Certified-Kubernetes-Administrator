@@ -1,0 +1,8 @@
+{
+  "wait --for=condition=Available deployment/q06-reader -n cka-sim-storage-06 --timeout=90s": {"stdout": "", "rc": 1},
+  "get deployment q06-reader -n cka-sim-storage-06 -o name": {"stdout": "", "rc": 1},
+  "get deployment q06-reader -n cka-sim-storage-06 -o jsonpath={.spec.template.spec.volumes[0].persistentVolumeClaim.claimName}": {"stdout": "", "rc": 0},
+  "get deployment q06-reader -n cka-sim-storage-06 -o jsonpath={.spec.template.spec.containers[0].volumeMounts[0].readOnly}": {"stdout": "", "rc": 0},
+  "exec -n cka-sim-storage-06 deployment/q06-reader -- cat /data/marker": {"stdout": "", "rc": 1},
+  "get pod -n cka-sim-storage-06 -l app=q06-reader -o jsonpath={.items[0].metadata.name}": {"stdout": "", "rc": 0}
+}

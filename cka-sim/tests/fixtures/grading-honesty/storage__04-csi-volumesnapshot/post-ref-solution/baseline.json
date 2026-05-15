@@ -1,0 +1,32 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-storage-04",
+  "resources": [
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "app-data",
+      "namespace": "cka-sim-storage-04",
+      "generation": null,
+      "resourceVersion": "100",
+      "labels": {
+        "cka-sim/pack": "storage",
+        "cka-sim/question-id": "storage-csi-volumesnapshot"
+      }
+    },
+    {
+      "kind": "Pod",
+      "name": "q04-writer",
+      "namespace": "cka-sim-storage-04",
+      "generation": null,
+      "resourceVersion": "110",
+      "labels": {
+        "cka-sim/pack": "storage",
+        "cka-sim/question-id": "storage-csi-volumesnapshot"
+      }
+    }
+  ],
+  "resource_list": [
+    "persistentvolumeclaim/app-data",
+    "pod/q04-writer"
+  ]
+}

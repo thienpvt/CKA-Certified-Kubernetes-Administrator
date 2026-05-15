@@ -28,7 +28,9 @@ kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/q03-rwx-pvc -n "$CKA_SIM
 #   q03-retain-pv immediately because both are RWO + storageClassName=manual + 1Gi).
 #   The candidate's primary deliverable for q03-retain-pv is flipping reclaimPolicy
 #   to Delete; this gate verifies the resource was actually touched.
-cka_sim::grade::assert_changed_since_setup pv q03-retain-pv
+#   Uses canonical kind 'persistentvolume' (not the 'pv' alias) so the lookup
+#   matches lib/baseline.sh's resource_list format ("\(.kind|ascii_downcase)/\(.name)").
+cka_sim::grade::assert_changed_since_setup persistentvolume q03-retain-pv
 cka_sim::grade::assert_pvc_bound "$CKA_SIM_LAB_NS" q03-rwx-pvc
 cka_sim::grade::assert_field_eq pv q03-retain-pv '{.spec.persistentVolumeReclaimPolicy}' 'Delete'
 cka_sim::grade::assert_field_eq pv q03-delete-pv '{.spec.accessModes[0]}' 'ReadWriteMany'
