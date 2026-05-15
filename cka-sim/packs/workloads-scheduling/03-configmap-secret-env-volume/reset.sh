@@ -7,4 +7,7 @@ set -uo pipefail
 kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
 
 # No cluster-scoped resources for this question.
+# 3. Remove per-question baseline dir
+rm -rf "/tmp/cka-sim/workloads-configmap-secret-env-volume/"
+
 exit 0

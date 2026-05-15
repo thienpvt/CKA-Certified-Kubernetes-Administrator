@@ -8,4 +8,7 @@ if [[ -f /tmp/q05-kube-proxy/.cka-sim-sentinel ]]; then
 fi
 
 kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
+# 3. Remove per-question baseline dir
+rm -rf "/tmp/cka-sim/services-kube-proxy-mode/"
+
 exit 0

@@ -17,4 +17,7 @@ if [[ -n "$sc_owned" ]]; then
   kubectl delete storageclass fast-ssd --ignore-not-found
 fi
 
+# 3. Remove per-question baseline dir
+rm -rf "/tmp/cka-sim/storage-storageclass-dynamic/"
+
 exit 0

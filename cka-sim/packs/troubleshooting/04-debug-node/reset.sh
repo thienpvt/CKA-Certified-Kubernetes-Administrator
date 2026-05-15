@@ -11,4 +11,7 @@ if [[ -f "$sandbox/.cka-sim-sentinel" ]]; then
 fi
 
 kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
+# 3. Remove per-question baseline dir
+rm -rf "/tmp/cka-sim/troubleshooting-debug-node/"
+
 exit 0
