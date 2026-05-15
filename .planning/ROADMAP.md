@@ -237,7 +237,7 @@ Plans:
 
 Plans:
 - [x] 07.1-01-PLAN.md -- TDD: lib/baseline.sh + 3 grade helpers + catalog ownership schema (Wave 1)
-- [ ] 07.1-02-PLAN.md -- TDD: traps.sh ownership refactor + drill.sh/exam.sh baseline hooks (Wave 2)
+- [x] 07.1-02-PLAN.md -- TDD: traps.sh ownership refactor + drill.sh/exam.sh baseline hooks (Wave 2)
 - [ ] 07.1-03-PLAN.md -- Fix: workloads-scheduling/02 generation-delta assertion (Wave 3)
 - [ ] 07.1-04-PLAN.md -- Fix: storage/02 candidate-authored StorageClass (Wave 3)
 - [ ] 07.1-05-PLAN.md -- Fix: services-networking/06 NP authorship gate (Wave 3)
