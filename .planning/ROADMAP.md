@@ -248,7 +248,7 @@ Plans:
 - [x] 07.1-10-PLAN.md -- Audit: services-networking pack (5 Qs) + fixtures + tests (Wave 5)
 - [x] 07.1-11-PLAN.md -- Audit: cluster-architecture pack (7 Qs) + fixtures + tests (Wave 5)
 - [x] 07.1-12-PLAN.md -- Audit: troubleshooting pack (6 Qs) + fixtures + tests (Wave 5)
-- [ ] 07.1-13-PLAN.md -- Docs: GRADING-HONESTY.md + README caveat removal + VERIFICATION.md (Wave 6)
+- [x] 07.1-13-PLAN.md -- Docs: GRADING-HONESTY.md + README caveat removal + VERIFICATION.md (Wave 6)
 
 ## Phase 8: Blueprint Bravo + Banners + Docs + CI
 
