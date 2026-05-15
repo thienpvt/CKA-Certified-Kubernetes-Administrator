@@ -27,15 +27,31 @@ else
   cka_sim::grade::record_trap netpol-endport-missing-protocol
 fi
 
+# Phase 07.1 D-15 — gate reachability assertion on candidate-authored NetworkPolicy.
+# Without this gate, default-allow lets the wget through with no NP, leaking 1 point.
+np_authored=0
+if cka_sim::baseline::is_candidate_modified networkpolicy q06-allow-range -n "$CKA_SIM_LAB_NS"; then
+  # is_candidate_modified returns 0 if NP is candidate-authored OR baseline missing (back-compat).
+  # Verify the NP actually exists in the cluster — back-compat fires the gate but cluster may still be empty.
+  if kubectl get networkpolicy q06-allow-range -n "$CKA_SIM_LAB_NS" -o name >/dev/null 2>&1; then
+    np_authored=1
+  fi
+fi
+
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
-if kubectl exec -n "$CKA_SIM_LAB_NS" q06-client -- wget -qO- --timeout=3 q06-server:8085 >/dev/null 2>&1; then
+if (( np_authored == 1 )) \
+   && kubectl exec -n "$CKA_SIM_LAB_NS" q06-client -- wget -qO- --timeout=3 q06-server:8085 >/dev/null 2>&1; then
   CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
-  CKA_SIM_GRADE_PASSES+=("q06-client can reach q06-server:8085 inside allowed endPort range")
+  CKA_SIM_GRADE_PASSES+=("q06-client can reach q06-server:8085 inside allowed endPort range (gated on candidate-authored NP)")
   ok "q06-client can reach q06-server:8085 inside allowed endPort range"
 else
-  CKA_SIM_GRADE_FAILS+=("q06-client cannot reach q06-server:8085 inside allowed endPort range")
-  err "q06-client cannot reach q06-server:8085 inside allowed endPort range"
-  cka_sim::grade::record_trap netpol-endport-missing-protocol
+  if (( np_authored == 0 )); then
+    CKA_SIM_GRADE_FAILS+=("reachability check skipped — no candidate-authored NetworkPolicy q06-allow-range")
+    err "reachability check skipped — no candidate-authored NetworkPolicy"
+  else
+    CKA_SIM_GRADE_FAILS+=("q06-client cannot reach q06-server:8085 inside allowed endPort range")
+    err "q06-client cannot reach q06-server:8085 inside allowed endPort range"
+  fi
 fi
 
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
