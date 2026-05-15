@@ -1,0 +1,53 @@
+{
+  "captured_at": 1778800000,
+  "lab_namespace": "cka-sim-troubleshooting-02",
+  "resources": [
+    {
+      "kind": "Deployment",
+      "name": "web",
+      "namespace": "cka-sim-troubleshooting-02",
+      "generation": 1,
+      "resourceVersion": "100",
+      "labels": {"app.kubernetes.io/name": "web"}
+    },
+    {
+      "kind": "Deployment",
+      "name": "api",
+      "namespace": "cka-sim-troubleshooting-02",
+      "generation": 1,
+      "resourceVersion": "101",
+      "labels": {"app.kubernetes.io/name": "api"}
+    },
+    {
+      "kind": "Service",
+      "name": "api-svc",
+      "namespace": "cka-sim-troubleshooting-02",
+      "generation": 1,
+      "resourceVersion": "102",
+      "labels": {}
+    },
+    {
+      "kind": "NetworkPolicy",
+      "name": "default-deny-egress",
+      "namespace": "cka-sim-troubleshooting-02",
+      "generation": 1,
+      "resourceVersion": "103",
+      "labels": {}
+    },
+    {
+      "kind": "NetworkPolicy",
+      "name": "allow-web-to-api",
+      "namespace": "cka-sim-troubleshooting-02",
+      "generation": 1,
+      "resourceVersion": "104",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "deployment/web",
+    "deployment/api",
+    "service/api-svc",
+    "networkpolicy/default-deny-egress",
+    "networkpolicy/allow-web-to-api"
+  ]
+}

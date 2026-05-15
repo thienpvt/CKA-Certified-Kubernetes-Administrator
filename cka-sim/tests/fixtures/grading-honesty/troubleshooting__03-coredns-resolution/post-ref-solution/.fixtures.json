@@ -1,0 +1,16 @@
+{
+  "wait --for=condition=Ready pod/q03-dnsclient -n cka-sim-troubleshooting-03 --timeout=30s": {"stdout": "", "rc": 0},
+  "get configmap q03-coredns-corefile -n cka-sim-troubleshooting-03 -o name": {"stdout": "configmap/q03-coredns-corefile", "rc": 0},
+  "get deployment q03-coredns -n cka-sim-troubleshooting-03 -o name": {"stdout": "deployment.apps/q03-coredns", "rc": 0},
+  "get service q03-coredns -n cka-sim-troubleshooting-03 -o name": {"stdout": "service/q03-coredns", "rc": 0},
+  "get pod q03-dnsclient -n cka-sim-troubleshooting-03 -o name": {"stdout": "pod/q03-dnsclient", "rc": 0},
+  "get pod q03-dnsclient -n cka-sim-troubleshooting-03 -o jsonpath={.spec.dnsPolicy}": {"stdout": "None", "rc": 0},
+  "get configmap q03-coredns-corefile -n cka-sim-troubleshooting-03 -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get configmap q03-coredns-corefile -n cka-sim-troubleshooting-03 -o jsonpath={.metadata.resourceVersion}": {"stdout": "200", "rc": 0},
+  "get deployment q03-coredns -n cka-sim-troubleshooting-03 -o jsonpath={.metadata.generation}": {"stdout": "2", "rc": 0},
+  "get deployment q03-coredns -n cka-sim-troubleshooting-03 -o jsonpath={.metadata.resourceVersion}": {"stdout": "250", "rc": 0},
+  "exec -n cka-sim-troubleshooting-03 q03-dnsclient -- nslookup kubernetes.default.svc.cluster.local": {"stdout": "Server: 10.0.0.10\nAddress: 10.96.0.1", "rc": 0},
+  "exec -n cka-sim-troubleshooting-03 q03-dnsclient -- nslookup www.example.com": {"stdout": "Server: 10.0.0.10\nAddress: 93.184.216.34", "rc": 0},
+  "get configmap q03-coredns-corefile -n cka-sim-troubleshooting-03 -o jsonpath={.data.Corefile}": {"stdout": ".:53 {\n    forward . /etc/resolv.conf\n}", "rc": 0},
+  "get deploy q03-coredns -n cka-sim-troubleshooting-03 -o jsonpath={.spec.template.spec.containers[0].volumeMounts[*].subPath}": {"stdout": "Corefile", "rc": 0}
+}

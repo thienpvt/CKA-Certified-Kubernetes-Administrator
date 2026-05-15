@@ -1,0 +1,9 @@
+{
+  "wait --for=condition=Available deployment/web -n cka-sim-troubleshooting-01 --timeout=30s": {"stdout": "", "rc": 1},
+  "get deployment web -n cka-sim-troubleshooting-01 -o name": {"stdout": "deployment.apps/web", "rc": 0},
+  "get service web-svc -n cka-sim-troubleshooting-01 -o name": {"stdout": "service/web-svc", "rc": 0},
+  "get endpoints web-svc -n cka-sim-troubleshooting-01 -o jsonpath={.subsets[*].addresses[*].ip}": {"stdout": "", "rc": 0},
+  "get service web-svc -n cka-sim-troubleshooting-01 -o jsonpath={.metadata.generation}": {"stdout": "1", "rc": 0},
+  "get service web-svc -n cka-sim-troubleshooting-01 -o jsonpath={.metadata.resourceVersion}": {"stdout": "101", "rc": 0},
+  "get pods -n cka-sim-troubleshooting-01 -l app=web-canary -o jsonpath={.items[*].status.containerStatuses[*].state.waiting.reason}": {"stdout": "ImagePullBackOff", "rc": 0}
+}
