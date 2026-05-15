@@ -29,6 +29,7 @@ declare -g CKA_SIM_LAB_NS=""
 declare -g CKA_SIM_EXAM_STTY_SAVED=""
 declare -g CKA_SIM_EXAM_IN_SIGHANDLER=0
 declare -g CKA_SIM_EXAM_SIGNAL_FIRED=0
+declare -g CKA_SIM_EXAM_RESUME_PENDING=0
 # Active input prompt — signal handlers re-print this because bash restarts an
 # interrupted `read` in-place (it does NOT return on a trapped signal), so the
 # read loop never gets a chance to re-print the prompt itself.
@@ -91,13 +92,11 @@ cka_sim::exam::on_int() {
 
 cka_sim::exam::on_tstp() {
   CKA_SIM_EXAM_SIGNAL_FIRED=1
-  # Pre-stop: record pause time, kill timer. DO NOT touch stty here — bash
-  # will reclaim the terminal once we stop and may change its modes, so any
-  # restore we do now is wasted. Restore stty AFTER resume instead.
+  CKA_SIM_EXAM_RESUME_PENDING=1
+  # Pre-stop: record pause time. DO NOT touch stty here — bash will reclaim
+  # the terminal once we stop and change its modes, so any restore now is
+  # wasted. Restore stty AFTER resume instead.
   cka_sim::state::set_pause
-  kill "${CKA_SIM_TIMER_PID:-}" 2>/dev/null || true
-  CKA_SIM_TIMER_PID=""
-  rm -f "${CKA_SIM_TIMER_GATE:-}" 2>/dev/null || true
   # Default-stop: restore default disposition, self-deliver TSTP.
   trap - TSTP
   kill -TSTP $$
@@ -113,17 +112,10 @@ cka_sim::exam::on_tstp() {
   stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
   stty echo icanon isig 2>/dev/null || true
   cka_sim::state::add_pause_delta
-  cka_sim::state::save
-  # Drain stdin so a stray Enter typed between Ctrl-Z and fg doesn't
-  # immediately consume the in-place read and auto-advance the question.
-  local _drain=""
-  while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
-  printf '\n\033[32m✓ Resumed. (⏱  %s remaining)\033[0m\n' \
-    "$(cka_sim::exam::format_remaining)" >&2
-  # Re-display the question after resume so the candidate isn't staring at
-  # a bare `>` with no context. Goes to stdout (same as initial display).
-  cka_sim::exam::present_question "$CKA_SIM_EXAM_CUR_IDX"
-  printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
+  # NOTE: do NOT call present_question or state::save (heavy jq) from inside
+  # this trap. set -e + pipefail inside a trap can corrupt the interrupted
+  # read's return path and make subsequent setup output disappear. The main
+  # loop checks CKA_SIM_EXAM_RESUME_PENDING and does redisplay there.
 }
 
 cka_sim::exam::on_cont() {
@@ -282,6 +274,15 @@ cka_sim::exam::question_loop() {
     local action=""
     CKA_SIM_EXAM_PROMPT='> '
     while true; do
+      # If we just came back from a Ctrl-Z/fg cycle, redisplay context here
+      # (NOT inside the trap, where set -e + jq can break the read path).
+      if (( CKA_SIM_EXAM_RESUME_PENDING == 1 )); then
+        CKA_SIM_EXAM_RESUME_PENDING=0
+        cka_sim::state::save
+        printf '\n\033[32m✓ Resumed. (⏱  %s remaining)\033[0m\n' \
+          "$(cka_sim::exam::format_remaining)" >&2
+        cka_sim::exam::present_question "$CKA_SIM_EXAM_CUR_IDX"
+      fi
       printf '> '
       CKA_SIM_EXAM_SIGNAL_FIRED=0
       local rc=0
