@@ -315,7 +315,7 @@ info "pass I: reset.sh /tmp/cka-sim/ cleanup (Phase 07.1 grading-honesty)"
 # Every reset.sh must remove its per-question baseline dir so stale baselines
 # don't poison the next drill run. Warn-only until Wave 5 lands cleanup across
 # all packs; CI can flip ENFORCE_RESET_TMP_CLEANUP=1 after that.
-ENFORCE_RESET_TMP_CLEANUP=${ENFORCE_RESET_TMP_CLEANUP:-0}
+ENFORCE_RESET_TMP_CLEANUP=${ENFORCE_RESET_TMP_CLEANUP:-1}
 while IFS= read -r reset_sh; do
   checked=$(( checked + 1 ))
   if ! grep -qE 'rm[[:space:]]+-rf[[:space:]]+["]?(/tmp/cka-sim/|[^[:space:]]*tmp/cka-sim/)' "$reset_sh" 2>/dev/null; then

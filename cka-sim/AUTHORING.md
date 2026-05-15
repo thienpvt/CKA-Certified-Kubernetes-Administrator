@@ -76,6 +76,12 @@ Seeds the broken state. Rules (D-07, D-09):
   owns cleanup via `reset.sh → setup.sh`. `kubectl delete ns ...` at the
   top of `setup.sh` is rejected by lint-packs.sh.
 
+### Grading Honesty
+
+All graders MUST use the delta-aware assertion helpers to avoid scoring setup state.
+See [GRADING-HONESTY.md](GRADING-HONESTY.md) for the full baselining contract,
+helper API reference, and caveats.
+
 ### 2.4 grade.sh
 
 Asserts post-fix state + records trap ids. Rules (D-01 from Phase 2, GRADE-02):

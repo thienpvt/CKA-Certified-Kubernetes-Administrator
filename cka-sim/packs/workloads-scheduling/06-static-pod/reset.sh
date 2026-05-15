@@ -19,4 +19,7 @@ while IFS= read -r node; do
     'sudo rm -f /etc/kubernetes/manifests/q06-static-nginx.yaml' 2>/dev/null || true
 done < <(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)
 
+# 3. Remove per-question baseline dir
+rm -rf "/tmp/cka-sim/workloads-static-pod/"
+
 exit 0

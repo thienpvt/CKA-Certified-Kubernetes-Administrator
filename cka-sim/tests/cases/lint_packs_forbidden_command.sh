@@ -63,6 +63,7 @@ cp "$fixtures/good/grade.sh" "$root/troubleshooting/01-test/grade.sh"
 cp "$fixtures/good/metadata.yaml" "$root/troubleshooting/01-test/metadata.yaml"
 cat > "$root/troubleshooting/01-test/reset.sh" <<'EOF'
 #!/bin/bash
+rm -rf "/tmp/cka-sim/test-question/"
 exit 0
 EOF
 cat > "$root/troubleshooting/01-test/ref-solution.sh" <<'EOF'
