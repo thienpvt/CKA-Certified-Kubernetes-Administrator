@@ -14,5 +14,11 @@ mkdir -p /tmp/q05-kube-proxy
 touch /tmp/q05-kube-proxy/.cka-sim-sentinel
 
 # Seed a WRONG initial mode so candidate must overwrite with the actual value
-echo 'ipvs' > /tmp/q05-kube-proxy/reported-mode.txt
+SEED_MODE='ipvs'
+echo "$SEED_MODE" > /tmp/q05-kube-proxy/reported-mode.txt
 chmod 0644 /tmp/q05-kube-proxy/reported-mode.txt
+
+# Phase 07.1 AUDIT-01: persist the seeded value to a sentinel so grade.sh can
+# detect "candidate has not written" (empty-submission honesty).
+echo "$SEED_MODE" > /tmp/q05-kube-proxy/.setup-seeded-mode
+chmod 0444 /tmp/q05-kube-proxy/.setup-seeded-mode

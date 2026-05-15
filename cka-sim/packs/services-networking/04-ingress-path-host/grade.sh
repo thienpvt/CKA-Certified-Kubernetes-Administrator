@@ -1,4 +1,7 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — services-networking/04-ingress-path-host/grade.sh
+# Risk: LOW — Ingress is candidate-authored from scratch (setup creates Service + IngressClass only).
+# Fix: gate Ingress existence on assert_resource_candidate_authored for honest 0/N on empty.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -8,8 +11,10 @@ source "$CKA_SIM_ROOT/lib/grade.sh"
 # shellcheck source=../../../lib/traps.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/traps.sh"
 
-cka_sim::grade::assert_resource_exists ingress q04-web -n "$CKA_SIM_LAB_NS"
+# Assertion 1: Ingress was candidate-authored (not in baseline)
+cka_sim::grade::assert_resource_candidate_authored ingress q04-web -n "$CKA_SIM_LAB_NS"
 
+# Assertion 2: ingressClassName
 ic=$(kubectl get ingress q04-web -n "$CKA_SIM_LAB_NS" -o jsonpath='{.spec.ingressClassName}' 2>/dev/null || true)
 ann=$(kubectl get ingress q04-web -n "$CKA_SIM_LAB_NS" -o jsonpath='{.metadata.annotations.kubernetes\.io/ingress\.class}' 2>/dev/null || true)
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
@@ -23,8 +28,10 @@ else
   [[ -z "$ic" && -z "$ann" ]] && cka_sim::grade::record_trap ingress-missing-ingressclass
 fi
 
+# Assertion 3: host
 cka_sim::grade::assert_field_eq ingress q04-web '{.spec.rules[0].host}' 'api.example.local' -n "$CKA_SIM_LAB_NS"
 
+# Assertion 4: path defined
 path=$(kubectl get ingress q04-web -n "$CKA_SIM_LAB_NS" -o jsonpath='{.spec.rules[0].http.paths[0].path}' 2>/dev/null || true)
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
 if [[ -n "$path" ]]; then
@@ -36,6 +43,7 @@ else
   err "ingress q04-web missing path rule"
 fi
 
+# Assertion 5: backend service name
 cka_sim::grade::assert_field_eq ingress q04-web '{.spec.rules[0].http.paths[0].backend.service.name}' 'q04-web' -n "$CKA_SIM_LAB_NS"
 
 cka_sim::grade::emit_result

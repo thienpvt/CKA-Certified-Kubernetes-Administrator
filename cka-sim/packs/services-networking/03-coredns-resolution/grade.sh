@@ -1,4 +1,8 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — services-networking/03-coredns-resolution/grade.sh
+# Risk: HIGH — pod exists + dnsPolicy=None are setup-owned (setup creates pod with
+# dnsPolicy=None pointing at 1.1.1.1). Candidate must delete+recreate pod with
+# correct kube-dns nameserver. Fix: gate pod existence on assert_changed_since_setup.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -8,9 +12,13 @@ source "$CKA_SIM_ROOT/lib/grade.sh"
 # shellcheck source=../../../lib/traps.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/traps.sh"
 
-cka_sim::grade::assert_resource_exists pod q03-dnsclient -n "$CKA_SIM_LAB_NS"
+# Assertion 1: pod modified since setup (candidate recreated with correct DNS config)
+cka_sim::grade::assert_changed_since_setup pod q03-dnsclient -n "$CKA_SIM_LAB_NS"
+
+# Assertion 2: dnsPolicy is None
 cka_sim::grade::assert_field_eq pod q03-dnsclient '{.spec.dnsPolicy}' 'None' -n "$CKA_SIM_LAB_NS"
 
+# Assertion 3: DNS resolution succeeds
 out=$(kubectl exec -n "$CKA_SIM_LAB_NS" q03-dnsclient -- nslookup kubernetes.default.svc.cluster.local 2>&1)
 rc=$?
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
