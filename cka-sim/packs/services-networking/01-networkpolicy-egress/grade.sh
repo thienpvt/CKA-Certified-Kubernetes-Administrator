@@ -24,8 +24,23 @@ if cka_sim::baseline::is_candidate_modified networkpolicy egress-restrict -n "$C
   np_modified=1
 fi
 
-# Assertion 2: probe pod Ready
-cka_sim::grade::assert_pod_ready "$CKA_SIM_LAB_NS" "probe"
+# Assertion 2: probe pod Ready (gated — only meaningful if candidate touched the NP;
+# otherwise the pod's readiness reflects setup state, not candidate work)
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+if (( np_modified == 1 )); then
+  ready=$(kubectl get pod probe -n "$CKA_SIM_LAB_NS" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null)
+  if [[ "$ready" == "True" ]]; then
+    CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+    CKA_SIM_GRADE_PASSES+=("pod 'probe' is Ready")
+    ok "pod 'probe' is Ready"
+  else
+    CKA_SIM_GRADE_FAILS+=("pod 'probe' is not Ready (got: '${ready:-<missing>}')")
+    err "pod 'probe' is not Ready (got: '${ready:-<missing>}')"
+  fi
+else
+  CKA_SIM_GRADE_FAILS+=("pod 'probe' readiness check skipped — NetworkPolicy not modified by candidate")
+  err "pod 'probe' readiness check skipped — NetworkPolicy not modified by candidate"
+fi
 
 # Assertion 3: DNS resolution works in-pod (gated on candidate-modified NP)
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))

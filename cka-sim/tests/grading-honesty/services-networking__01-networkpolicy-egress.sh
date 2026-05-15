@@ -1,7 +1,8 @@
 #!/bin/bash
 # Phase 07.1 grading-honesty regression: services-networking/01-networkpolicy-egress
-# Asserts empty submission (post-setup state) scores 1/3 (pod Ready only — NP gated,
-# DNS gated on NP-modified) AND ref-solution (post-ref-solution state) scores 3/3.
+# Asserts empty submission (post-setup state) scores 0/3 (NP-delta gate fails;
+# pod-Ready + DNS gated on np_modified, both skip).
+# Ref-solution (post-ref-solution state) scores 3/3.
 
 set -uo pipefail
 : "${CKA_SIM_ROOT:?}"
@@ -20,7 +21,7 @@ export CKA_SIM_LAB_NS="cka-sim-services-networking-01"
 out=$(bash "$qdir/grade.sh" 2>&1)
 
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_setup_score="SCORE: 1/3"
+expected_setup_score="SCORE: 0/3"
 
 if [[ "$score_line" == "$expected_setup_score" ]]; then
   ok "empty submission $test_id: $expected_setup_score"
