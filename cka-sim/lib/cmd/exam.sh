@@ -79,14 +79,18 @@ cka_sim::exam::format_remaining() {
 }
 
 cka_sim::exam::on_int() {
+  # Inside a trap, `set -e` + pipefail can poison the interrupted read's
+  # return path if any helper (e.g., jq inside state::save) was also hit by
+  # the SIGINT and exits non-zero — bash then terminates the script. Wrap
+  # every call with `|| true` so the trap always returns cleanly.
   CKA_SIM_EXAM_SIGNAL_FIRED=1
-  cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "flagged"
-  cka_sim::state::save
+  cka_sim::state::set_question_status "$CKA_SIM_EXAM_CUR_IDX" "flagged" || true
+  cka_sim::state::save || true
   printf '\n\033[33m✓ Q%d flagged. Continuing…\033[0m\n' \
-    "$(( CKA_SIM_EXAM_CUR_IDX + 1 ))" >&2
+    "$(( CKA_SIM_EXAM_CUR_IDX + 1 ))" >&2 || true
   # `read` restarts in-place after this trap returns — re-print the prompt so
   # the user sees the exam is still waiting for input.
-  printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
+  printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2 || true
   return 0
 }
 
@@ -96,7 +100,7 @@ cka_sim::exam::on_tstp() {
   # Pre-stop: record pause time. DO NOT touch stty here — bash will reclaim
   # the terminal once we stop and change its modes, so any restore now is
   # wasted. Restore stty AFTER resume instead.
-  cka_sim::state::set_pause
+  cka_sim::state::set_pause || true
   # Default-stop: restore default disposition, self-deliver TSTP.
   trap - TSTP
   kill -TSTP $$
@@ -111,11 +115,12 @@ cka_sim::exam::on_tstp() {
   stty sane 2>/dev/null || true
   stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
   stty echo icanon isig 2>/dev/null || true
-  cka_sim::state::add_pause_delta
+  cka_sim::state::add_pause_delta || true
   # NOTE: do NOT call present_question or state::save (heavy jq) from inside
   # this trap. set -e + pipefail inside a trap can corrupt the interrupted
   # read's return path and make subsequent setup output disappear. The main
   # loop checks CKA_SIM_EXAM_RESUME_PENDING and does redisplay there.
+  return 0
 }
 
 cka_sim::exam::on_cont() {
@@ -276,13 +281,13 @@ cka_sim::exam::question_loop() {
     while true; do
       # If we just came back from a Ctrl-Z/fg cycle, redisplay context here
       # (NOT inside the trap, where set -e + jq can break the read path).
+      # No stdin drain — it eats the candidate's intentional post-fg Enter
+      # within its 50ms window. Stale buffered chars typed during suspend will
+      # land at the next prompt as-is, which is fine: they either act as a
+      # valid action (n/f/s/p/t/q) or print "Unknown action".
       if (( CKA_SIM_EXAM_RESUME_PENDING == 1 )); then
         CKA_SIM_EXAM_RESUME_PENDING=0
         cka_sim::state::save
-        # Drain any chars the candidate typed between Ctrl-Z and fg so they
-        # don't auto-consume the next read.
-        local _drain=""
-        while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
         printf '\n\033[32m✓ Resumed. (⏱  %s remaining)\033[0m\n' \
           "$(cka_sim::exam::format_remaining)" >&2
         cka_sim::exam::present_question "$CKA_SIM_EXAM_CUR_IDX"
