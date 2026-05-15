@@ -60,12 +60,21 @@ Controls during exam:
   [f]       = flag current question for review
   [s]       = skip current question
   [p]       = go back to previous question
+  [t]       = show time remaining (without advancing)
   [q]       = end exam and submit for grading
 
 Signals:
   Ctrl-C    = flag current question (does NOT kill the exam)
   Ctrl-Z    = pause (state saved; resume with fg)
 EOF
+}
+
+cka_sim::exam::format_remaining() {
+  local now remaining
+  now=$(cka_sim::state::now)
+  remaining=$(( CKA_SIM_EXAM_DEADLINE_TS - now ))
+  (( remaining < 0 )) && remaining=0
+  printf '%02d:%02d:%02d' $((remaining/3600)) $(((remaining%3600)/60)) $((remaining%60))
 }
 
 cka_sim::exam::on_int() {
@@ -109,12 +118,10 @@ cka_sim::exam::on_tstp() {
   # immediately consume the in-place read and auto-advance the question.
   local _drain=""
   while IFS= read -r -t 0.05 -N 1024 _drain 2>/dev/null; do :; done
-  printf '\n\033[32m✓ Resumed. (still on Q%d/%d)\033[0m\n' \
-    "$((CKA_SIM_EXAM_CUR_IDX + 1))" "$CKA_SIM_EXAM_QUESTION_COUNT" >&2
+  printf '\n\033[32m✓ Resumed. (still on Q%d/%d, ⏱  %s remaining)\033[0m\n' \
+    "$((CKA_SIM_EXAM_CUR_IDX + 1))" "$CKA_SIM_EXAM_QUESTION_COUNT" \
+    "$(cka_sim::exam::format_remaining)" >&2
   printf '%s' "$CKA_SIM_EXAM_PROMPT" >&2
-  # Respawn the live timer so the bottom status row keeps ticking after fg.
-  # Deadline has been adjusted by add_pause_delta so paused time is excluded.
-  cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
 }
 
 cka_sim::exam::on_cont() {
@@ -155,15 +162,16 @@ cka_sim::exam::present_question() {
   [[ "$status" == "skipped" ]] && marker=" ↷"
 
   printf '\n'
-  printf '%s[Question %d/%d — %s — ~%sm]%s%s\n' \
-    "$BOLD" "$((idx + 1))" "$CKA_SIM_EXAM_QUESTION_COUNT" "$domain" "$est" "$NC" "$marker"
+  printf '%s[Question %d/%d — %s — ~%sm]   [⏱  %s remaining]%s%s\n' \
+    "$BOLD" "$((idx + 1))" "$CKA_SIM_EXAM_QUESTION_COUNT" "$domain" "$est" \
+    "$(cka_sim::exam::format_remaining)" "$NC" "$marker"
   printf '%s\n' "─────────────────────────────────────────"
 
   if [[ -r "$qdir/question.md" ]]; then
     cat "$qdir/question.md"
   fi
 
-  printf '\n%s[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam%s\n' "$YELLOW" "$NC"
+  printf '\n%s[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [t]=time  [q]=end exam%s\n' "$YELLOW" "$NC"
 }
 
 cka_sim::exam::handle_action() {
@@ -253,8 +261,6 @@ cka_sim::exam::question_loop() {
   while (( CKA_SIM_EXAM_CUR_IDX < CKA_SIM_EXAM_QUESTION_COUNT && CKA_SIM_EXAM_ENDED == 0 )); do
     cka_sim::exam::check_time_remaining || break
 
-    # Kill timer during setup so it doesn't draw over kubectl output
-    cka_sim::timer::stop
     local setup_ok=0
     cka_sim::exam::setup_question "$CKA_SIM_EXAM_CUR_IDX" && setup_ok=1 || true
     if (( ! setup_ok )); then
@@ -271,10 +277,6 @@ cka_sim::exam::question_loop() {
            'if .[$i].started_at == null then .[$i].started_at = $ts else . end')
     cka_sim::state::save
 
-    # Spawn timer AFTER question is displayed. Timer draws live to the bottom
-    # status row over the read prompt — `>` only accepts single-char actions
-    # (n/f/s/p/q), so the tput sc/cup/el/rc redraw rarely collides with input.
-    cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
     local action=""
     CKA_SIM_EXAM_PROMPT='> '
     while true; do
@@ -288,16 +290,20 @@ cka_sim::exam::question_loop() {
         CKA_SIM_EXAM_SIGNAL_FIRED=0
         continue
       fi
-      if (( rc == 0 )); then
-        break
-      elif (( rc > 128 )); then
-        # Trap-interrupted read — re-prompt
-        continue
-      else
-        # Genuine EOF
-        CKA_SIM_EXAM_ENDED=1
-        break 2
+      if (( rc != 0 )); then
+        if (( rc > 128 )); then
+          continue
+        else
+          CKA_SIM_EXAM_ENDED=1
+          break 2
+        fi
       fi
+      # `t` queries time without leaving the prompt
+      if [[ "$action" == "t" ]]; then
+        printf '⏱  %s remaining\n' "$(cka_sim::exam::format_remaining)"
+        continue
+      fi
+      break
     done
 
     cka_sim::exam::handle_action "$action"
@@ -465,7 +471,6 @@ cka_sim::exam::start_new() {
   printf '\n'
 
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
-  cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
   cka_sim::exam::question_loop 0
 }
 
@@ -501,7 +506,6 @@ cka_sim::exam::resume() {
   cka_sim::exam::setup_question "$CKA_SIM_EXAM_CUR_IDX"
 
   CKA_SIM_EXAM_STTY_SAVED=$(stty -g 2>/dev/null || true)
-  cka_sim::timer::spawn "$CKA_SIM_EXAM_DEADLINE_TS"
   cka_sim::exam::question_loop "$CKA_SIM_EXAM_CUR_IDX"
 }
 
