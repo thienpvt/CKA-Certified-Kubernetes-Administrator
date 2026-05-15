@@ -1,0 +1,14 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "web-abc123",
+    "namespace": "test-ns",
+    "generation": 1,
+    "resourceVersion": "200"
+  },
+  "spec": {
+    "serviceAccountName": "default",
+    "containers": [{"name": "main", "image": "nginx:1.28"}]
+  }
+}

@@ -311,6 +311,23 @@ if [[ -d "$EXAMS_DIR" ]]; then
   done < <(find "$EXAMS_DIR" -mindepth 2 -maxdepth 2 -name manifest.yaml 2>/dev/null)
 fi
 
+info "pass I: reset.sh /tmp/cka-sim/ cleanup (Phase 07.1 grading-honesty)"
+# Every reset.sh must remove its per-question baseline dir so stale baselines
+# don't poison the next drill run. Warn-only until Wave 5 lands cleanup across
+# all packs; CI can flip ENFORCE_RESET_TMP_CLEANUP=1 after that.
+ENFORCE_RESET_TMP_CLEANUP=${ENFORCE_RESET_TMP_CLEANUP:-0}
+while IFS= read -r reset_sh; do
+  checked=$(( checked + 1 ))
+  if ! grep -qE 'rm[[:space:]]+-rf[[:space:]]+["]?(/tmp/cka-sim/|[^[:space:]]*tmp/cka-sim/)' "$reset_sh" 2>/dev/null; then
+    if (( ENFORCE_RESET_TMP_CLEANUP == 1 )); then
+      err "RESET-TMP: $reset_sh missing 'rm -rf /tmp/cka-sim/<slug>/' cleanup"
+      errors=$(( errors + 1 ))
+    else
+      warn "RESET-TMP: $reset_sh missing 'rm -rf /tmp/cka-sim/<slug>/' cleanup (warn-only until Wave 5)"
+    fi
+  fi
+done < <(find "$PACKS_DIR" -name 'reset.sh' -type f)
+
 printf '\n' >&2
 if (( errors > 0 )); then
   err "$errors pack lint error(s) across $checked check(s). Fix before pushing."

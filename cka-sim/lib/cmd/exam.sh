@@ -19,6 +19,8 @@ source "$CKA_SIM_ROOT/lib/exam-blueprint.sh"
 source "$CKA_SIM_ROOT/lib/exam-report.sh"
 # shellcheck source=../exam-timer.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/exam-timer.sh"
+# shellcheck source=../baseline.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/baseline.sh"
 
 declare -g CKA_SIM_EXAM_CUR_IDX=0
 declare -ag CKA_SIM_EXAM_SETUP_IDXS=()
@@ -251,6 +253,17 @@ cka_sim::exam::setup_question() {
       cka_sim::state::set_question_status "$idx" "flagged"
       return 1
     fi
+    # Baseline capture (Phase 07.1) -- per-question, runner-managed.
+    local slug="${CKA_SIM_EXAM_QDIRS[$idx]##*/}"
+    CKA_SIM_BASELINE_PATH="/tmp/cka-sim/$slug/baseline.json"
+    export CKA_SIM_BASELINE_PATH
+    sleep 1
+    if ! cka_sim::baseline::capture "$CKA_SIM_LAB_NS"; then
+      err "Q$((idx+1)) baseline capture failed -- aborting question setup."
+      err "Grading-honesty contract requires a valid baseline. Check cluster connectivity."
+      cka_sim::state::set_question_status "$idx" "flagged"
+      return 1
+    fi
     CKA_SIM_EXAM_SETUP_IDXS+=("$idx")
   fi
 }
@@ -419,6 +432,11 @@ cka_sim::exam::batch_grade() {
 
     info "Grading Q$((i+1))..."
     cka_sim::exam::export_lab_ns "$i"
+    # Re-export per-question baseline path for grading (Phase 07.1).
+    # Each question has its own baseline at /tmp/cka-sim/<slug>/baseline.json.
+    local slug="${CKA_SIM_EXAM_QDIRS[$i]##*/}"
+    CKA_SIM_BASELINE_PATH="/tmp/cka-sim/$slug/baseline.json"
+    export CKA_SIM_BASELINE_PATH
     tmp=$(mktemp -t "cka-sim-grade.XXXXXX")
     rc=0
     bash "$qdir/grade.sh" </dev/null > "$tmp" 2>&1 || rc=$?

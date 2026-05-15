@@ -21,6 +21,8 @@ source "$CKA_SIM_ROOT/lib/colors.sh"
 source "$CKA_SIM_ROOT/lib/log.sh"
 # shellcheck source=../preflight.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/preflight.sh"
+# shellcheck source=../baseline.sh disable=SC1091
+source "$CKA_SIM_ROOT/lib/baseline.sh"
 
 # ---------- State populated by load_pack / main ----------
 
@@ -228,6 +230,8 @@ cka_sim::drill::cleanup() {
   if [[ -n "${CKA_SIM_QUESTION_DIR:-}" && -x "$CKA_SIM_QUESTION_DIR/reset.sh" ]]; then
     bash "$CKA_SIM_QUESTION_DIR/reset.sh" || warn "reset.sh exited non-zero (rc=$?)"
   fi
+  # Remove per-question baseline tmp dir (Phase 07.1).
+  rm -rf "/tmp/cka-sim/${CKA_SIM_QUESTION_ID:-}/"
   [[ -n "${CKA_SIM_DRILL_TMP:-}" ]] && rm -f "$CKA_SIM_DRILL_TMP"
   exit "$rc"
 }
@@ -301,6 +305,17 @@ main() {
 
   info "step 2/4: setup"
   bash "$CKA_SIM_QUESTION_DIR/setup.sh"
+
+  # Baseline capture (Phase 07.1) -- runner-managed per CONTEXT D-01.
+  # Setup-script authors do NOT call this; the runner enforces the contract once.
+  CKA_SIM_BASELINE_PATH="/tmp/cka-sim/$CKA_SIM_QUESTION_ID/baseline.json"
+  export CKA_SIM_BASELINE_PATH
+  sleep 1  # absorb final controller status flap (RESEARCH Q1 mitigation)
+  if ! cka_sim::baseline::capture "$CKA_SIM_LAB_NS"; then
+    err "Baseline capture failed for $CKA_SIM_QUESTION_ID -- aborting question."
+    err "Check kubectl connectivity and jq availability."
+    die "Cannot proceed without baseline (grading-honesty contract requires it)."
+  fi
 
   info "step 3/4: prompt"
   cat "$CKA_SIM_QUESTION_DIR/question.md"
