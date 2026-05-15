@@ -58,6 +58,21 @@ if [[ -d "$exam_dir" ]]; then
   done < <(find "$exam_dir" -name '*.sh' -print0 | sort -z)
 fi
 
+# Walk tests/grading-honesty/ if it exists (Phase 07.1 grading-honesty regression).
+grading_dir="$CKA_SIM_ROOT/tests/grading-honesty"
+if [[ -d "$grading_dir" ]]; then
+  while IFS= read -r -d '' case_file; do
+    total=$(( total + 1 ))
+    header "$(basename "$case_file" .sh)"
+    if ( source "$case_file" ); then
+      ok "case passed: $(basename "$case_file" .sh)"
+    else
+      err "case failed (rc=$?): $(basename "$case_file" .sh)"
+      failed=$(( failed + 1 ))
+    fi
+  done < <(find "$grading_dir" -name '*.sh' -print0 | sort -z)
+fi
+
 printf '\n' >&2
 if (( total == 0 )); then
   warn "no test cases found in $cases_dir — treat as success during scaffold"

@@ -17,6 +17,26 @@ set -euo pipefail
 : "${CKA_SIM_TEST_FIXTURES_DIR:?CKA_SIM_TEST_FIXTURES_DIR must be set by tests/run.sh}"
 : "${CKA_SIM_TEST_CURRENT:?CKA_SIM_TEST_CURRENT must be set by the test case (e.g. default-sa-used/hit)}"
 
+# Phase 07.1 — multi-resource fixture dispatch via .fixtures.json manifest.
+# If $CKA_SIM_TEST_FIXTURES_DIR/$CKA_SIM_TEST_CURRENT/.fixtures.json exists, look up
+# the canonicalized argv as a key. On match: emit stdout from manifest entry, exit with rc.
+# On miss: fall through to legacy single-fixture path below.
+fixtures_manifest="$CKA_SIM_TEST_FIXTURES_DIR/$CKA_SIM_TEST_CURRENT/.fixtures.json"
+if [[ -r "$fixtures_manifest" ]]; then
+  argv_key="$*"
+  entry=$(jq -r --arg k "$argv_key" '.[$k] // empty' "$fixtures_manifest" 2>/dev/null)
+  if [[ -n "$entry" ]]; then
+    out=$(jq -r --arg k "$argv_key" '.[$k].stdout // ""' "$fixtures_manifest")
+    rc=$(jq -r --arg k "$argv_key" '.[$k].rc // 0' "$fixtures_manifest")
+    [[ -n "$out" ]] && printf '%s' "$out"
+    exit "$rc"
+  fi
+  # Manifest exists but no entry matches — emit canonicalized argv to stderr
+  # so the test author can see what key to add. Then continue to legacy path.
+  printf 'kubectl-stub: no manifest entry for argv: %s\n' "$argv_key" >&2
+fi
+# Legacy single-fixture path (Phase 2-7 existing tests rely on this).
+
 fixture_path="$CKA_SIM_TEST_FIXTURES_DIR/$CKA_SIM_TEST_CURRENT.json"
 
 verb="${1:-}"
