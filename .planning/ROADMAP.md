@@ -242,7 +242,7 @@ Plans:
 - [x] 07.1-04-PLAN.md -- Fix: storage/02 candidate-authored StorageClass (Wave 3)
 - [x] 07.1-05-PLAN.md -- Fix: services-networking/06 NP authorship gate (Wave 3)
 - [x] 07.1-06-PLAN.md -- Fix: cluster-architecture/04 audit-escape + candidate Pod (Wave 3)
-- [ ] 07.1-07-PLAN.md -- CI: kubectl stub extension + 4 offender test cases (Wave 4)
+- [x] 07.1-07-PLAN.md -- CI: kubectl stub extension + 4 offender test cases (Wave 4)
 - [ ] 07.1-08-PLAN.md -- Audit: storage pack (5 Qs) + fixtures + tests (Wave 5)
 - [ ] 07.1-09-PLAN.md -- Audit: workloads-scheduling pack (7 Qs) + fixtures + tests (Wave 5)
 - [ ] 07.1-10-PLAN.md -- Audit: services-networking pack (5 Qs) + fixtures + tests (Wave 5)
