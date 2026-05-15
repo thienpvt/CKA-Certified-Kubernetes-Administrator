@@ -22,11 +22,10 @@ cka_sim::grade::assert_resource_exists storageclass fast-ssd
 # Assertion 2: PVC app-cache must be Bound.
 cka_sim::grade::assert_pvc_bound "$CKA_SIM_LAB_NS" app-cache
 
-# Assertion 3: PVC still references fast-ssd (candidate did not smuggle in another SC).
-cka_sim::grade::assert_field_eq pvc app-cache \
-  '{.spec.storageClassName}' \
-  'fast-ssd' \
-  -n "$CKA_SIM_LAB_NS"
+# Assertion 3: Candidate must have created StorageClass fast-ssd (not setup-provided).
+# Phase 07.1 D-14 — was assert_field_eq on storageClassName; setup wrote that verbatim,
+# leaking 1 point. Now requires candidate-authored StorageClass.
+cka_sim::grade::assert_resource_candidate_authored storageclass fast-ssd
 
 # Trap detector: if PVC is still Pending AND SC fast-ssd does not exist,
 # record pvc-wrong-storageclass (the seeded content-bug trap).
