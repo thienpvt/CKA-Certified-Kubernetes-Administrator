@@ -24,6 +24,7 @@ _make_pack_tree() {
   cat > "$root/storage/01-test/reset.sh" <<'EOF'
 #!/bin/bash
 set -uo pipefail
+rm -rf "/tmp/cka-sim/test-question/"
 EOF
   cat > "$root/storage/01-test/ref-solution.sh" <<'EOF'
 #!/bin/bash
