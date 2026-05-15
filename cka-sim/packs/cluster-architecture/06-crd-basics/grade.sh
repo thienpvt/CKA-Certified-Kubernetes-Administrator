@@ -1,11 +1,23 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — distinguish setup-state from candidate work.
+#
+# cluster-architecture/06-crd-basics/grade.sh
+#
+# Ownership analysis:
+#   - setup.sh creates lab namespace + a readme ConfigMap (q06-readme). It does
+#     NOT create the CRD or any Q06Widget — those are 100% candidate work.
+#   - Candidate work: kubectl apply CRD q06widgets.cka-sim.io (scope=Namespaced,
+#     group=cka-sim.io) + create at least one Q06Widget with numeric spec.size.
+#   - Use assert_resource_candidate_authored on the CRD to prove the candidate
+#     authored it (CRD must NOT be in baseline AND must currently exist).
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
 
 source "$CKA_SIM_ROOT/lib/grade.sh"
 
-cka_sim::grade::assert_resource_exists crd q06widgets.cka-sim.io
+# Candidate-work assertion: CRD must be authored by candidate (not in baseline).
+cka_sim::grade::assert_resource_candidate_authored crd q06widgets.cka-sim.io
 
 scope=$(kubectl get crd q06widgets.cka-sim.io -o jsonpath='{.spec.scope}' 2>/dev/null || true)
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))

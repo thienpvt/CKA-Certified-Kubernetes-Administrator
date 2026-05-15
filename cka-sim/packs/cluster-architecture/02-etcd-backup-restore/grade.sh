@@ -1,4 +1,18 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — distinguish setup-state from candidate work.
+# Phase 07.1 D-22 audit-escape: file-baseline gap.
+#
+# cluster-architecture/02-etcd-backup-restore/grade.sh
+#
+# Ownership analysis:
+#   - setup.sh creates apply-script.sh with TODO comments + .cka-sim-sentinel.
+#   - Candidate work: write snapshot.db, populate restored-data/member/wal,
+#     embed ETCDCTL_API=3 + correct --data-dir in apply-script.sh.
+#   - All scoring assertions read FILESYSTEM state, not K8s API. The
+#     lib/baseline.sh schema (D-03) tracks K8s resources only — this Q is
+#     unverifiable by the grading-honesty harness until v1.x adds file-mtime +
+#     sha256 baseline support. Empty submission naturally fails all asserts
+#     (setup writes none of the scored files), so no demotion is required.
 set -uo pipefail
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
 

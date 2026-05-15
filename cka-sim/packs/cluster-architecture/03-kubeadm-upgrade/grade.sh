@@ -1,4 +1,15 @@
 #!/bin/bash
+# Phase 07.1 AUDIT-01 — distinguish setup-state from candidate work.
+#
+# cluster-architecture/03-kubeadm-upgrade/grade.sh
+#
+# Ownership analysis:
+#   - setup.sh creates EMPTY planned-upgrade.txt + apply-script.sh + writes
+#     current-version.txt + kubeadm-upgrade-plan.txt (reference docs).
+#   - Candidate work: write content into planned-upgrade.txt (mention v1.35)
+#     and apply-script.sh (kubeadm upgrade plan + apply v1.35).
+#   - All 5 scored asserts probe file CONTENT (non-empty + grep), which empty
+#     setup state fails by design. No setup-state leakage to demote.
 set -uo pipefail
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
 
