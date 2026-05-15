@@ -1,4 +1,13 @@
 #!/bin/bash
+# troubleshooting/04-debug-node/grade.sh
+# Phase 07.1 AUDIT-01 — audit-escape.
+# Phase 07.1 D-22 audit-escape: file-edit baseline gap.
+#   Candidate work is `kubectl debug node/<worker>` + write to /tmp/q04-debug-node/answer.txt.
+#   Baseline schema captures only kubectl resources; no file-tracking. The answer.txt presence + content match
+#   IS already candidate-required by construction (setup writes empty answer.txt; pass requires exact kernelVersion).
+#   The debug-pod evidence gate (debug_evidence non-empty) is also candidate-required.
+#   No setup-collision: all current assertions correctly require candidate work.
+#   Captured in 07.1-12-AUDIT-ESCAPE.md for Plan 13 VERIFICATION consumption.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"

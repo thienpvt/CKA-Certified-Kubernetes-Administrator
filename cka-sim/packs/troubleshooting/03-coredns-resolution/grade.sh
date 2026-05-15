@@ -1,4 +1,8 @@
 #!/bin/bash
+# troubleshooting/03-coredns-resolution/grade.sh
+# Phase 07.1 AUDIT-01 — setup-collision: ConfigMap + Deployment + Service + Pod (with dnsPolicy=None) all authored by setup.sh.
+#   → existence/field assertions demoted to weight=0; added assert_changed_since_setup on ConfigMap (rv-only signal per RESEARCH Q1).
+#   → DNS-resolution behavioural checks already gated (invalid upstream + bad subPath; correctly fail until candidate fixes).
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -12,11 +16,19 @@ ns="$CKA_SIM_LAB_NS"
 
 kubectl wait --for=condition=Ready pod/q03-dnsclient -n "$ns" --timeout=30s 2>/dev/null || true
 
-cka_sim::grade::assert_resource_exists configmap q03-coredns-corefile -n "$ns"
-cka_sim::grade::assert_resource_exists deployment q03-coredns -n "$ns"
-cka_sim::grade::assert_resource_exists service q03-coredns -n "$ns"
-cka_sim::grade::assert_resource_exists pod q03-dnsclient -n "$ns"
-cka_sim::grade::assert_field_eq pod q03-dnsclient '{.spec.dnsPolicy}' 'None' -n "$ns"
+# Phase 07.1 AUDIT-01: demoted to weight=0 — all created by setup.sh.
+cka_sim::grade::assert_resource_exists configmap q03-coredns-corefile -n "$ns" 0
+cka_sim::grade::assert_resource_exists deployment q03-coredns -n "$ns" 0
+cka_sim::grade::assert_resource_exists service q03-coredns -n "$ns" 0
+cka_sim::grade::assert_resource_exists pod q03-dnsclient -n "$ns" 0
+cka_sim::grade::assert_field_eq pod q03-dnsclient '{.spec.dnsPolicy}' 'None' -n "$ns" 0
+
+# Phase 07.1 AUDIT-01: candidate must edit the Corefile ConfigMap (fix forward upstream).
+# ConfigMaps don't bump generation (no .spec) — relies on rv-fallback in assert_changed_since_setup.
+cka_sim::grade::assert_changed_since_setup configmap q03-coredns-corefile -n "$ns"
+
+# Phase 07.1 AUDIT-01: candidate must also fix the broken volumeMount subPath on the Deployment.
+cka_sim::grade::assert_changed_since_setup deployment q03-coredns -n "$ns"
 
 out=$(kubectl exec -n "$ns" q03-dnsclient -- nslookup kubernetes.default.svc.cluster.local 2>&1)
 rc=$?

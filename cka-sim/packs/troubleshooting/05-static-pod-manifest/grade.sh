@@ -1,4 +1,13 @@
 #!/bin/bash
+# troubleshooting/05-static-pod-manifest/grade.sh
+# Phase 07.1 AUDIT-01 — audit-escape.
+# Phase 07.1 D-22 audit-escape: file-edit baseline gap (node-side static-pod manifest).
+#   Candidate work is pure file-edit to /tmp/q05-staticpod/manifest.yaml.
+#   Baseline schema captures only kubectl resources; no file-tracking. Setup writes a manifest with intentional
+#   tab-indent + image-tag traps that must be fixed before the manifest parses + dry-run validates.
+#   All current assertions (file exists, YAML-parseable, kind=Pod, client-dry-run passes) correctly require
+#   candidate work since setup intentionally breaks them.
+#   Captured in 07.1-12-AUDIT-ESCAPE.md for Plan 13 VERIFICATION consumption.
 set -uo pipefail
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
 

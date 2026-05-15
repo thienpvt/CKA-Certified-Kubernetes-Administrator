@@ -1,4 +1,5 @@
 #!/bin/bash
+# troubleshooting/06-broken-kubelet/reset.sh
 set -euo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 
@@ -8,7 +9,5 @@ if [[ -f "$sandbox/.cka-sim-sentinel" ]]; then
 fi
 kubectl delete namespace "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false
 
-# Remove per-question baseline dir
-rm -rf "/tmp/cka-sim/troubleshooting-broken-kubelet/"
-
-exit 0
+# Phase 07.1 AUDIT-01: per-question tmp cleanup (lint requires slug-named path).
+rm -rf /tmp/cka-sim/06-broken-kubelet/
