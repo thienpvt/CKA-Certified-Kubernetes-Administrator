@@ -1,9 +1,8 @@
 #!/bin/bash
 # storage/01-pvc-binding/grade.sh
-# Phase 07.1 D-23 — PVC binds to PV at creation time regardless of nodeAffinity
-# (nodeAffinity only blocks Pod scheduling). Setup creates PV+PVC with matching
-# storageClassName+accessMode → assert_pvc_bound leaks 1pt on empty submission.
-# Fix: gate scoring on candidate-modified PV (added nodeAffinity).
+# Phase 07.1 D-25 — switched from assert_changed_since_setup (rv-based, unreliable
+# for PVs where binding controller increments rv post-setup) to deterministic
+# field check. PV with no nodeAffinity → empty jsonpath result → fail.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -17,13 +16,12 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 # Setup's PV+PVC pair binds automatically at creation; nodeAffinity only matters at Pod scheduling.
 cka_sim::grade::assert_pvc_bound "$CKA_SIM_LAB_NS" "app-data" 0
 
-# Scoring assertion: PV must be modified since setup (candidate added nodeAffinity).
-cka_sim::grade::assert_changed_since_setup pv q01-app-pv
-
-# Precondition (weight=0): PV must have nodeAffinity expression key kubernetes.io/hostname — informational.
+# Scoring assertion: PV must have nodeAffinity expression key kubernetes.io/hostname.
+# Setup creates PV WITHOUT nodeAffinity (the trap) → field is empty → FAIL on empty submission.
+# Candidate must add nodeAffinity → field matches → PASS.
 cka_sim::grade::assert_field_eq pv q01-app-pv \
   '{.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].key}' \
-  'kubernetes.io/hostname' 0
+  'kubernetes.io/hostname'
 
 # Trap detector: if PV still has hostPath but no nodeAffinity, record the seeded trap.
 tid=$(cka_sim::trap::detect_hostpath_pv_without_nodeaffinity q01-app-pv)
