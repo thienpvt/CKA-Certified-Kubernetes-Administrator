@@ -17,11 +17,24 @@ kubectl rollout status daemonset/q05-node-agent -n "$CKA_SIM_LAB_NS" --timeout=6
 # Assertion 1: DaemonSet is candidate-authored (not pre-seeded by setup).
 cka_sim::grade::assert_resource_candidate_authored daemonset q05-node-agent -n "$CKA_SIM_LAB_NS"
 
-# Assertion 2: desiredNumberScheduled equals the cluster's node count (dynamic).
-# `kubectl get nodes --no-headers` is read-only metadata, not a grep pattern.
-node_count=$(kubectl get nodes --no-headers 2>/dev/null | wc -l | tr -d ' ')
-cka_sim::grade::assert_field_eq daemonset q05-node-agent \
-  '{.status.desiredNumberScheduled}' "$node_count" -n "$CKA_SIM_LAB_NS"
+# Assertion 2: DaemonSet rolled out to every node it SHOULD cover.
+# Phase 07.1 D-27 — original comparison `desiredNumberScheduled == kubectl get nodes`
+# was wrong on clusters with non-schedulable nodes (cordoned, NotReady, additional
+# taints not tolerated by the DS). desiredNumberScheduled is already what kube-controller
+# computed as "nodes this DS targets given its tolerations". Compare numberReady to it.
+desired=$(kubectl get daemonset q05-node-agent -n "$CKA_SIM_LAB_NS" \
+  -o jsonpath='{.status.desiredNumberScheduled}' 2>/dev/null || echo "0")
+ready=$(kubectl get daemonset q05-node-agent -n "$CKA_SIM_LAB_NS" \
+  -o jsonpath='{.status.numberReady}' 2>/dev/null || echo "0")
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+if [[ -n "$desired" ]] && [[ -n "$ready" ]] && (( desired > 0 )) && (( ready == desired )); then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("DaemonSet fully rolled out: $ready/$desired nodes ready")
+  ok "DaemonSet fully rolled out: $ready/$desired nodes ready"
+else
+  CKA_SIM_GRADE_FAILS+=("DaemonSet not fully rolled out: numberReady=$ready desired=$desired")
+  err "DaemonSet not fully rolled out: numberReady=$ready desired=$desired"
+fi
 
 # Assertion 3: toleration for node-role.kubernetes.io/control-plane with operator=Exists.
 # The ref-solution adds two tolerations (NoSchedule + NoExecute) with the same key, so the
