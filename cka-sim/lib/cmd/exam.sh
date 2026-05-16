@@ -255,6 +255,8 @@ cka_sim::exam::setup_question() {
     fi
     # Baseline capture (Phase 07.1) -- per-question, runner-managed.
     local slug="${CKA_SIM_EXAM_QDIRS[$idx]##*/}"
+    CKA_SIM_QUESTION_ID="$slug"
+    export CKA_SIM_QUESTION_ID
     CKA_SIM_BASELINE_PATH="/tmp/cka-sim/$slug/baseline.json"
     export CKA_SIM_BASELINE_PATH
     sleep 1
@@ -435,6 +437,8 @@ cka_sim::exam::batch_grade() {
     # Re-export per-question baseline path for grading (Phase 07.1).
     # Each question has its own baseline at /tmp/cka-sim/<slug>/baseline.json.
     local slug="${CKA_SIM_EXAM_QDIRS[$i]##*/}"
+    CKA_SIM_QUESTION_ID="$slug"
+    export CKA_SIM_QUESTION_ID
     CKA_SIM_BASELINE_PATH="/tmp/cka-sim/$slug/baseline.json"
     export CKA_SIM_BASELINE_PATH
     tmp=$(mktemp -t "cka-sim-grade.XXXXXX")
