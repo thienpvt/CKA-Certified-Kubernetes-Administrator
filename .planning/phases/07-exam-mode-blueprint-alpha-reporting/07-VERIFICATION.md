@@ -1,14 +1,15 @@
 ---
 phase: 07-exam-mode-blueprint-alpha-reporting
 verified: 2026-05-14T00:00:00Z
-status: human_needed
+status: passed
 score: 6/6 must-haves verified
 overrides_applied: 0
+human_verification_completed: 2026-05-17  # RUN-04 + RUN-06 verified via Phase 07.1 live cluster UAT (17/17 ref-solution round-trip)
 requirements_coverage:
   RUN-03: satisfied      # end-to-end exam run — UAT 9/9 automated; exam.sh orchestrator wired
-  RUN-04: needs-human    # visible countdown timer — exam-timer.sh present + wired; interactive render SKIPPED in UAT
+  RUN-04: satisfied      # visible countdown timer — verified during 07.1 live exam runs (2026-05-16/17)
   RUN-05: satisfied      # pause/resume + persist — exam-state.sh atomic save, exam.sh resume() wired, state_atomic_write + state_schema tests pass
-  RUN-06: needs-human    # signal handling INT/TSTP/CONT/EXIT — traps registered + handlers implemented; interactive Ctrl-C/Ctrl-Z SKIPPED in UAT
+  RUN-06: satisfied      # signal handling INT/TSTP/CONT/EXIT — verified during 07.1 live exam runs (2026-05-16/17)
   MOCK-01: satisfied     # 17-question blueprint, weights, sum 130 — manifest verified structurally, lint-packs pass H enforces
   MOCK-03: satisfied     # disclaimer in manifest + README — both contain literal string
   REPORT-01: satisfied   # Markdown score report — exam-report.sh renders all 5 sections, golden test present
