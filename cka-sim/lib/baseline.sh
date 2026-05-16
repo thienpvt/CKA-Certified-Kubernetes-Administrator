@@ -137,6 +137,44 @@ cka_sim::baseline::capture() {
   ok "baseline captured: $CKA_SIM_BASELINE_PATH"
 }
 
+# ---------- cka_sim::baseline::canonical_kind ----------
+#
+# Normalize a kubectl kind short-name to its canonical lowercase singular form
+# so lookups against the resource_list stored by capture() succeed.
+#
+# kubectl get -o json returns items with .kind set to the full CamelCase singular
+# (e.g., PersistentVolume, Service). capture() lowercases these into resource_list
+# entries like "persistentvolume/<name>". Callers of is_candidate_modified often
+# use the short form (pv, pvc, svc, etc.); this helper expands them.
+#
+# Usage: canonical=$(cka_sim::baseline::canonical_kind "pv")  # -> persistentvolume
+cka_sim::baseline::canonical_kind() {
+  local k
+  k="$(printf '%s' "${1:?canonical_kind requires kind}" | tr '[:upper:]' '[:lower:]')"
+  case "$k" in
+    pv)      echo "persistentvolume" ;;
+    pvc)     echo "persistentvolumeclaim" ;;
+    svc)     echo "service" ;;
+    sa)      echo "serviceaccount" ;;
+    cm)      echo "configmap" ;;
+    ns)      echo "namespace" ;;
+    po)      echo "pod" ;;
+    deploy)  echo "deployment" ;;
+    sts)     echo "statefulset" ;;
+    ds)      echo "daemonset" ;;
+    rs)      echo "replicaset" ;;
+    rc)      echo "replicationcontroller" ;;
+    ing)     echo "ingress" ;;
+    netpol)  echo "networkpolicy" ;;
+    pdb)     echo "poddisruptionbudget" ;;
+    sc)      echo "storageclass" ;;
+    ep)      echo "endpoints" ;;
+    no)      echo "node" ;;
+    crd)     echo "customresourcedefinition" ;;
+    *)       echo "$k" ;;
+  esac
+}
+
 # ---------- cka_sim::baseline::is_candidate_modified ----------
 #
 # Returns 0 if the resource has been modified since baseline (or baseline unavailable).
@@ -170,9 +208,13 @@ cka_sim::baseline::is_candidate_modified() {
     return 0
   fi
 
-  # Canonical lookup key: lowercase-kind/name
+  # Canonical lookup key: lowercase canonical-kind/name.
+  # Phase 07.1 D-24 — kubectl short names (pv, pvc, svc, sa, cm, etc.) must be
+  # normalized to full canonical kind to match the resource_list stored by capture().
+  local canonical_kind
+  canonical_kind="$(cka_sim::baseline::canonical_kind "$kind")"
   local lookup_key
-  lookup_key="$(printf '%s' "$kind" | tr '[:upper:]' '[:lower:]')/$name"
+  lookup_key="$canonical_kind/$name"
 
   # Check if resource is in baseline
   local in_baseline
