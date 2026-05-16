@@ -22,7 +22,7 @@ export CKA_SIM_LAB_NS="cka-sim-workloads-scheduling-02"
 out=$(bash "$qdir/grade.sh" 2>&1)
 
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_setup_score="SCORE: 1/4"
+expected_setup_score="SCORE: 0/1"
 
 if [[ "$score_line" == "$expected_setup_score" ]]; then
   ok "empty submission $test_id: $expected_setup_score"
@@ -37,7 +37,7 @@ export CKA_SIM_BASELINE_PATH="$CKA_SIM_TEST_FIXTURES_DIR/grading-honesty/${test_
 
 out=$(bash "$qdir/grade.sh" 2>&1)
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_ref_score="SCORE: 4/4"
+expected_ref_score="SCORE: 1/1"
 
 if [[ "$score_line" == "$expected_ref_score" ]]; then
   ok "ref-solution $test_id: $expected_ref_score"
