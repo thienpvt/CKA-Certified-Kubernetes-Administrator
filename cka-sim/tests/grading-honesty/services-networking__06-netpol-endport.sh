@@ -22,7 +22,7 @@ export CKA_SIM_LAB_NS="cka-sim-services-networking-06"
 out=$(bash "$qdir/grade.sh" 2>&1)
 
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_setup_score="SCORE: 1/6"
+expected_setup_score="SCORE: 0/6"
 
 if [[ "$score_line" == "$expected_setup_score" ]]; then
   ok "empty submission $test_id: $expected_setup_score"

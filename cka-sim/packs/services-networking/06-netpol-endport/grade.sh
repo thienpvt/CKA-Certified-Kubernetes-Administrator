@@ -54,14 +54,23 @@ else
   fi
 fi
 
+# Phase 07.1 D-23 — also gate unreachability check on candidate-authored NP.
+# Without the gate, wget to :8095 fails because server doesn't listen there (not because of NP),
+# leaking 1pt on empty submission. The test only proves the NP rule when an NP exists.
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
-if kubectl exec -n "$CKA_SIM_LAB_NS" q06-client -- wget -qO- --timeout=3 q06-server:8095 >/dev/null 2>&1; then
-  CKA_SIM_GRADE_FAILS+=("q06-client can reach q06-server:8095 outside allowed endPort range")
-  err "q06-client can reach q06-server:8095 outside allowed endPort range"
-else
+if (( np_authored == 1 )) \
+   && ! kubectl exec -n "$CKA_SIM_LAB_NS" q06-client -- wget -qO- --timeout=3 q06-server:8095 >/dev/null 2>&1; then
   CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
-  CKA_SIM_GRADE_PASSES+=("q06-client cannot reach q06-server:8095 outside allowed endPort range")
+  CKA_SIM_GRADE_PASSES+=("q06-client cannot reach q06-server:8095 outside allowed endPort range (gated on candidate-authored NP)")
   ok "q06-client cannot reach q06-server:8095 outside allowed endPort range"
+else
+  if (( np_authored == 0 )); then
+    CKA_SIM_GRADE_FAILS+=("unreachability check skipped — no candidate-authored NetworkPolicy q06-allow-range")
+    err "unreachability check skipped — no candidate-authored NetworkPolicy"
+  else
+    CKA_SIM_GRADE_FAILS+=("q06-client can reach q06-server:8095 outside allowed endPort range")
+    err "q06-client can reach q06-server:8095 outside allowed endPort range"
+  fi
 fi
 
 cka_sim::grade::emit_result

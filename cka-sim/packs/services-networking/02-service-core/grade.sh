@@ -1,7 +1,8 @@
 #!/bin/bash
-# Phase 07.1 AUDIT-01 — services-networking/02-service-core/grade.sh
-# Risk: MEDIUM — Service exists is setup-owned; selector/endpoints fail correctly on empty.
-# Fix: gate Service existence on assert_changed_since_setup (candidate must patch selector).
+# Phase 07.1 D-23 — services-networking/02-service-core/grade.sh
+# Original leak: assert_field_eq on selector.app passes for free (setup writes the selector).
+# Fix: demote selector/endpoints checks to weight=0; sole scoring assertion is
+# assert_changed_since_setup (candidate must patch the Service).
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -11,21 +12,18 @@ source "$CKA_SIM_ROOT/lib/grade.sh"
 # shellcheck source=../../../lib/traps.sh disable=SC1091
 source "$CKA_SIM_ROOT/lib/traps.sh"
 
-# Assertion 1: Service modified since setup (candidate patched selector)
+# Scoring assertion: Service modified since setup (candidate patched selector)
 cka_sim::grade::assert_changed_since_setup service q02-web -n "$CKA_SIM_LAB_NS"
 
-# Assertion 2: selector matches deployment label
-cka_sim::grade::assert_field_eq service q02-web '{.spec.selector.app}' 'q02-web' -n "$CKA_SIM_LAB_NS"
+# Precondition (weight=0): selector matches deployment label — informational only.
+# Setup writes this selector verbatim → leaks 1pt without weight=0.
+cka_sim::grade::assert_field_eq service q02-web '{.spec.selector.app}' 'q02-web' -n "$CKA_SIM_LAB_NS" 0
 
-# Assertion 3: endpoints non-empty
+# Precondition (weight=0): endpoints non-empty — informational + trap detection.
 addr=$(kubectl get endpoints q02-web -n "$CKA_SIM_LAB_NS" -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null || echo "")
-CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
 if [[ -n "$addr" ]]; then
-  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
-  CKA_SIM_GRADE_PASSES+=("endpoints for service 'q02-web' are non-empty")
   ok "endpoints for service 'q02-web' are non-empty"
 else
-  CKA_SIM_GRADE_FAILS+=("endpoints for service 'q02-web' are empty")
   err "endpoints for service 'q02-web' are empty"
   cka_sim::grade::record_trap service-selector-empty-endpoints
 fi

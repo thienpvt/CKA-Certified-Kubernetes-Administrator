@@ -1,7 +1,8 @@
 #!/bin/bash
-# storage/02-storageclass-dynamic/grade.sh — asserts StorageClass fast-ssd exists
-# + PVC app-cache Bound; records pvc-wrong-storageclass trap if the seed condition
-# (Pending + no SC) still holds.
+# storage/02-storageclass-dynamic/grade.sh
+# Phase 07.1 D-23 — assert_resource_exists/assert_pvc_bound can leak when SC fast-ssd
+# persists from previous runs (reset.sh only deletes if cka-sim/uses label present).
+# Fix: demote setup-presence checks to weight=0; sole scoring is assert_resource_candidate_authored.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -16,15 +17,15 @@ source "$CKA_SIM_ROOT/lib/traps.sh"
 kubectl wait --for=jsonpath='{.status.phase}'=Bound \
   pvc/app-cache -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
 
-# Assertion 1: StorageClass fast-ssd must exist (cluster-scoped).
-cka_sim::grade::assert_resource_exists storageclass fast-ssd
+# Precondition (weight=0): StorageClass fast-ssd must exist — informational only.
+# Could pre-exist from stale reset; only gated assertion below scores.
+cka_sim::grade::assert_resource_exists storageclass fast-ssd 0
 
-# Assertion 2: PVC app-cache must be Bound.
-cka_sim::grade::assert_pvc_bound "$CKA_SIM_LAB_NS" app-cache
+# Precondition (weight=0): PVC app-cache must be Bound — informational only.
+# Binds automatically if SC exists from previous run.
+cka_sim::grade::assert_pvc_bound "$CKA_SIM_LAB_NS" app-cache 0
 
-# Assertion 3: Candidate must have created StorageClass fast-ssd (not setup-provided).
-# Phase 07.1 D-14 — was assert_field_eq on storageClassName; setup wrote that verbatim,
-# leaking 1 point. Now requires candidate-authored StorageClass.
+# Scoring assertion: Candidate must have created StorageClass fast-ssd (not pre-existing).
 cka_sim::grade::assert_resource_candidate_authored storageclass fast-ssd
 
 # Trap detector: if PVC is still Pending AND SC fast-ssd does not exist,
