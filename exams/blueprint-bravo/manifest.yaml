@@ -1,0 +1,47 @@
+exam:
+  id: blueprint-bravo
+  version: "1.0"
+  durationMinutes: 120
+  estimatedMinutesBudget: [120, 145]
+  disclaimer: "Not real CKA exam content; independently authored. Targets v1.35 CKA blueprint."
+  weighting:
+    storage: 10
+    workloads-scheduling: 15
+    services-networking: 20
+    cluster-architecture: 25
+    troubleshooting: 30
+questions:
+  - pack: storage
+    slug: 05-wait-for-first-consumer
+  - pack: troubleshooting
+    slug: 06-broken-kubelet
+  - pack: workloads-scheduling
+    slug: 03-configmap-secret-env-volume
+  - pack: cluster-architecture
+    slug: 01-rbac-viewer
+  - pack: services-networking
+    slug: 01-networkpolicy-egress
+  - pack: troubleshooting
+    slug: 01-deploy-svc-mismatch
+  - pack: workloads-scheduling
+    slug: 06-static-pod
+  - pack: cluster-architecture
+    slug: 02-etcd-backup-restore
+  - pack: services-networking
+    slug: 03-coredns-resolution
+  - pack: troubleshooting
+    slug: 02-netpol-dns-egress
+  - pack: storage
+    slug: 06-pvc-mount-pod
+  - pack: cluster-architecture
+    slug: 03-kubeadm-upgrade
+  - pack: workloads-scheduling
+    slug: 07-native-sidecar
+  - pack: troubleshooting
+    slug: 03-coredns-resolution
+  - pack: services-networking
+    slug: 04-ingress-path-host
+  - pack: cluster-architecture
+    slug: 05-audit-policy
+  - pack: troubleshooting
+    slug: 04-debug-node

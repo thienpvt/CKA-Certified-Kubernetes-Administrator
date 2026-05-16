@@ -1,0 +1,17 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-workloads-scheduling-02",
+  "resources": [
+    {
+      "kind": "Deployment",
+      "name": "web",
+      "namespace": "cka-sim-workloads-scheduling-02",
+      "generation": 2,
+      "resourceVersion": "100",
+      "labels": {"app": "web"}
+    }
+  ],
+  "resource_list": [
+    "deployment/web"
+  ]
+}

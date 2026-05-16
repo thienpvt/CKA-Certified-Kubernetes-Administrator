@@ -1,0 +1,1 @@
+{"apiVersion":"snapshot.storage.k8s.io/v1","kind":"VolumeSnapshot","metadata":{"name":"q04-snapshot","namespace":"cka-sim-storage-04"},"spec":{"source":{"persistentVolumeClaimName":"app-data"},"volumeSnapshotClassName":"q04-snapclass"}}

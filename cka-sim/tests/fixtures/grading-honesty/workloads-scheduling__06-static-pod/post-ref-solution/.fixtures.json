@@ -1,0 +1,6 @@
+{
+  "wait --for=condition=Ready pod/q06-static-nginx-node-01 -n default --timeout=60s": {"stdout": "pod/q06-static-nginx-node-01 condition met", "rc": 0},
+  "get pod q06-static-nginx-node-01 -n default -o name": {"stdout": "pod/q06-static-nginx-node-01", "rc": 0},
+  "get pod q06-static-nginx-node-01 -n default -o jsonpath={.metadata.annotations.kubernetes\\.io/config\\.source}": {"stdout": "file", "rc": 0},
+  "get pod q06-static-nginx-node-01 -n default -o jsonpath={.status.conditions[?(@.type==\"Ready\")].status}": {"stdout": "True", "rc": 0}
+}

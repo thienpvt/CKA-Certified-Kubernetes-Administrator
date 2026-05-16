@@ -1,0 +1,12 @@
+{
+  "wait --for=condition=Available deployment/load-app -n cka-sim-workloads-scheduling-01 --timeout=60s": {"stdout": "", "rc": 1},
+  "get deployment load-app -n cka-sim-workloads-scheduling-01 -o jsonpath={.metadata.generation}": {"stdout": "1", "rc": 0},
+  "get deployment load-app -n cka-sim-workloads-scheduling-01 -o jsonpath={.metadata.resourceVersion}": {"stdout": "100", "rc": 0},
+  "get deployment load-app -n cka-sim-workloads-scheduling-01 -o jsonpath={.spec.template.spec.serviceAccountName}": {"stdout": "", "rc": 0},
+  "get deployment load-app -n cka-sim-workloads-scheduling-01 -o jsonpath={.spec.template.spec.containers[0].resources.requests.cpu}": {"stdout": "", "rc": 0},
+  "get deployment load-app -n cka-sim-workloads-scheduling-01 -o jsonpath={.spec.template.spec.containers[0].resources.requests.memory}": {"stdout": "", "rc": 0},
+  "get pod -n cka-sim-workloads-scheduling-01 -l app=load-app -o jsonpath={.items[0].metadata.name}": {"stdout": "load-app-setup-xxxx", "rc": 0},
+  "get pod load-app-setup-xxxx -n cka-sim-workloads-scheduling-01 -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get pod load-app-setup-xxxx -n cka-sim-workloads-scheduling-01 -o jsonpath={.metadata.resourceVersion}": {"stdout": "110", "rc": 0},
+  "get pod load-app-setup-xxxx -n cka-sim-workloads-scheduling-01 -o jsonpath={.spec.serviceAccountName}": {"stdout": "default", "rc": 0}
+}

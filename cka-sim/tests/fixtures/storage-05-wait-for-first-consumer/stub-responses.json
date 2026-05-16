@@ -1,0 +1,1 @@
+{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"name":"q05-claim","namespace":"cka-sim-storage-05"},"spec":{"accessModes":["ReadWriteOnce"],"storageClassName":"q05-wffc","resources":{"requests":{"storage":"500Mi"}}},"status":{"phase":"Pending"}}

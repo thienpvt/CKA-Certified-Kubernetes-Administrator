@@ -1,0 +1,3 @@
+{
+  "apply --dry-run=client -f /tmp/q05-staticpod/manifest.yaml": {"stdout": "", "rc": 1}
+}

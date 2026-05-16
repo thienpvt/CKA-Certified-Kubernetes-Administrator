@@ -1,0 +1,18 @@
+id: workloads-configmap-secret-env-volume
+domain: workloads-scheduling
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - default-sa-used
+  - configmap-env-value-literal-hardcoded
+  - deployment-missing-requests
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/configuration/configmap/"
+    note: ConfigMap concepts
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/configuration/secret/"
+    note: Secret concepts (env + volume projections)
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#define-container-environment-variables-using-configmap-data"
+    note: ConfigMap env valueFrom.configMapKeyRef pattern

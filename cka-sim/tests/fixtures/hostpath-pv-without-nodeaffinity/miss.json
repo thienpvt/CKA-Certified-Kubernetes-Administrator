@@ -1,0 +1,15 @@
+{
+  "kind": "PersistentVolume",
+  "apiVersion": "v1",
+  "metadata": {"name": "data-hostpath-pinned"},
+  "spec": {
+    "capacity": {"storage": "1Gi"},
+    "hostPath": {"path": "/mnt/data"},
+    "accessModes": ["ReadWriteOnce"],
+    "nodeAffinity": {
+      "required": {
+        "nodeSelectorTerms": [{"matchExpressions": [{"key": "kubernetes.io/hostname", "operator": "In", "values": ["node-01"]}]}]
+      }
+    }
+  }
+}

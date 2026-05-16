@@ -1,0 +1,14 @@
+{
+  "get networkpolicy egress-restrict -n cka-sim-services-networking-01 -o jsonpath={.metadata.generation}": {
+    "stdout": "1",
+    "rc": 0
+  },
+  "get networkpolicy egress-restrict -n cka-sim-services-networking-01 -o jsonpath={.metadata.resourceVersion}": {
+    "stdout": "100",
+    "rc": 0
+  },
+  "get pod probe -n cka-sim-services-networking-01 -o jsonpath={.status.conditions[?(@.type==\"Ready\")].status}": {
+    "stdout": "True",
+    "rc": 0
+  }
+}

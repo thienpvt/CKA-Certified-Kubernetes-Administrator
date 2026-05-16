@@ -1,0 +1,35 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-services-networking-06",
+  "resources": [
+    {
+      "kind": "Pod",
+      "name": "q06-server",
+      "namespace": "cka-sim-services-networking-06",
+      "generation": null,
+      "resourceVersion": "400",
+      "labels": {"app": "q06-server"}
+    },
+    {
+      "kind": "Pod",
+      "name": "q06-client",
+      "namespace": "cka-sim-services-networking-06",
+      "generation": null,
+      "resourceVersion": "401",
+      "labels": {"app": "q06-client"}
+    },
+    {
+      "kind": "NetworkPolicy",
+      "name": "q06-allow-range",
+      "namespace": "cka-sim-services-networking-06",
+      "generation": 1,
+      "resourceVersion": "500",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "pod/q06-server",
+    "pod/q06-client",
+    "networkpolicy/q06-allow-range"
+  ]
+}

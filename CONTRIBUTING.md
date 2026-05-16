@@ -57,3 +57,16 @@ This checks YAML syntax across `skeletons/` and `exercises/`. CI runs the same c
 ## Questions?
 
 Open an issue. I'll get back to you.
+
+## Authoring Exam-Sim Questions
+
+Want to add a new drill question to cka-sim? Here's the quick path:
+
+1. Pick a domain pack under `cka-sim/packs/<domain>/`
+2. Create a new directory: `<NN>-<slug>/` with the 6 required files (metadata.yaml, question.md, setup.sh, grade.sh, reset.sh, ref-solution.sh)
+3. Register any new traps in `cka-sim/traps/catalog.yaml`
+4. Update the pack's `manifest.yaml` and `coverage.yaml`
+5. Run `bash cka-sim/scripts/test.sh` to verify everything passes
+
+For the full authoring guide, see [`cka-sim/AUTHORING.md`](./cka-sim/AUTHORING.md).
+For YAML schema details, see [`cka-sim/SCHEMA.md`](./cka-sim/SCHEMA.md).

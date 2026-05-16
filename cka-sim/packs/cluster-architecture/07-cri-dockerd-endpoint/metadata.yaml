@@ -1,0 +1,15 @@
+id: cluster-architecture-cri-dockerd-endpoint
+domain: cluster-architecture
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - kubelet-runtime-flag-in-kubeconfig
+  - removed-container-runtime-flag
+  - cri-endpoint-unix-prefix-missing
+references:
+  - kind: concerns-md
+    target: .planning/codebase/CONCERNS.md
+    note: correct kubelet runtime flag file and endpoint flag
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/setup/production-environment/container-runtimes/
+    note: kubelet container runtime endpoint configuration

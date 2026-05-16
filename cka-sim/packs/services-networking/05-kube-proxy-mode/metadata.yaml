@@ -1,0 +1,15 @@
+id: services-kube-proxy-mode
+domain: services-networking
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - kube-proxy-mode-mismatch-ipvs-iptables
+  - missing-dns-egress
+  - default-sa-used
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/reference/networking/virtual-ips/
+    note: kube-proxy virtual IPs and mode configuration
+  - kind: concerns-md
+    target: CONCERNS.md CG-15
+    note: kube-proxy mode inspection question

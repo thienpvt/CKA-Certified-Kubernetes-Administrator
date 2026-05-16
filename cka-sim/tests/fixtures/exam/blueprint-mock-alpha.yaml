@@ -1,0 +1,47 @@
+exam:
+  id: mock-alpha
+  version: "1.0"
+  durationMinutes: 120
+  estimatedMinutesBudget: [120, 130]
+  disclaimer: "Not real CKA exam content; independently authored. Targets v1.35 CKA blueprint."
+  weighting:
+    storage: 10
+    workloads-scheduling: 15
+    services-networking: 20
+    cluster-architecture: 25
+    troubleshooting: 30
+questions:
+  - pack: mock-pack-alpha
+    slug: 01-fake
+  - pack: mock-pack-alpha
+    slug: 02-fake
+  - pack: mock-pack-alpha
+    slug: 03-fake
+  - pack: mock-pack-alpha
+    slug: 04-fake
+  - pack: mock-pack-alpha
+    slug: 05-fake
+  - pack: mock-pack-alpha
+    slug: 06-fake
+  - pack: mock-pack-alpha
+    slug: 07-fake
+  - pack: mock-pack-alpha
+    slug: 08-fake
+  - pack: mock-pack-alpha
+    slug: 09-fake
+  - pack: mock-pack-alpha
+    slug: 10-fake
+  - pack: mock-pack-alpha
+    slug: 11-fake
+  - pack: mock-pack-alpha
+    slug: 12-fake
+  - pack: mock-pack-alpha
+    slug: 13-fake
+  - pack: mock-pack-alpha
+    slug: 14-fake
+  - pack: mock-pack-alpha
+    slug: 15-fake
+  - pack: mock-pack-alpha
+    slug: 16-fake
+  - pack: mock-pack-alpha
+    slug: 17-fake

@@ -1,0 +1,35 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-workloads-scheduling-03",
+  "resources": [
+    {
+      "kind": "ConfigMap",
+      "name": "q03-app-config",
+      "namespace": "cka-sim-workloads-scheduling-03",
+      "generation": null,
+      "resourceVersion": "50",
+      "labels": {}
+    },
+    {
+      "kind": "Secret",
+      "name": "q03-app-secret",
+      "namespace": "cka-sim-workloads-scheduling-03",
+      "generation": null,
+      "resourceVersion": "51",
+      "labels": {}
+    },
+    {
+      "kind": "Pod",
+      "name": "q03-app",
+      "namespace": "cka-sim-workloads-scheduling-03",
+      "generation": null,
+      "resourceVersion": "0",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "configmap/q03-app-config",
+    "secret/q03-app-secret",
+    "pod/q03-app"
+  ]
+}

@@ -1,0 +1,32 @@
+# cka-sim/packs/storage/coverage.yaml
+# PACK-07 coverage matrix for the Storage domain (v1.35 Study Progress Tracker).
+# Each tracker.<slug>.questions lists the question-ids (from manifest.yaml) that
+# exercise that Tracker checkbox. Multiple questions may cover the same item.
+domain: storage
+tracker:
+  understand-pv-pvc:
+    label: "Understand PersistentVolume and PersistentVolumeClaim"
+    questions:
+      - storage-pvc-binding
+      - storage-pvc-mount-pod
+  understand-storageclass-dynamic:
+    label: "Understand StorageClass and dynamic provisioning"
+    questions:
+      - storage-storageclass-dynamic
+      - storage-wait-for-first-consumer
+  know-access-modes:
+    label: "Know access modes (RWO, ROX, RWX, RWOP)"
+    questions:
+      - storage-access-modes-reclaim
+  know-reclaim-policies:
+    label: "Know reclaim policies (Retain, Delete)"
+    questions:
+      - storage-access-modes-reclaim
+  csi-basics:
+    label: "CSI driver basics and troubleshooting"
+    questions:
+      - storage-csi-volumesnapshot
+  mount-pvc-in-pod:
+    label: "Mount PVC in a Pod"
+    questions:
+      - storage-pvc-mount-pod

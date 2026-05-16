@@ -1,0 +1,14 @@
+{
+  "networkpolicy/q06-allow-range": {
+    "exists": true,
+    "jsonpath": {
+      "{.spec.ingress[0].ports[0].port}": "8080",
+      "{.spec.ingress[0].ports[0].endPort}": "8090",
+      "{.spec.ingress[0].ports[0].protocol}": "TCP"
+    }
+  },
+  "exec": {
+    "q06-client -- wget -qO- --timeout=3 q06-server:8085": { "exit": 0 },
+    "q06-client -- wget -qO- --timeout=3 q06-server:8095": { "exit": 1 }
+  }
+}

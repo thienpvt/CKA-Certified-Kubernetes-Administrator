@@ -1,0 +1,7 @@
+{
+  "get crd q06widgets.cka-sim.io -o name": {"stdout": "", "rc": 1},
+  "get crd q06widgets.cka-sim.io -o jsonpath={.spec.scope}": {"stdout": "", "rc": 1},
+  "get crd q06widgets.cka-sim.io -o jsonpath={.spec.group}": {"stdout": "", "rc": 1},
+  "-n cka-sim-cluster-architecture-06 get q06widgets.cka-sim.io -o jsonpath={range .items[*]}{.metadata.name}{\"\\n\"}{end}": {"stdout": "", "rc": 1},
+  "-n cka-sim-cluster-architecture-06 get q06widgets.cka-sim.io -o jsonpath={.items[0].spec.size}": {"stdout": "", "rc": 1}
+}

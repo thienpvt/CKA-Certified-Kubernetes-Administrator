@@ -1,0 +1,15 @@
+id: storage-storageclass-dynamic
+domain: storage
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - pvc-wrong-storageclass
+  - pvc-accessmode-rwx-on-rwo-sc
+  - hostpath-pv-without-nodeaffinity
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/storage/storage-classes/"
+    note: StorageClass concepts
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/"
+    note: Dynamic volume provisioning

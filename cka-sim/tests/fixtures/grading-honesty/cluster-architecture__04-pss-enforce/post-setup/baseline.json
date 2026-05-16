@@ -1,0 +1,26 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-cluster-architecture-04",
+  "resources": [
+    {
+      "kind": "Namespace",
+      "name": "cka-sim-cluster-architecture-04",
+      "namespace": null,
+      "generation": null,
+      "resourceVersion": "600",
+      "labels": {"pod-security.kubernetes.io/enforce": "restricted", "pod-security.kubernetes.io/enforce-version": "v1.35"}
+    },
+    {
+      "kind": "Deployment",
+      "name": "q04-compliant",
+      "namespace": "cka-sim-cluster-architecture-04",
+      "generation": 1,
+      "resourceVersion": "601",
+      "labels": {}
+    }
+  ],
+  "resource_list": [
+    "namespace/cka-sim-cluster-architecture-04",
+    "deployment/q04-compliant"
+  ]
+}

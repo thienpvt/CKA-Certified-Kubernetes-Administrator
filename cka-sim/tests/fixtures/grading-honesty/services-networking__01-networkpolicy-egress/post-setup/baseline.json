@@ -1,0 +1,26 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-services-networking-01",
+  "resources": [
+    {
+      "kind": "NetworkPolicy",
+      "name": "egress-restrict",
+      "namespace": "cka-sim-services-networking-01",
+      "generation": 1,
+      "resourceVersion": "100",
+      "labels": {}
+    },
+    {
+      "kind": "Pod",
+      "name": "probe",
+      "namespace": "cka-sim-services-networking-01",
+      "generation": null,
+      "resourceVersion": "110",
+      "labels": {"app": "probe"}
+    }
+  ],
+  "resource_list": [
+    "networkpolicy/egress-restrict",
+    "pod/probe"
+  ]
+}

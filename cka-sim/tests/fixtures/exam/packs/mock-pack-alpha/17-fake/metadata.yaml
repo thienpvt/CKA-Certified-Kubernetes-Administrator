@@ -1,0 +1,12 @@
+id: mock-alpha-17
+domain: troubleshooting
+estimatedMinutes: 6
+verified_against: "1.35"
+traps:
+  - mock-trap-a
+  - mock-trap-b
+  - mock-trap-c
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/"
+    note: "mock reference"

@@ -1,0 +1,32 @@
+# cka-sim/packs/services-networking/coverage.yaml
+# PACK-07 coverage matrix for the Services & Networking domain (v1.35 Study Progress Tracker).
+# Each tracker.<slug>.questions lists the question-ids (from manifest.yaml) that
+# exercise that Tracker checkbox. Multiple questions may cover the same item.
+domain: services-networking
+tracker:
+  netpol-egress:
+    label: "NetworkPolicy egress + DNS allow"
+    questions:
+      - services-networkpolicy-egress
+  # BEGIN phase-05 new questions (P03-P07 append one tracker block each below this line; idempotent via grep guard)
+  service-core:
+    label: "Service + Endpoints + selector matching"
+    questions:
+      - services-service-core
+  coredns-resolution:
+    label: "CoreDNS resolution + Pod dnsConfig"
+    questions:
+      - services-coredns-resolution
+  ingress-path-host:
+    label: "Ingress + IngressClass + host/path routing"
+    questions:
+      - services-ingress-path-host
+  kube-proxy-mode:
+    label: "kube-proxy mode inspection (CG-15)"
+    questions:
+      - services-kube-proxy-mode
+  netpol-endport:
+    label: "NetworkPolicy endPort (CG-16)"
+    questions:
+      - services-netpol-endport
+  # END phase-05 new questions

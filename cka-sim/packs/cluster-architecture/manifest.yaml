@@ -1,0 +1,32 @@
+pack:
+  id: cluster-architecture
+  domain: cluster-architecture
+  weight: 25
+  description: "Cluster Architecture 25% domain pack (PACK-04) -- full v1.35 Tracker coverage + CONCERNS.md content replacements (PSS + CRI-dockerd)."
+questions:
+  - id: cluster-architecture-rbac-viewer
+    path: 01-rbac-viewer
+    estimatedMinutes: 8
+  # BEGIN phase-05 new questions (P09-P15 append below this line -- one row per plan, idempotent)
+  - id: cluster-architecture-etcd-backup-restore
+    path: 02-etcd-backup-restore
+    estimatedMinutes: 10
+  - id: cluster-architecture-kubeadm-upgrade
+    path: 03-kubeadm-upgrade
+    estimatedMinutes: 10
+  - id: cluster-architecture-pss-enforce
+    path: 04-pss-enforce
+    estimatedMinutes: 9
+  - id: cluster-architecture-audit-policy
+    path: 05-audit-policy
+    estimatedMinutes: 9
+  - id: cluster-architecture-crd-basics
+    path: 06-crd-basics
+    estimatedMinutes: 6
+  - id: cluster-architecture-cri-dockerd-endpoint
+    path: 07-cri-dockerd-endpoint
+    estimatedMinutes: 8
+  - id: cluster-architecture-priorityclass
+    path: 08-priorityclass
+    estimatedMinutes: 7
+  # END phase-05 new questions

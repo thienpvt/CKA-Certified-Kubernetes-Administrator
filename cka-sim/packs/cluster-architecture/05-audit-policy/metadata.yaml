@@ -1,0 +1,12 @@
+id: cluster-architecture-audit-policy
+domain: cluster-architecture
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - audit-policy-wrong-stage-verbosity
+  - default-sa-used
+  - missing-dns-egress
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/
+    note: Audit Policy schema, levels, and omitStages

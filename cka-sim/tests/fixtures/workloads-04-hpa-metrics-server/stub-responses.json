@@ -1,0 +1,29 @@
+{
+  "kind": "HorizontalPodAutoscaler",
+  "apiVersion": "autoscaling/v2",
+  "metadata": {
+    "name": "q04-load",
+    "namespace": "cka-sim-workloads-scheduling-04"
+  },
+  "spec": {
+    "scaleTargetRef": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "name": "q04-load"
+    },
+    "minReplicas": 1,
+    "maxReplicas": 5,
+    "metrics": [
+      {
+        "type": "Resource",
+        "resource": {
+          "name": "cpu",
+          "target": {
+            "type": "Utilization",
+            "averageUtilization": 50
+          }
+        }
+      }
+    ]
+  }
+}

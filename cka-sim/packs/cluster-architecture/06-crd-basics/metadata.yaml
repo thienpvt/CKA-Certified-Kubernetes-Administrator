@@ -1,0 +1,12 @@
+id: cluster-architecture-crd-basics
+domain: cluster-architecture
+estimatedMinutes: 6
+verified_against: "1.35"
+traps:
+  - crd-missing-scope-field
+  - default-sa-used
+  - missing-dns-egress
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/
+    note: CRD group, scope, and schema basics

@@ -1,0 +1,15 @@
+id: workloads-static-pod
+domain: workloads-scheduling
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - static-pod-applied-via-kubectl-apply
+  - default-sa-used
+  - deployment-missing-requests
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
+    note: Static pod concepts (kubelet-managed manifest directory)
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/"
+    note: kubelet --pod-manifest-path flag

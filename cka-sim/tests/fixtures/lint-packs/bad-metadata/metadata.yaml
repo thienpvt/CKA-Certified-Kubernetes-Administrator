@@ -1,0 +1,7 @@
+id: bad-metadata-fixture
+domain: storage
+estimatedMinutes: 99
+verified_against: "1.34"
+traps:
+  - this-trap-id-does-not-exist
+references: []

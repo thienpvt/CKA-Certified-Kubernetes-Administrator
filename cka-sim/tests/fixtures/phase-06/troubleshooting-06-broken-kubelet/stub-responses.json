@@ -1,0 +1,22 @@
+{
+  "kubectl": [
+    {
+      "args": ["create", "namespace", "cka-sim-troubleshooting-06"],
+      "stdout": "namespace/cka-sim-troubleshooting-06 created\n",
+      "stderr": "",
+      "exitCode": 0
+    },
+    {
+      "args": ["label", "namespace", "cka-sim-troubleshooting-06", "cka-sim/pack=troubleshooting", "cka-sim/question=troubleshooting-broken-kubelet", "--overwrite"],
+      "stdout": "namespace/cka-sim-troubleshooting-06 labeled\n",
+      "stderr": "",
+      "exitCode": 0
+    },
+    {
+      "args": ["get", "namespace", "cka-sim-troubleshooting-06", "-o", "jsonpath={.status.phase}"],
+      "stdout": "Active",
+      "stderr": "",
+      "exitCode": 0
+    }
+  ]
+}

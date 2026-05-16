@@ -1,0 +1,6 @@
+{
+  "-n kube-system get configmap kube-proxy -o jsonpath={.data.config\\.conf}": {
+    "stdout": "mode: iptables\nclusterCIDR: 10.244.0.0/16\n",
+    "rc": 0
+  }
+}

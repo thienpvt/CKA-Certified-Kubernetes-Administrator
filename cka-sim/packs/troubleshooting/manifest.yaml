@@ -1,0 +1,26 @@
+pack:
+  id: troubleshooting
+  domain: troubleshooting
+  weight: 30
+  description: "Troubleshooting 30% domain pack (PACK-05) -- full v1.35 Tracker coverage."
+questions:
+  - id: troubleshooting-deploy-svc-mismatch
+    path: 01-deploy-svc-mismatch
+    estimatedMinutes: 7
+  # BEGIN phase-06 new questions
+  - id: troubleshooting-netpol-dns-egress
+    path: 02-netpol-dns-egress
+    estimatedMinutes: 8
+  - id: troubleshooting-coredns-resolution
+    path: 03-coredns-resolution
+    estimatedMinutes: 8
+  - id: troubleshooting-debug-node
+    path: 04-debug-node
+    estimatedMinutes: 9
+  - id: troubleshooting-static-pod-manifest
+    path: 05-static-pod-manifest
+    estimatedMinutes: 10
+  - id: troubleshooting-broken-kubelet
+    path: 06-broken-kubelet
+    estimatedMinutes: 11
+  # END phase-06 new questions

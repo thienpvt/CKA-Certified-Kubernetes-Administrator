@@ -1,0 +1,15 @@
+id: services-networkpolicy-egress
+domain: services-networking
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - missing-dns-egress
+  - default-sa-used
+  - hostpath-pv-without-nodeaffinity
+references:
+  - kind: prior-art-exercise
+    target: exercises/05-networkpolicy/
+    note: Prior NetworkPolicy exercise
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+    note: NetworkPolicy concepts

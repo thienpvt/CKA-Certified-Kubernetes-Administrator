@@ -1,0 +1,18 @@
+id: workloads-hpa-metrics-server
+domain: workloads-scheduling
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - hpa-missing-metrics-server
+  - deployment-missing-requests
+  - default-sa-used
+references:
+  - kind: concerns-md
+    target: .planning/codebase/CONCERNS.md
+    note: "CG-06 metrics-server bootstrap prerequisite for HPA"
+  - kind: k8s-doc
+    target: "https://github.com/kubernetes-sigs/metrics-server"
+    note: metrics-server upstream manifest (v0.7.2 pinned)
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/"
+    note: HPA v2 concepts

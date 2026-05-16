@@ -1,0 +1,15 @@
+id: storage-csi-volumesnapshot
+domain: storage
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - csi-snapshot-wrong-driver
+  - pvc-wrong-storageclass
+  - reclaim-policy-delete-data-loss
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/storage/volume-snapshots/"
+    note: VolumeSnapshot + VolumeSnapshotClass concepts
+  - kind: k8s-doc
+    target: "https://github.com/rancher/local-path-provisioner"
+    note: local-path-provisioner StorageClass used by the lab PVC

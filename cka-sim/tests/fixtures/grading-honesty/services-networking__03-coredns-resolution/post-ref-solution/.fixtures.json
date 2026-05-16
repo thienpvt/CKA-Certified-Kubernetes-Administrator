@@ -1,0 +1,14 @@
+{
+  "get pod q03-dnsclient -n cka-sim-services-networking-03 -o jsonpath={.metadata.resourceVersion}": {
+    "stdout": "450",
+    "rc": 0
+  },
+  "get pod q03-dnsclient -n cka-sim-services-networking-03 -o jsonpath={.spec.dnsPolicy}": {
+    "stdout": "None",
+    "rc": 0
+  },
+  "exec -n cka-sim-services-networking-03 q03-dnsclient -- nslookup kubernetes.default.svc.cluster.local": {
+    "stdout": "Server:\t10.96.0.10\nAddress:\t10.96.0.10:53\nName:\tkubernetes.default.svc.cluster.local\nAddress: 10.96.0.1\n",
+    "rc": 0
+  }
+}

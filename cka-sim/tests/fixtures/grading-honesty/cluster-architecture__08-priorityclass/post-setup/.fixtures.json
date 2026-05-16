@@ -1,0 +1,6 @@
+{
+  "get priorityclass q08-critical q08-batch -o name": {"stdout": "priorityclass.scheduling.k8s.io/q08-critical\npriorityclass.scheduling.k8s.io/q08-batch", "rc": 0},
+  "get priorityclass q08-critical -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get priorityclass q08-critical -o jsonpath={.metadata.resourceVersion}": {"stdout": "700", "rc": 0},
+  "get priorityclass -o jsonpath={.items[?(@.globalDefault==true)].metadata.name}": {"stdout": "", "rc": 0}
+}

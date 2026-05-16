@@ -1,0 +1,42 @@
+# cka-sim/packs/workloads-scheduling/coverage.yaml
+# PACK-07 coverage matrix for the Workloads & Scheduling domain (v1.35 Study Progress Tracker).
+# Each tracker.<slug>.questions lists the question-ids (from manifest.yaml) that
+# exercise that Tracker checkbox. Multiple questions may cover the same item.
+domain: workloads-scheduling
+tracker:
+  deployment-requests-limits:
+    label: "Deployments with resource requests and limits"
+    questions:
+      - workloads-deployment-requests
+  rolling-update-rollback:
+    label: "Rolling update and rollback"
+    questions:
+      - workloads-rolling-update-rollback
+  configmap-secret-env-volume:
+    label: "ConfigMaps and Secrets (env and volume)"
+    questions:
+      - workloads-configmap-secret-env-volume
+  hpa-autoscaling-v2:
+    label: "HPA (autoscaling/v2)"
+    questions:
+      - workloads-hpa-metrics-server
+  daemonset:
+    label: "DaemonSet"
+    questions:
+      - workloads-daemonset
+  static-pods:
+    label: "Static pods"
+    questions:
+      - workloads-static-pod
+  native-sidecar:
+    label: "Native sidecar containers (restartPolicy: Always on initContainer)"
+    questions:
+      - workloads-native-sidecar
+  nodeselector-node-affinity:
+    label: "nodeSelector and node affinity"
+    questions:
+      - workloads-nodeselector-affinity-taints
+  taints-tolerations:
+    label: "Taints and tolerations"
+    questions:
+      - workloads-nodeselector-affinity-taints

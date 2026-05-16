@@ -1,0 +1,1 @@
+{"apiVersion":"v1","kind":"PersistentVolume","metadata":{"name":"q03-retain-pv"},"spec":{"capacity":{"storage":"1Gi"},"accessModes":["ReadWriteOnce"],"persistentVolumeReclaimPolicy":"Retain","storageClassName":"manual"}}

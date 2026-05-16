@@ -2,93 +2,100 @@
 
 ## What This Is
 
-A complete, automated CKA (Certified Kubernetes Administrator) exam simulator that runs on a learner's own existing 1-control-plane + 2-worker Ubuntu cluster (provisioned manually on GCP). Each question ships with `setup.sh` (creates the broken state / preconditions), `grade.sh` (kubectl checks with named "trap" diagnostics for common candidate mistakes), and `reset.sh`, plus a runner CLI that supports both `cka-sim drill` (single-question domain practice) and `cka-sim exam` (timed 17-question / 2-hour mock with per-domain scoring). Built for one CKA candidate (the repo owner) preparing for the real CKA exam, with the existing 31-exercise study guide kept in place as superseded reference material.
+A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simulator that runs against a learner's own 1-control-plane + 2-worker kubeadm cluster. Ships two timed 17-question mock exams (blueprint-alpha and blueprint-bravo), five domain packs (Storage, Workloads & Scheduling, Services & Networking, Cluster Architecture, Troubleshooting) with 38 total questions, a trap-aware grading framework that distinguishes setup state from candidate work, and CLI subcommands (`drill`, `exam`, `score`, `list`, `bootstrap`, `doctor`). Built for one CKA candidate preparing for the real v1.35 exam; verified end-to-end on a live 1+2 GCP Ubuntu cluster.
 
 ## Core Value
 
-**A candidate can take a 2-hour timed mock exam against their own cluster and get an honest, trap-aware score telling them exactly which CKA domains and which classes of mistake they need to drill before sitting the real exam.** Everything else in this project (domain packs, ssh-node scaffolding, individual graders) exists to feed that one experience.
+**A candidate can take a 2-hour timed mock exam against their own cluster and get an honest, trap-aware score telling them exactly which CKA domains and which classes of mistake they need to drill before sitting the real exam.** v1.0 delivered this end-to-end with grading honesty verified: empty submission scores 0/100, reference solutions score max/max.
+
+## Current State
+
+**Shipped v1.0 (2026-05-17):** Full CKA exam simulator operational on live cluster.
+- 38 questions across 5 domain packs (Storage 10%, W&S 15%, S&N 20%, CA 25%, Troubleshooting 30%)
+- 2 mock exam blueprints (alpha, bravo) — 17 questions / 130 minutes each
+- Bash-only runtime (~1000 LOC core + 19000 LOC tests/fixtures/docs)
+- Trap framework: 47 catalog entries, 8 root-cause detectors
+- Live cluster UAT: 17/17 ref-solution round-trip PASS, empty=0/100 verified
+- CI: shellcheck, lint-packs (298 checks), lint-traps (47 entries), test.sh (78 cases)
+
+**Tech stack:** Pure Bash + kubectl + jq + standard Ubuntu 22.04 binaries. No external runtime dependencies beyond what `apt-get` ships.
 
 ## Requirements
 
-### Validated
+### Validated (v1.0)
 
-<!-- From the existing codebase map (.planning/codebase/) — already shipped, kept as superseded study-guide reference. -->
+- ✓ Cluster bootstrap script — `cka-sim bootstrap` configures existing 1+2 cluster, SSH topology, doctor check — v1.0
+- ✓ Domain coverage map — every v1.35 Study Progress Tracker checkbox mapped to ≥1 question — v1.0
+- ✓ Five domain packs (Storage, W&S, S&N, CA, Troubleshooting) — 38 questions total — v1.0
+- ✓ Per-question runtime triplet (`setup.sh` / `grade.sh` / `reset.sh`) — bash-only, idempotent — v1.0
+- ✓ Trap-aware grader — 47 catalog entries with named `Trap N: <description>` diagnostics — v1.0
+- ✓ Two mock-exam packs — blueprint-alpha + blueprint-bravo, 17 questions / 130 min each — v1.0
+- ✓ Runner CLI (`cka-sim`) — `drill`, `exam`, `score`, `list`, `bootstrap`, `doctor` subcommands — v1.0
+- ✓ Score report — Markdown with total, per-domain %, trap frequencies — v1.0
+- ✓ Existing-content banner — superseded notices on legacy exercises/mock-exams — v1.0
+- ✓ Documentation — README, AUTHORING, SCHEMA, CONTRIBUTING, GRADING-HONESTY — v1.0
+- ✓ Grading honesty (Phase 07.1) — setup-state vs candidate-authored distinction; baseline capture + ownership gates — v1.0
 
-- ✓ 31 hands-on exercises under `exercises/NN-slug/README.md` covering most CKA topics — existing
-- ✓ 23 single-resource YAML skeletons under `skeletons/` — existing
-- ✓ 2 paired mock exams under `mock-exams/` (15 questions each, prose-graded) — existing
-- ✓ Symptom-indexed troubleshooting playbook (`troubleshooting/README.md`) — existing
-- ✓ kubectl/cheatsheet quick-reference (`cheatsheet/cka-cheatsheet.md`) — existing
-- ✓ Exam-setup helper (`scripts/exam-setup.sh`) defining the `k`/`kn`/`kgp`/`$do`/`$now` aliases — existing
-- ✓ Local YAML lint (`scripts/validate-local.sh`) + matching CI workflow — existing
-- ✓ Repository conventions (exercise template, commit prefixes, namespace `exercise-NN`) — existing
+### Active (v2.0 — not yet planned)
 
-### Active
+Use `/gsd-new-milestone` to scope. Candidate ideas based on v1.0 outcomes:
 
-<!-- Current scope. All hypotheses until shipped. -->
+- Domain coverage gap closure — any audit-escape questions from 07.1 that need file-baseline support (etcd snapshot, audit-policy YAML, node-level files)
+- Real-cluster CI — github-hosted runner that spins up a kind/k3s cluster and runs grading-honesty UAT
+- Optional candidate quality-of-life: aliases, kubectl-neat integration, time-tracking per question
 
-- [ ] **Cluster bootstrap script** — configures an *existing* 1+2 Ubuntu cluster on GCP (no provisioning) so that from the control-plane node the candidate can `ssh node-01` / `ssh node-02` like the real PSI exam, with exam aliases / vimrc / `ETCDCTL_API=3` / kubeconfig context all pre-loaded.
-- [ ] **Domain coverage map** — every checkbox in the README's Study Progress Tracker (Domains 1-5 + Exam Readiness) maps to one or more exam-sim questions; gaps from the current 31-exercise corpus get net-new questions.
-- [ ] **Domain packs** — one pack per CKA domain (Storage 10%, Troubleshooting 30%, Workloads & Scheduling 15%, Cluster Architecture 25%, Services & Networking 20%) for targeted drilling.
-- [ ] **Per-question runtime triplet** — every question ships `setup.sh` (idempotent, creates the lab namespace + any broken state + required SSH context), `grade.sh` (kubectl-driven pass/fail + named trap diagnostics), `reset.sh` (cleanup back to baseline). Pure bash, runnable in isolation against a clean cluster.
-- [ ] **Trap-aware grader** — `grade.sh` actively detects top common mistakes per question (wrong namespace, missing DNS egress, wrong `--as=` form, default ServiceAccount used, RBAC scope wrong, hostPath without `nodeAffinity`, etc.) and prints `Trap N: <description>` so the candidate learns the *class* of mistake, not just pass/fail.
-- [ ] **Mock-exam packs** — multiple realistic 17-question / 2-hour exam packs that mix domains by exam-weighting (matching the real CKA blueprint), reusing question content from the domain packs.
-- [ ] **Runner CLI (`cka-sim`)** — `cka-sim drill <pack> [<n>]` for single-question practice and `cka-sim exam <pack>` for timed full-mock with flag/skip, end-of-exam grading, 100-point score, per-domain breakdown, and per-trap aggregation.
-- [ ] **Score report** — at exam end, prints a Markdown summary: total score, per-domain percentage, list of traps hit (with frequencies), suggested domain packs to drill next.
-- [ ] **Existing-content banner** — `exercises/`, `mock-exams/`, and the README get a "superseded — see exam-sim/" pointer that doesn't delete the prose but routes new learners to the simulator.
-- [ ] **Documentation** — top-level README section explaining cluster prerequisites, the runner CLI, the trap framework, and how to add new questions. Plus a `CONTRIBUTING.md` update covering question-authoring conventions for the exam-sim.
+### Out of Scope (carried from v1.0)
 
-### Out of Scope
-
-<!-- Explicit boundaries with reasoning to prevent re-adding. -->
-
-- **Provisioning the GCP VMs (Terraform / `gcloud compute instances create`)** — the user provisions VMs themselves and considers that a one-time, manual step.
-- **Bootstrapping the kubeadm cluster (kubeadm init / join)** — assumes the cluster already exists; configuring it for SSH/aliases is in scope, building it is not.
-- **Browser / PSI-like web-terminal emulation** — the runner is terminal-only; PSI's Chromebook environment is reproduced functionally (timer, ssh-node, kubectl) not visually.
-- **CKAD or CKS exam content** — strictly CKA v1.35 syllabus; CKAD/CKS would be separate projects.
-- **Multi-tenant / shared cluster mode** — a single learner runs against their own cluster; concurrent users not supported.
-- **Cloud-vendor-specific labs (GKE/EKS/AKS-only features)** — content stays vendor-neutral kubeadm; GCP is incidental to where the VMs live, not to the curriculum.
-- **Killer.sh-style exam VPN / portal infrastructure** — no remote portal, no auth, no leaderboard. The simulator runs locally against the candidate's cluster.
-- **Question content from the real CKA exam** — only independently designed practice questions; sharing real exam content violates CNCF policy.
-- **Content for older Kubernetes versions** — target is the v1.35 syllabus current at project start (2026-05-07); back-porting to 1.34 or earlier is out of scope.
+- Provisioning the GCP VMs (Terraform / `gcloud compute instances create`) — manual one-time step
+- Bootstrapping the kubeadm cluster (kubeadm init/join) — cluster pre-exists
+- Browser / PSI-like web-terminal emulation — terminal-only functional fidelity
+- CKAD or CKS exam content — strictly CKA v1.35
+- Multi-tenant / shared cluster mode — single learner
+- Cloud-vendor-specific labs — vendor-neutral kubeadm
+- Killer.sh-style exam portal / VPN / leaderboard
+- Question content from the real CKA exam — CNCF NDA
+- Pre-v1.35 Kubernetes versions
 
 ## Context
 
-**Repository state (from `.planning/codebase/`):** The repo is a study-guide for the CKA exam written by the previous owner — Markdown + YAML + Bash, no application code. It already contains 31 exercises, 23 skeletons, 2 mock exams, and a `scripts/validate-local.sh` lint, but `.planning/codebase/CONCERNS.md` flags content drift (PSP error strings, removed `--container-runtime=remote` flag, missing `priorityclass.yaml` skeleton, domain-link 404s, duplicate cri-dockerd exercises) and several gaps vs the v1.35 syllabus (CRDs, kube-proxy modes, metrics-server bootstrap, native sidecars, NetworkPolicy `endPort`, audit policy). The new exam-sim is the place to fix coverage; the existing exercises stay as superseded reference and don't have to be re-validated.
+**Shipped scope (v1.0):** 9 phases, 88 plans, 89 SUMMARYs, 501 commits, 11.5 months elapsed. All work verified on live 1+2 Ubuntu 22.04 / Kubernetes 1.35 cluster on GCP. Phase 07.1 was inserted late as urgent gap-closure when Phase 07 UAT revealed setup-state leak (empty exam scored 10/100 instead of 0/100); rebuilt grading framework with baseline-capture + ownership gates; verified 17/17 round-trip on live cluster.
 
-**Cluster topology (target):** 1 control-plane VM + 2 worker VMs, Ubuntu 22.04 LTS, on GCP Compute Engine, provisioned manually by the candidate. Kubernetes v1.35 via kubeadm. Internal IPs / hostnames `node-01`/`node-02`/`node-03` (or similar) reachable from the control-plane over SSH on the GCP VPC. Containerd runtime; Calico or default CNI.
+**Notable v1.0 incidents resolved during milestone:**
+- Wave 3 + Wave 5 merge commits silently disappeared from git history during 07.1 execution — recovered via cherry-pick of 20 plan commits
+- `assert_changed_since_setup` rv-fallback misfired when controllers updated resource status — fixed by making generation comparison authoritative
+- kubectl short kinds (`pv`, `svc`) didn't match canonical baseline keys — added kind normalization helper
+- 11 SUMMARY.md files were missing at milestone close — backfilled from feat commit messages
 
-**Real CKA exam reference (2026):** ~17 questions, 2 hours, PSI-Bridge web-Chromebook environment, candidate works from a "student" terminal and `ssh` into named cluster nodes, allowed only `kubectl.io/docs`, `kubernetes.io/docs`, `helm.sh/docs`. Pass mark 66%. The simulator targets functional fidelity to that experience, not visual fidelity.
+**Cluster topology (verified):** 1 control-plane + 2 workers, Ubuntu 22.04, GCP Compute Engine, kubeadm + containerd, Kubernetes 1.35. SSH topology validated; `cka-sim doctor` green.
 
-**Existing concerns to address en route:** the trap catalog should call out the real-world content bugs already documented in `.planning/codebase/CONCERNS.md` (PSS error wording, kubeadm-flags.env vs kubelet.conf, hostPath nodeAffinity) so the new graders teach the right mental model from day one.
+## Constraints (carried from v1.0)
 
-**Why this user is building this:** The owner is a CKA candidate (system context email confirms: `pvtcwd@gmail.com`). They've outgrown the existing prose-only practice format and want timed, automated, trap-aware feedback to identify their weak domains before sitting the real exam.
-
-## Constraints
-
-- **Tech stack**: Pure Bash + standard kubectl / `etcdctl` / `crictl` for the runner — no Go/Python CLIs, no extra dependencies beyond what `apt-get install` ships on Ubuntu 22.04 plus the Kubernetes-installed binaries. Why: keeps the runner installable on the same VM the candidate practices on, and matches the bash-only execution surface of the real exam.
-- **Cluster topology**: 1 control-plane + minimum 2 workers, Ubuntu 22.04, kubeadm + containerd, Kubernetes 1.35. Why: matches the v1.35 syllabus and the real exam's multi-node topology with worker `ssh node-NN` access.
-- **Provisioning**: GCP VMs are pre-existing and out of scope. Why: the candidate has already built and pays for the cluster manually; re-provisioning is friction, not value.
-- **Content scope**: All v1.35 CKA Study Progress Tracker checkboxes covered, no CKAD/CKS scope creep. Why: a focused, *complete* CKA simulator is more valuable than a partial three-cert simulator.
-- **Grading discipline**: Every grader must produce both a binary pass/fail AND at least one named trap diagnostic per failure mode it knows how to detect. Why: the core value is "honest, trap-aware feedback" — generic pass/fail is what `mock-exams/` already does and isn't differentiated.
-- **No real exam content**: All questions independently authored; explicit disclaimer in each pack. Why: CNCF NDA — sharing real exam content is grounds for decertification.
-- **Single-learner mode**: Designed for one candidate at a time on their own cluster. Why: avoids the auth/multi-tenant complexity of a service like killer.sh and matches how the user actually practices.
-- **Idempotent setup**: Every `setup.sh` must be safe to re-run; every `reset.sh` must return the cluster to a known clean baseline. Why: practice loops are short — re-running a setup three times in a session must not poison the lab.
+- **Tech stack:** Pure Bash + kubectl/etcdctl/crictl + jq, no Go/Python CLIs
+- **Cluster topology:** 1 CP + ≥2 workers, Ubuntu 22.04, kubeadm + containerd, K8s 1.35
+- **Provisioning:** GCP VMs pre-existing
+- **Content scope:** v1.35 CKA Study Progress Tracker; no CKAD/CKS scope creep
+- **Grading discipline:** Binary pass/fail AND named trap diagnostic per failure mode; setup-state must not score
+- **No real exam content:** All questions independently authored
+- **Single-learner mode:** One candidate, one cluster
+- **Idempotent setup/reset:** Every loop safe to replay
 
 ## Key Decisions
 
-<!-- Decisions made during initial questioning (2026-05-07). -->
-
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Rebuild from the Study Progress Tracker checklist rather than retro-fit existing 31 exercises | Existing exercises have content drift and gaps; cleaner to author fresh, complete coverage than to repair piecemeal — the codebase map's CONCERNS.md backs this | — Pending |
-| Configure existing cluster only (no Terraform / kubeadm bootstrap) | User provisions VMs manually as a one-time GCP step; building provisioning automation duplicates effort and isn't core value | — Pending |
-| Per-question `setup.sh` + `grade.sh` + `reset.sh`, all bash, runnable in isolation | Bash-only matches the real exam shell; isolation lets a candidate replay any single question without resetting the whole pack | — Pending |
-| Grader emits named "trap" diagnostics, not just pass/fail | Trap-aware feedback is the differentiator vs the existing prose mock exams; generic pass/fail teaches less than `Trap 3: missing DNS egress` | — Pending |
-| Build both `cka-sim drill` (single Q) AND `cka-sim exam` (timed 2h mock) | Drill mode for targeted learning; exam mode for the realistic stress-test feedback loop. Exam mode is the core-value experience; drill mode is the daily practice surface | — Pending |
-| Build both domain packs AND multiple full mock-exam packs | Domain packs serve drilling; mock-exam packs reuse domain questions in a weighted blueprint mix for full mocks | — Pending |
-| SSH topology: candidate works from the control-plane node | Common killer.sh-style topology; no need to provision a 4th "student" VM; SSH key generated on CP, authorised on workers | — Pending |
-| Existing 31 exercises kept and labelled "superseded", not deleted | Preserves the existing "What tripped me up" war stories as reference; avoids rewriting prose that already works for study | — Pending |
+| Rebuild from Study Progress Tracker rather than retrofit 31 exercises | Existing exercises had content drift; cleaner to author fresh | ✓ Good — 38 fresh questions ship with v1.0 |
+| Configure existing cluster only (no Terraform/kubeadm bootstrap) | Manual one-time GCP step; not core value | ✓ Good — bootstrap.sh handles SSH/doctor only |
+| Per-question `setup.sh` + `grade.sh` + `reset.sh`, all bash | Matches real exam shell; isolation enables replay | ✓ Good — pattern held across 38 questions |
+| Grader emits named "trap" diagnostics, not just pass/fail | Trap-aware feedback differentiator | ✓ Good — 47 catalog entries deliver named diagnostics |
+| Build both `cka-sim drill` AND `cka-sim exam` | Drill for targeted learning, exam for realistic stress | ✓ Good — both shipped, both verified |
+| Build both domain packs AND mock-exam packs | Domain packs for drilling, mock packs for full exams | ✓ Good — 5 domain packs + 2 mock packs |
+| SSH topology: candidate works from CP node | Common killer.sh topology; no 4th student VM | ✓ Good — verified on live cluster |
+| Existing 31 exercises kept and labelled "superseded" | Preserves prose study material as reference | ✓ Good — banners added in Phase 08 |
+| Bootstrap does NOT inject shell aliases or modify `~/.vimrc` | Muscle memory matches real exam minimal pre-config | ✓ Good — opt-in only |
+| All K8s resource names conform to RFC 1123 | K8s rejects non-compliant names; CI-enforced | ✓ Good — 47 catalog entries pass lint |
+| Decimal-version phase insertion (07.1) for urgent gap closure | Avoid renumbering 08; preserve audit trail | ✓ Good — pattern works, archived as Phase 07.1 |
+| Distinguish setup state from candidate work via baseline capture | Original graders leaked points (10/100 on empty); honest scoring required for exam fidelity | ✓ Good — verified 0/100 on empty, 17/17 on ref-solution |
+| `assert_changed_since_setup` uses generation-first comparison | rv comparison flaky for status-updating resources (Deployment status, PV binding) | ✓ Good — verified during 07.1 UAT |
 
 ## Evolution
 
@@ -108,4 +115,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-07 after initialization*
+*Last updated: 2026-05-17 after v1.0 milestone*

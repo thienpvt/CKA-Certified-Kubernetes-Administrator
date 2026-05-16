@@ -1,3 +1,7 @@
+> **Note:** The content below is superseded by the interactive exam simulator.
+> See [`cka-sim/`](../cka-sim/) for trap-aware drills, timed mocks, and automated grading.
+> This content remains for reference but is no longer actively maintained.
+
 # CKA Exercises
 
 31 hands-on labs covering all seven CKA exam domains. Each one has a task list, hints (use them — they save time), verification commands, and a full solution behind a spoiler tag.

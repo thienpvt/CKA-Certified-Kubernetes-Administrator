@@ -1,0 +1,15 @@
+id: cluster-architecture-pss-enforce
+domain: cluster-architecture
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - pss-error-string-mismatch
+  - psp-fictional-pod-label-exemption
+  - default-sa-used
+references:
+  - kind: concerns-md
+    target: .planning/codebase/CONCERNS.md
+    note: PSS replacement content accuracy
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/security/pod-security-admission/
+    note: Pod Security Admission enforce labels

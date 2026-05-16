@@ -1,0 +1,6 @@
+pack:
+  id: empty
+  domain: storage
+  weight: 0
+  description: "Empty fixture for negative test"
+questions:

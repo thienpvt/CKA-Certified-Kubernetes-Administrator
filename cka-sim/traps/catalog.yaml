@@ -1,0 +1,631 @@
+# cka-sim/traps/catalog.yaml — registry of named content-bug traps.
+# Schema (per CONTEXT D-13/D-14, lint-enforced by scripts/lint-traps.sh):
+#   id, name, description, remediation_hint, severity, domain, source, ownership, references
+# references: list of {kind, target, note}
+# ownership: optional. Values: candidate-required (default -- detector gates on baseline), setup-allowed (text-based content-bug traps fire on setup state).
+# Field order MUST match the above for diff/lint readability.
+# All 8 seeded entries come from REQUIREMENTS.md GRADE-05 + .planning/codebase/CONCERNS.md.
+
+traps:
+  - id: pss-error-string-mismatch
+    name: PSS error message uses PodSecurityPolicy (pre-1.25) wording
+    description: Solution shows the pre-1.25 PSP error wording instead of the v1.25+ PodSecurity admission wording.
+    remediation_hint: "Replace with the actual PSS error wording: violates PodSecurity <level>:<version>."
+    severity: error
+    domain: cluster-architecture
+    source: concerns-md
+    ownership: setup-allowed
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Content Accuracy & Version Drift - PSS error string"
+      - kind: prior-art-exercise
+        target: exercises/20-pod-security-standards/
+        note: Exercise that contains the bug
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/security/pod-security-admission/"
+        note: Authoritative PSS reference
+
+  - id: psp-fictional-pod-label-exemption
+    name: Fictional pod-level PSS exemption label
+    description: "Solution uses a fictional pod-level label pod-security.kubernetes.io/exempt to bypass PSS; no such label exists."
+    remediation_hint: Configure PSS exemptions cluster-wide via AdmissionConfiguration.exemptions, or raise the namespace label.
+    severity: error
+    domain: cluster-architecture
+    source: concerns-md
+    ownership: setup-allowed
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Content Accuracy & Version Drift - Pod-level PSS exemption"
+      - kind: prior-art-exercise
+        target: mock-exams/MOCK-EXAM-02-SOLUTIONS.md
+        note: Solution 13 contains the fictional label
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/enforce-standards-admission-controller/"
+        note: AdmissionConfiguration exemptions
+
+  - id: kubelet-runtime-flag-in-kubeconfig
+    name: Kubelet runtime flag edited in kubeconfig file
+    description: "Solution edits /etc/kubernetes/kubelet.conf (kubeconfig) for kubelet runtime flags; flags actually live in /var/lib/kubelet/kubeadm-flags.env."
+    remediation_hint: Edit /var/lib/kubelet/kubeadm-flags.env (or /etc/default/kubelet) for kubelet runtime args.
+    severity: error
+    domain: cluster-architecture
+    source: concerns-md
+    ownership: setup-allowed
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Content Accuracy - wrong kubeconfig file path"
+      - kind: prior-art-exercise
+        target: exercises/26-cri-dockerd-setup/
+        note: Exercise edits the wrong file
+
+  - id: removed-container-runtime-flag
+    name: Removed --container-runtime=remote flag
+    description: "kubelet uses --container-runtime=remote (removed in 1.27); only --container-runtime-endpoint remains in 1.35."
+    remediation_hint: "Drop --container-runtime=remote; set --container-runtime-endpoint=unix:///run/cri-dockerd.sock instead."
+    severity: error
+    domain: cluster-architecture
+    source: concerns-md
+    ownership: setup-allowed
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Content Accuracy - removed kubelet flag"
+      - kind: prior-art-exercise
+        target: exercises/26-cri-dockerd-setup/
+        note: Exercise contains the removed flag
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/setup/production-environment/container-runtimes/"
+        note: Container runtime configuration
+
+  - id: hostpath-pv-without-nodeaffinity
+    name: hostPath PV without nodeAffinity
+    description: "hostPath PV declared without spec.nodeAffinity; works on single-node but breaks silently on multi-node clusters."
+    remediation_hint: Add spec.nodeAffinity pinning the PV to a specific node, or use a non-hostPath StorageClass.
+    severity: warn
+    domain: storage
+    source: concerns-md
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Security Example Hygiene - hostPath PVs everywhere, no node-pinning"
+      - kind: prior-art-exercise
+        target: exercises/12-storage-pv-pvc/
+        note: Exercise PV missing nodeAffinity
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/volumes/#hostpath"
+        note: hostPath docs
+
+  - id: as-flag-format-wrong
+    name: kubectl --as used with wrong subject format
+    description: "kubectl --as expects a username (or system:serviceaccount:<ns>:<name>); a bare ServiceAccount name is rejected."
+    remediation_hint: "Use --as=system:serviceaccount:<ns>:<name> for SA impersonation (or a plain username for users)."
+    severity: error
+    domain: cluster-architecture
+    source: concerns-md
+    ownership: setup-allowed
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Edge-case authoring - --as= format wrong"
+      - kind: prior-art-exercise
+        target: exercises/04-rbac/
+        note: RBAC exercise demonstrates impersonation
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/reference/access-authn-authz/authentication/#user-impersonation"
+        note: User impersonation reference
+
+  - id: default-sa-used
+    name: Pod uses default ServiceAccount with auto-mounted token
+    description: Pod has no spec.serviceAccountName (or it is set to the default value), so it inherits the default SA with auto-mounted token.
+    remediation_hint: Create a dedicated ServiceAccount and set spec.serviceAccountName + automountServiceAccountToken=false where appropriate.
+    severity: warn
+    domain: workloads-scheduling
+    source: concerns-md
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Security Example Hygiene - Default ServiceAccount usage everywhere"
+      - kind: prior-art-exercise
+        target: exercises/04-rbac/
+        note: RBAC exercise shows the dedicated-SA pattern
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/"
+        note: ServiceAccount docs
+
+  - id: missing-dns-egress
+    name: NetworkPolicy denies UDP/53 egress
+    description: Egress NetworkPolicy on the namespace omits the kube-system DNS allow rule (UDP/53), breaking pod DNS lookups.
+    remediation_hint: Add an egress rule allowing UDP port 53 to namespace=kube-system pods (or 0.0.0.0/0 if simpler).
+    severity: error
+    domain: services-networking
+    source: concerns-md
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "Edge-case authoring - DNS egress missed"
+      - kind: prior-art-exercise
+        target: skeletons/networkpolicy.yaml
+        note: "Skeleton notes: NEVER forget DNS egress"
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+        note: NetworkPolicy docs
+
+  - id: pvc-wrong-storageclass
+    name: PVC requests a StorageClass not present on the cluster
+    description: "PVC stays Pending because spec.storageClassName references a StorageClass that no provisioner serves."
+    remediation_hint: "Update PVC.spec.storageClassName to a class that exists, or create the missing StorageClass."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/storage-classes/"
+        note: StorageClass concepts
+
+  - id: pv-accessmodes-mismatch
+    name: PV and PVC accessModes do not match
+    description: "Binder skips a PV whose accessModes don't include every mode the PVC requests."
+    remediation_hint: "Align PV.spec.accessModes with PVC.spec.accessModes (PVC requesting RWO needs PV listing RWO)."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
+        note: accessModes matching rules
+
+  - id: deployment-missing-requests
+    name: Deployment containers omit resources.requests
+    description: "Without resources.requests, HPA cannot compute CPU utilisation and the scheduler treats the pod as best-effort QoS."
+    remediation_hint: "Add resources.requests.cpu and resources.requests.memory to every container in the Deployment template."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/"
+        note: container resource requests
+
+  - id: service-selector-empty-endpoints
+    name: Service selector matches no Ready pods so endpoints are empty
+    description: "Service.spec.selector labels do not match any Ready pod's labels; Endpoints/EndpointSlices contain no addresses."
+    remediation_hint: "Diff Service.spec.selector against the Deployment template's pod labels and align them (label keys AND values)."
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service"
+        note: selector / endpoints
+
+  - id: imagepullbackoff-wrong-tag
+    name: Workload stuck in ImagePullBackOff due to non-existent image tag
+    description: "A Deployment references an image tag that does not exist, so its Pods cannot pull the container image and remain in ImagePullBackOff or ErrImagePull."
+    remediation_hint: "Inspect pod events and containerStatuses waiting.reason, then update or remove the workload that references the bad tag."
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/"
+        note: Debug Pods stuck waiting on image pulls
+
+  - id: rbac-viewer-role-mismatch
+    name: RBAC Role or RoleBinding does not grant the required viewer permissions
+    description: "Candidate created a Role/RoleBinding pair but the Role's rules omit the required verb-resource (e.g., 'list pods') OR the RoleBinding subject does not name the expected ServiceAccount; kubectl auth can-i returns 'no' for the requested impersonation."
+    remediation_hint: "Ensure the Role grants verbs ['get','list','watch'] on resources ['pods'] in apiGroups ['']; ensure the RoleBinding subject is kind=ServiceAccount, name=<expected-sa>, namespace=<lab-ns>."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
+        note: RBAC Role/RoleBinding semantics
+
+  - id: csi-snapshot-wrong-driver
+    name: VolumeSnapshotClass references a driver not installed on the cluster
+    description: "VolumeSnapshot stays stuck without readyToUse=true because the VolumeSnapshotClass spec.driver names a CSI driver that is not installed or not serving snapshots on this cluster."
+    remediation_hint: "Install the correct CSI driver that matches the VolumeSnapshotClass spec.driver, or edit the VolumeSnapshotClass to point at an installed driver."
+    severity: error
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/volume-snapshots/"
+        note: VolumeSnapshot + VolumeSnapshotClass concepts
+
+  - id: pvc-pending-wffc-unscheduled-consumer
+    name: PVC with WaitForFirstConsumer stays Pending because no pod consumes it
+    description: "StorageClass has volumeBindingMode=WaitForFirstConsumer; the PVC will not bind until a pod that mounts it is scheduled. Candidates often deploy the PVC alone and conclude the cluster is broken."
+    remediation_hint: "Create a Pod (or Deployment/StatefulSet) that mounts the PVC via spec.volumes[].persistentVolumeClaim.claimName. Binding resolves as soon as the pod is scheduled."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode"
+        note: WaitForFirstConsumer binding semantics
+
+  - id: reclaim-policy-delete-data-loss
+    name: PV reclaim policy set to Delete destroys data when the PVC is deleted
+    description: "PersistentVolume reclaim policy is Delete; when the bound PVC is deleted, the underlying volume (and its data) is removed automatically. Retain preserves the volume for manual reclaim."
+    remediation_hint: "Set persistentVolumeReclaimPolicy: Retain on any PV whose data must survive PVC deletion. kubectl patch pv <name> -p '{\"spec\":{\"persistentVolumeReclaimPolicy\":\"Retain\"}}'"
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming"
+        note: Reclaim policy semantics
+
+  - id: pvc-accessmode-rwx-on-rwo-sc
+    name: PVC requests ReadWriteMany access from a StorageClass that only provides ReadWriteOnce
+    description: "PVC spec.accessModes contains ReadWriteMany but the matching StorageClass (or PV) only supports ReadWriteOnce; the PVC stays Pending forever. hostPath and most local-path provisioners are RWO-only."
+    remediation_hint: "Either request ReadWriteOnce on the PVC (matching what the StorageClass provides) or use a StorageClass whose provisioner supports RWX (NFS, CephFS, cloud file shares)."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
+        note: accessMode support matrix per volume plugin
+
+  - id: hpa-missing-metrics-server
+    name: HPA cannot scale because metrics-server is not installed
+    description: "HorizontalPodAutoscaler targets CPU/memory but metrics.k8s.io is unavailable; the HPA stays FailedGetResourceMetric and never scales. kubeadm clusters do not ship metrics-server by default."
+    remediation_hint: "Install metrics-server via the upstream manifest (https://github.com/kubernetes-sigs/metrics-server). On lab kubeadm clusters with self-signed kubelet certs, add --kubelet-insecure-tls to the metrics-server Deployment args."
+    severity: error
+    domain: workloads-scheduling
+    source: concerns-md
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "CG-06 — metrics-server bootstrap prerequisite for HPA"
+      - kind: k8s-doc
+        target: "https://github.com/kubernetes-sigs/metrics-server"
+        note: metrics-server upstream install manifest
+
+  - id: sidecar-not-native-restartpolicy-always
+    name: Sidecar added as peer container instead of v1.29+ native sidecar (initContainer with restartPolicy Always)
+    description: "Candidate adds a sidecar as a regular spec.containers entry instead of using the v1.29+ native sidecar shape: spec.initContainers[].restartPolicy: Always. Legacy peer-container sidecars do not get guaranteed ordering, lifecycle, or graceful shutdown."
+    remediation_hint: "Move the sidecar into spec.initContainers and set restartPolicy: Always on that init container. The SidecarContainers feature gate is GA on 1.29+ and enabled by default in 1.35."
+    severity: warn
+    domain: workloads-scheduling
+    source: concerns-md
+    references:
+      - kind: concerns-md
+        target: .planning/codebase/CONCERNS.md
+        note: "CG-08 — native sidecar pattern is the 1.35 canonical shape"
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/"
+        note: Native sidecar containers
+
+  - id: daemonset-missing-control-plane-toleration
+    name: DaemonSet lacks control-plane NoSchedule toleration
+    description: "DaemonSet pod template omits a toleration for node-role.kubernetes.io/control-plane:NoSchedule, so the daemon pod is never scheduled onto the control-plane node. The DaemonSet reports fewer Ready nodes than the cluster actually has."
+    remediation_hint: "Add a toleration for node-role.kubernetes.io/control-plane with operator: Exists (and effect: NoSchedule, plus NoExecute if the node has that effect too). Verify status.desiredNumberScheduled matches the cluster's Ready node count after the change."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/"
+        note: Taints + tolerations — control-plane NoSchedule taint semantics
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/#taints-and-tolerations"
+        note: DaemonSet taints + tolerations guidance
+
+  - id: reclaim-policy-retain-when-delete-required
+    name: PV reclaim policy still Retain when business rule requires Delete
+    description: "Business rule requires the PV to delete its underlying storage automatically when the bound PVC is deleted, but persistentVolumeReclaimPolicy is still Retain. The PVC-deletion path will orphan the volume and its backing storage instead of cleaning it up, leaving manual cleanup debt."
+    remediation_hint: "Patch the PV to reclaim: Delete. kubectl patch pv <name> -p '{\"spec\":{\"persistentVolumeReclaimPolicy\":\"Delete\"}}'. Verify with kubectl get pv <name> -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'."
+    severity: warn
+    domain: storage
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming"
+        note: Reclaim policy semantics (Retain vs Delete)
+
+  - id: configmap-env-value-literal-hardcoded
+    name: ConfigMap value hardcoded into Pod env instead of valueFrom.configMapKeyRef
+    description: "Candidate wired a ConfigMap-sourced env var by pasting the literal value into env[].value instead of using env[].valueFrom.configMapKeyRef. The pod no longer reacts to ConfigMap edits and the coupling to the ConfigMap is broken; when the ConfigMap key rotates, the pod keeps the stale value."
+    remediation_hint: "Replace env[].value with env[].valueFrom.configMapKeyRef pointing at { name: <configmap>, key: <key> } so the binding is declarative. Restart the Pod (or let the controller do it) to pick up the reference."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#define-container-environment-variables-using-configmap-data"
+        note: configMapKeyRef env binding pattern
+
+  - id: pod-unschedulable-nodeselector-no-matching-node
+    name: Pod stays Pending because nodeSelector matches no Ready node
+    description: "Pod spec.nodeSelector (or required nodeAffinity matchExpressions) specifies a label that no cluster node carries, so the scheduler cannot place the pod and it stays Pending with a 'didn't match Pod's node affinity/selector' event."
+    remediation_hint: "Either label the intended node with the required key/value (kubectl label nodes <node> key=value) or relax the Pod's nodeSelector / nodeAffinity to a label that an existing node already carries. kubectl describe pod <name> shows the scheduler event for the specific label key that did not match."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/"
+        note: nodeSelector + node affinity matching semantics
+
+  - id: rollout-undo-without-prior-revision
+    name: kubectl rollout undo fails because Deployment has no prior revision
+    description: "Deployment has only a single revision recorded (revisionHistoryLimit=0 or setup never produced a second template hash), so kubectl rollout undo has nothing to return to. The command exits non-zero with 'no rollout history found'."
+    remediation_hint: "Ensure the Deployment carries revisionHistoryLimit >= 2 and that the template genuinely changed between revisions (image, annotation with a unique value, env var). kubectl rollout history deployment/<name> shows the recorded revisions; there must be >=2 for undo to succeed."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-back-a-deployment"
+        note: Rolling back a Deployment requires prior revision history
+
+  - id: static-pod-applied-via-kubectl-apply
+    name: Static Pod manifest submitted via kubectl apply instead of kubelet manifest dir
+    description: "Candidate ran kubectl apply -f against the static-pod manifest instead of placing it in /etc/kubernetes/manifests/ on the target node. The resulting pod is API-server-managed, not kubelet-managed; no mirror pod is created and kubernetes.io/config.source is api, not file."
+    remediation_hint: "Delete the API-server-managed Pod (kubectl delete pod <name>) and copy the manifest to /etc/kubernetes/manifests/<name>.yaml on the intended node. Confirm with kubectl get pod <name>-<node> -o jsonpath='{.metadata.annotations.kubernetes\\.io/config\\.source}' returning 'file'."
+    severity: warn
+    domain: workloads-scheduling
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
+        note: Static pods are kubelet-managed via --pod-manifest-path, not API-server-managed
+
+  - id: kube-proxy-mode-mismatch-ipvs-iptables
+    name: Reported kube-proxy mode does not match live kube-system/kube-proxy ConfigMap
+    description: "Candidate's reported kube-proxy mode does not equal the value of the `mode:` key inside the kube-system/kube-proxy ConfigMap's config.conf entry. Valid Linux values are iptables (kubeadm default), ipvs, and nftables; an empty string means defaults. Oracle is behavioural — read live ConfigMap jsonpath, never shell history."
+    remediation_hint: "Extract the active mode with: kubectl -n kube-system get configmap kube-proxy -o jsonpath='{.data.config\\.conf}' | awk '/^mode:/{print $2}' | tr -d '\"'. Submit exactly that string."
+    severity: warn
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/reference/networking/virtual-ips/"
+        note: kube-proxy modes (iptables/ipvs/nftables) and Service VIP data-plane semantics
+
+  - id: netpol-endport-missing-protocol
+    name: NetworkPolicy endPort rule omits explicit protocol
+    description: "NetworkPolicy uses spec.ingress[].ports[].endPort without a sibling protocol field. v1.35 requires an explicit protocol on any port-range rule; defaults are fragile across CNIs and an omitted protocol is ambiguous at review time even when Calico/Cilium accept it. endPort must also be numeric (not a named port) and >= port."
+    remediation_hint: "Add protocol: TCP (or UDP) next to port and endPort. Example: { protocol: TCP, port: 8080, endPort: 8090 }. Verify CNI support: Calico 3.25+ and Cilium 1.13+ enforce endPort natively."
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+        note: NetworkPolicy endPort field semantics and CNI support matrix
+
+  - id: coredns-forward-to-invalid-upstream
+    name: Pod dnsConfig or CoreDNS forward references an unreachable or non-cluster upstream
+    description: "Pod uses dnsPolicy: None with dnsConfig.nameservers pointing at a public IP (e.g. 1.1.1.1) or an unreachable host instead of the cluster DNS service IP; cluster-internal names like kubernetes.default.svc.cluster.local fail to resolve. Equivalent failure mode in the live CoreDNS Corefile is a `forward .` directive aimed at an upstream the cluster cannot reach."
+    remediation_hint: "For Pod dnsConfig: set nameservers to the cluster DNS Service IP (kubectl -n kube-system get svc kube-dns -o jsonpath='{.spec.clusterIP}') and keep dnsPolicy: ClusterFirst unless there is a specific reason to override. For CoreDNS: keep `forward . /etc/resolv.conf` to inherit the node resolver."
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/coredns/"
+        note: CoreDNS Corefile and in-cluster DNS resolution contract
+
+  - id: ingress-missing-ingressclass
+    name: Ingress has neither spec.ingressClassName nor a matching ingress.class annotation
+    description: "Ingress resource omits both spec.ingressClassName and the legacy kubernetes.io/ingress.class annotation. v1.35 strongly prefers spec.ingressClassName; without it, no controller claims the Ingress and routing never activates. Silently green until a live probe reveals the missing controller binding."
+    remediation_hint: "Set spec.ingressClassName to the name of an installed IngressClass (kubectl get ingressclass). If the cluster has a default IngressClass (ingressclass.kubernetes.io/is-default-class annotation), omission is safe — otherwise always specify explicitly."
+    severity: warn
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/ingress/"
+        note: Ingress + IngressClass binding rules and default-class annotation
+
+  - id: etcd-snapshot-without-env-set
+    name: etcdctl snapshot save/restore invoked without ETCDCTL_API=3
+    description: "Candidate ran etcdctl snapshot save or status without ETCDCTL_API=3 exported. Older etcdctl binaries default to v2 API on some distros; the v3 snapshot subcommand fails or silently operates on v2 data, producing an unusable snapshot file. On v1.35 clusters the boot script exports ETCDCTL_API=3 but the exam drill still marks bare invocations as exam-wrong."
+    remediation_hint: "Always prefix with ETCDCTL_API=3 or export it at the top of the command block. Preferred: ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=... --cert=... --key=... snapshot save <path>."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/"
+        note: etcd backup/restore procedure for kubeadm clusters
+
+  - id: etcd-restore-wrong-data-dir
+    name: etcdutl snapshot restore targets the live data-dir or omits --data-dir
+    description: "Candidate ran etcdutl snapshot restore without --data-dir, or pointed --data-dir at the live /var/lib/etcd. The first form restores into the CWD's default path and is brittle; the second is catastrophic — it overwrites the running etcd's state and bricks the control plane. A safe drill always restores into a sandbox path like /tmp/qNN-etcd-*/restored-data."
+    remediation_hint: "Always pass --data-dir pointing at a sandbox path: etcdutl snapshot restore <snapshot.db> --data-dir=/tmp/q02-etcd-backup/restored-data. Verify the member/wal/ dir exists under the sandbox after restore; never write into /var/lib/etcd on a running cluster."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/"
+        note: etcd snapshot restore procedure and data-dir handling
+
+  - id: kubeadm-upgrade-skip-plan
+    name: kubeadm upgrade apply invoked without a prior kubeadm upgrade plan step
+    description: "Upgrade runbook jumps directly to `kubeadm upgrade apply v<X.Y.Z>` without running `kubeadm upgrade plan` first. Plan output prints the allowable target versions, component version matrix, and migration notices; skipping it risks applying an incompatible minor version or missing a required pre-upgrade action (e.g. drain, etcd snapshot). Safe upgrades always plan -> snapshot -> apply -> uncordon."
+    remediation_hint: "Insert `kubeadm upgrade plan` before apply. Read the output, choose the target version it lists as available, then run `kubeadm upgrade apply v<X.Y.Z>`. Keep `kubeadm upgrade plan` in the apply-script.sh for auditability."
+    severity: warn
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/"
+        note: kubeadm upgrade plan + apply sequence
+
+  - id: audit-policy-wrong-stage-verbosity
+    name: Audit Policy rule uses invalid level or unknown omitStages value
+    description: "audit.k8s.io/v1 Policy rule has no level, or level is outside {None, Metadata, Request, RequestResponse}. Equivalent bug: omitStages lists a stage name the apiserver does not recognise (valid stages are RequestReceived, ResponseStarted, ResponseComplete, Panic). Either form causes apiserver to reject the Policy on load, silently disabling audit logging."
+    remediation_hint: "Set level to one of None/Metadata/Request/RequestResponse per rule. Use omitStages only with valid stage names; RequestReceived is the most common omission to avoid double-logging pre-admission events."
+    severity: warn
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/"
+        note: Audit Policy schema, levels, and stage names
+
+  - id: crd-missing-scope-field
+    name: CustomResourceDefinition omits spec.scope or uses the wrong scope value
+    description: "CRD manifest has no spec.scope, or sets Cluster when the intended resource should be Namespaced (or vice versa). v1 CRDs require spec.scope; apiserver rejects the manifest on apply. Wrong scope silently changes the access model: a Cluster-scoped CR lives outside namespaces and ignores RBAC RoleBindings, while a Namespaced CR requires a namespace on every query."
+    remediation_hint: "Set spec.scope explicitly to Namespaced or Cluster. Default to Namespaced unless the resource genuinely has no tenant boundary (e.g. cluster-wide config). Verify with kubectl get crd <name> -o jsonpath='{.spec.scope}'."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/"
+        note: CRD spec.scope semantics (Namespaced vs Cluster)
+
+  - id: cri-endpoint-unix-prefix-missing
+    name: kubelet --container-runtime-endpoint value omits the unix:// scheme
+    description: "kubelet --container-runtime-endpoint flag set to a bare filesystem path (e.g. /run/cri-dockerd.sock) instead of a unix:// URI. kubelet requires the scheme; without it the endpoint is treated as a protocol error and the kubelet cannot dial the runtime, producing a cryptic 'connection refused' loop at startup."
+    remediation_hint: "Always prefix with unix://. Correct form: --container-runtime-endpoint=unix:///run/cri-dockerd.sock (note the three slashes: unix:// + absolute path)."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/setup/production-environment/container-runtimes/"
+        note: Container runtime endpoint URI format for kubelet
+
+  - id: priorityclass-globaldefault-conflict
+    name: Multiple PriorityClasses declare globalDefault true
+    description: "Two or more PriorityClass resources have globalDefault: true. Kubernetes admission rejects the second creation at submission time, and if both exist (e.g. applied via separate manifests with Force or during upgrade migration) the scheduler's default-priority resolution becomes non-deterministic — new pods without an explicit priorityClassName may receive an unexpected priority."
+    remediation_hint: "Exactly one PriorityClass may be globalDefault. Pick the intended one; patch the others: kubectl patch priorityclass <name> -p '{\"globalDefault\":false}'. Verify: kubectl get priorityclass -o jsonpath='{range .items[?(@.globalDefault==true)]}{.metadata.name}{\"\\n\"}{end}' | wc -l should equal 1."
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/"
+        note: PriorityClass globalDefault semantics and uniqueness constraint
+
+  - id: netpol-label-key-drift
+    name: NetworkPolicy selector key does not match Pod label key
+    description: "Egress NetworkPolicy podSelector.matchLabels key drifted from the target Pod labels, so the policy selects no Pods."
+    remediation_hint: Align the NetworkPolicy podSelector label keys and values with the Pods that need the rule.
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+        note: NetworkPolicy podSelector matchLabels semantics
+
+  - id: netpol-default-deny-missing-allow
+    name: Default-deny NetworkPolicy with no allow path for required flow
+    description: Namespace has default-deny NetworkPolicy plus a policy granting the wrong namespace or port, leaving no allow path for the required flow.
+    remediation_hint: Add an explicit allow rule for the required namespace selector, pod selector, protocol, and port.
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+        note: default-deny + explicit allow composition
+
+  - id: coredns-sandbox-configmap-mount
+    name: Sandbox CoreDNS mounts ConfigMap with wrong volume name or key
+    description: CoreDNS Deployment in the lab namespace mounts the ConfigMap by wrong volume name or key, so Corefile is empty at runtime.
+    remediation_hint: Mount the ConfigMap key named Corefile at the path CoreDNS reads for its Corefile.
+    severity: warn
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/administer-cluster/coredns/"
+        note: CoreDNS Corefile volume mount convention (key "Corefile")
+
+  - id: dnsconfig-policy-none-no-nameservers
+    name: Pod dnsPolicy None with empty dnsConfig.nameservers
+    description: "Pod uses dnsPolicy: None with empty dnsConfig.nameservers, leaving the resolver with no upstream nameserver."
+    remediation_hint: Provide at least one valid nameserver in dnsConfig.nameservers or use ClusterFirst when custom DNS is unnecessary.
+    severity: error
+    domain: services-networking
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/"
+        note: dnsPolicy None requires non-empty dnsConfig.nameservers
+
+  - id: debug-pod-leaked-not-cleaned
+    name: kubectl debug pod left running after drill
+    description: Candidate leaves the kubectl debug Pod running after answering the node-debug drill.
+    remediation_hint: Delete debug Pods after collecting evidence so the lab has no leftover privileged inspection pods.
+    severity: warn
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/"
+        note: ephemeral debug pods require manual cleanup
+
+  - id: debug-node-missing-chroot-host
+    name: kubectl debug node without chroot /host reads debug-container rootfs
+    description: "kubectl debug node was invoked without chroot /host, so the candidate reads the debug container root filesystem instead of the node filesystem."
+    remediation_hint: Enter chroot /host inside the node debug container before reading host files.
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/"
+        note: chroot /host required to inspect the node's filesystem
+
+  - id: debug-ephemeral-vs-node-confusion
+    name: Candidate used kubectl debug <pod> when node debug was required
+    description: Candidate used an ephemeral container on an application Pod when the drill required kubectl debug node on the worker.
+    remediation_hint: Use node debugging for host-level evidence and ephemeral container debugging for Pod-level process inspection.
+    severity: warn
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/"
+        note: ephemeral container vs node debug decision tree
+
+  - id: static-pod-manifest-bad-yaml
+    name: Static pod manifest has YAML parse error
+    description: Static pod manifest contains a YAML parse error, so kubelet skips it and no mirror Pod appears.
+    remediation_hint: Fix the YAML syntax and validate the manifest before placing it in the static Pod manifest directory.
+    severity: error
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
+        note: kubelet silently skips invalid static pod manifests
+
+  - id: static-pod-image-tag-typo
+    name: Static pod image tag does not exist
+    description: "Static pod manifest image value references a non-existent tag, causing ImagePullBackOff on the node."
+    remediation_hint: Use an existing image tag in the static Pod manifest before handing it to kubelet.
+    severity: warn
+    domain: troubleshooting
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/concepts/containers/images/"
+        note: kubelet-managed pod reaches ImagePullBackOff
+
+  - id: kubelet-flag-file-malformed-quoting
+    name: kubeadm-flags.env KUBELET_KUBEADM_ARGS value has stray quotes or CRLF line-endings
+    description: "kubeadm-flags.env KUBELET_KUBEADM_ARGS value has stray quotes, missing quotes, or CRLF line endings, so kubelet refuses to parse it."
+    remediation_hint: Rewrite KUBELET_KUBEADM_ARGS as one shell-parseable assignment with balanced quotes and Unix line endings.
+    severity: error
+    domain: cluster-architecture
+    source: community
+    references:
+      - kind: k8s-doc
+        target: "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/"
+        note: kubelet refuses to parse malformed KUBELET_KUBEADM_ARGS

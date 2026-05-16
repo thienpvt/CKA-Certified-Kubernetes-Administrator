@@ -1,0 +1,7 @@
+{
+  "get rolebinding viewer-binding -n cka-sim-cluster-architecture-01 -o name": {"stdout": "rolebinding.rbac.authorization.k8s.io/viewer-binding", "rc": 0},
+  "get serviceaccount viewer -n cka-sim-cluster-architecture-01 -o name": {"stdout": "serviceaccount/viewer", "rc": 0},
+  "get role pod-viewer -n cka-sim-cluster-architecture-01 -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get role pod-viewer -n cka-sim-cluster-architecture-01 -o jsonpath={.metadata.resourceVersion}": {"stdout": "500", "rc": 0},
+  "auth can-i get pods -n cka-sim-cluster-architecture-01 --as system:serviceaccount:cka-sim-cluster-architecture-01:viewer": {"stdout": "no", "rc": 1}
+}

@@ -1,0 +1,44 @@
+{
+  "captured_at": 1778800000,
+  "lab_namespace": "cka-sim-troubleshooting-03",
+  "resources": [
+    {
+      "kind": "ConfigMap",
+      "name": "q03-coredns-corefile",
+      "namespace": "cka-sim-troubleshooting-03",
+      "generation": null,
+      "resourceVersion": "100",
+      "labels": {}
+    },
+    {
+      "kind": "Deployment",
+      "name": "q03-coredns",
+      "namespace": "cka-sim-troubleshooting-03",
+      "generation": 1,
+      "resourceVersion": "101",
+      "labels": {"app.kubernetes.io/name": "q03-coredns"}
+    },
+    {
+      "kind": "Service",
+      "name": "q03-coredns",
+      "namespace": "cka-sim-troubleshooting-03",
+      "generation": 1,
+      "resourceVersion": "102",
+      "labels": {}
+    },
+    {
+      "kind": "Pod",
+      "name": "q03-dnsclient",
+      "namespace": "cka-sim-troubleshooting-03",
+      "generation": null,
+      "resourceVersion": "103",
+      "labels": {"app": "q03-dnsclient"}
+    }
+  ],
+  "resource_list": [
+    "configmap/q03-coredns-corefile",
+    "deployment/q03-coredns",
+    "service/q03-coredns",
+    "pod/q03-dnsclient"
+  ]
+}

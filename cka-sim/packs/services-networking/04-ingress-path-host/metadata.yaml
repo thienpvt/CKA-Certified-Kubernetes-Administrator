@@ -1,0 +1,15 @@
+id: services-ingress-path-host
+domain: services-networking
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - ingress-missing-ingressclass
+  - default-sa-used
+  - missing-dns-egress
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/services-networking/ingress/
+    note: Ingress host and path routing
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/#ingressclass
+    note: IngressClass concepts

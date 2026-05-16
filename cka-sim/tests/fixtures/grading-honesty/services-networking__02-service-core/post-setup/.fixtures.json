@@ -1,0 +1,14 @@
+{
+  "get service q02-web -n cka-sim-services-networking-02 -o jsonpath={.metadata.resourceVersion}": {
+    "stdout": "300",
+    "rc": 0
+  },
+  "get service q02-web -n cka-sim-services-networking-02 -o jsonpath={.spec.selector.app}": {
+    "stdout": "q02-web-typo",
+    "rc": 0
+  },
+  "get endpoints q02-web -n cka-sim-services-networking-02 -o jsonpath={.subsets[0].addresses[0].ip}": {
+    "stdout": "",
+    "rc": 0
+  }
+}

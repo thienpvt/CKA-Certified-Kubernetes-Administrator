@@ -1,0 +1,26 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-services-networking-02",
+  "resources": [
+    {
+      "kind": "Service",
+      "name": "q02-web",
+      "namespace": "cka-sim-services-networking-02",
+      "generation": null,
+      "resourceVersion": "300",
+      "labels": {}
+    },
+    {
+      "kind": "Deployment",
+      "name": "q02-web",
+      "namespace": "cka-sim-services-networking-02",
+      "generation": 1,
+      "resourceVersion": "310",
+      "labels": {"tier": "backend"}
+    }
+  ],
+  "resource_list": [
+    "service/q02-web",
+    "deployment/q02-web"
+  ]
+}

@@ -1,0 +1,19 @@
+id: troubleshooting-broken-kubelet
+domain: troubleshooting
+estimatedMinutes: 11
+verified_against: "1.35"
+traps:
+  - removed-container-runtime-flag
+  - cri-endpoint-unix-prefix-missing
+  - kubelet-runtime-flag-in-kubeconfig
+  - kubelet-flag-file-malformed-quoting
+references:
+  - kind: prior-art-exercise
+    target: cka-sim/packs/cluster-architecture/07-cri-dockerd-endpoint/
+    note: "Related prior-art: CRI-dockerd endpoint flag file semantics"
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/
+    note: kubelet CLI reference and KUBELET_KUBEADM_ARGS shape
+  - kind: concerns-md
+    target: .planning/codebase/CONCERNS.md
+    note: Correct node-agent runtime flag file path and endpoint scheme

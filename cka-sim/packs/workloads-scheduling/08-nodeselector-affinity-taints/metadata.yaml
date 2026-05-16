@@ -1,0 +1,15 @@
+id: workloads-nodeselector-affinity-taints
+domain: workloads-scheduling
+estimatedMinutes: 9
+verified_against: "1.35"
+traps:
+  - default-sa-used
+  - deployment-missing-requests
+  - pod-unschedulable-nodeselector-no-matching-node
+references:
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/"
+    note: nodeSelector + node affinity (required vs preferred)
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/"
+    note: taints + tolerations (NoSchedule / PreferNoSchedule / NoExecute)

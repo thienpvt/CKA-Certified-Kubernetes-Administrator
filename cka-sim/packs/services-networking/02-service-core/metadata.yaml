@@ -1,0 +1,15 @@
+id: services-service-core
+domain: services-networking
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - service-selector-empty-endpoints
+  - default-sa-used
+  - missing-dns-egress
+references:
+  - kind: prior-art-exercise
+    target: exercises/06-services/
+    note: Service selector and endpoint troubleshooting prior art
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service
+    note: Service selector and endpoint semantics

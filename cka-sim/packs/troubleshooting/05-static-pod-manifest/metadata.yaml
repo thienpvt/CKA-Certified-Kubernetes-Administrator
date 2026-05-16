@@ -1,0 +1,15 @@
+id: troubleshooting-static-pod-manifest
+domain: troubleshooting
+estimatedMinutes: 10
+verified_against: "1.35"
+traps:
+  - static-pod-manifest-bad-yaml
+  - static-pod-image-tag-typo
+  - default-sa-used
+references:
+  - kind: prior-art-exercise
+    target: cka-sim/packs/workloads-scheduling/06-static-pod/
+    note: "Related prior-art: static pod authoring (workloads-scheduling)"
+  - kind: k8s-doc
+    target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
+    note: Static pod concepts and the /etc/kubernetes/manifests/ directory

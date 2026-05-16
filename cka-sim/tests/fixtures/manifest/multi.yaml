@@ -1,0 +1,15 @@
+pack:
+  id: troubleshooting
+  domain: troubleshooting
+  weight: 30
+  description: "Multi-question fixture"
+questions:
+  - id: ts-question-one
+    path: 01-question-one
+    estimatedMinutes: 5
+  - id: ts-question-two
+    path: 02-question-two
+    estimatedMinutes: 10
+  - id: ts-question-three
+    path: 03-question-three
+    estimatedMinutes: 7

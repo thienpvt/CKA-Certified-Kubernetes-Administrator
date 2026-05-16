@@ -1,0 +1,26 @@
+{
+  "captured_at": 1747000000,
+  "lab_namespace": "cka-sim-cluster-architecture-08",
+  "resources": [
+    {
+      "kind": "PriorityClass",
+      "name": "q08-critical",
+      "namespace": null,
+      "generation": null,
+      "resourceVersion": "700",
+      "labels": {"cka-sim/pack": "cluster-architecture", "cka-sim/question": "cluster-architecture-priorityclass"}
+    },
+    {
+      "kind": "PriorityClass",
+      "name": "q08-batch",
+      "namespace": null,
+      "generation": null,
+      "resourceVersion": "701",
+      "labels": {"cka-sim/pack": "cluster-architecture", "cka-sim/question": "cluster-architecture-priorityclass"}
+    }
+  ],
+  "resource_list": [
+    "priorityclass/q08-critical",
+    "priorityclass/q08-batch"
+  ]
+}

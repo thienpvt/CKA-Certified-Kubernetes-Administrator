@@ -1,0 +1,26 @@
+pack:
+  id: services-networking
+  domain: services-networking
+  weight: 20
+  description: "Services & Networking 20% domain pack (PACK-03) -- full v1.35 Tracker coverage."
+questions:
+  - id: services-networkpolicy-egress
+    path: 01-networkpolicy-egress
+    estimatedMinutes: 9
+  # BEGIN phase-05 new questions (P03-P07 append one question block each below this line; idempotent via grep guard)
+  - id: services-service-core
+    path: 02-service-core
+    estimatedMinutes: 7
+  - id: services-coredns-resolution
+    path: 03-coredns-resolution
+    estimatedMinutes: 7
+  - id: services-ingress-path-host
+    path: 04-ingress-path-host
+    estimatedMinutes: 8
+  - id: services-kube-proxy-mode
+    path: 05-kube-proxy-mode
+    estimatedMinutes: 8
+  - id: services-netpol-endport
+    path: 06-netpol-endport
+    estimatedMinutes: 7
+  # END phase-05 new questions

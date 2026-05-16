@@ -1,0 +1,22 @@
+{
+  "get networkpolicy egress-restrict -n cka-sim-services-networking-01 -o jsonpath={.metadata.generation}": {
+    "stdout": "2",
+    "rc": 0
+  },
+  "get networkpolicy egress-restrict -n cka-sim-services-networking-01 -o jsonpath={.metadata.resourceVersion}": {
+    "stdout": "200",
+    "rc": 0
+  },
+  "get pod probe -n cka-sim-services-networking-01 -o jsonpath={.status.conditions[?(@.type==\"Ready\")].status}": {
+    "stdout": "True",
+    "rc": 0
+  },
+  "exec -n cka-sim-services-networking-01 probe -- nslookup kubernetes.default": {
+    "stdout": "",
+    "rc": 0
+  },
+  "get networkpolicy egress-restrict -n cka-sim-services-networking-01 -o json": {
+    "stdout": "{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"NetworkPolicy\",\"metadata\":{\"name\":\"egress-restrict\",\"namespace\":\"cka-sim-services-networking-01\",\"generation\":2,\"resourceVersion\":\"200\"},\"spec\":{\"podSelector\":{\"matchLabels\":{\"app\":\"probe\"}},\"policyTypes\":[\"Egress\"],\"egress\":[{\"to\":[{\"ipBlock\":{\"cidr\":\"10.0.0.0/8\"}}],\"ports\":[{\"protocol\":\"TCP\",\"port\":80}]},{\"to\":[{\"namespaceSelector\":{\"matchLabels\":{\"kubernetes.io/metadata.name\":\"kube-system\"}},\"podSelector\":{\"matchLabels\":{\"k8s-app\":\"kube-dns\"}}}],\"ports\":[{\"protocol\":\"UDP\",\"port\":53},{\"protocol\":\"TCP\",\"port\":53}]}]}}",
+    "rc": 0
+  }
+}

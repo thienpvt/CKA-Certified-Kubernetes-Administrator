@@ -1,0 +1,12 @@
+{
+  "ingress/q04-web": {
+    "exists": true,
+    "jsonpath": {
+      "{.spec.ingressClassName}": "q04-nginx",
+      "{.metadata.annotations.kubernetes\\.io/ingress\\.class}": "",
+      "{.spec.rules[0].host}": "api.example.local",
+      "{.spec.rules[0].http.paths[0].path}": "/",
+      "{.spec.rules[0].http.paths[0].backend.service.name}": "q04-web"
+    }
+  }
+}

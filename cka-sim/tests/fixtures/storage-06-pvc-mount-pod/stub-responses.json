@@ -1,0 +1,32 @@
+{
+  "kind": "Deployment",
+  "apiVersion": "apps/v1",
+  "metadata": {
+    "name": "q06-reader",
+    "namespace": "cka-sim-storage-06",
+    "labels": {"app": "q06-reader"}
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {"matchLabels": {"app": "q06-reader"}},
+    "template": {
+      "metadata": {"labels": {"app": "q06-reader"}},
+      "spec": {
+        "serviceAccountName": "q06-reader-sa",
+        "containers": [
+          {
+            "name": "app",
+            "image": "nginx:1.27",
+            "resources": {"requests": {"cpu": "50m", "memory": "64Mi"}},
+            "volumeMounts": [
+              {"name": "data", "mountPath": "/data", "readOnly": true}
+            ]
+          }
+        ],
+        "volumes": [
+          {"name": "data", "persistentVolumeClaim": {"claimName": "q06-data"}}
+        ]
+      }
+    }
+  }
+}

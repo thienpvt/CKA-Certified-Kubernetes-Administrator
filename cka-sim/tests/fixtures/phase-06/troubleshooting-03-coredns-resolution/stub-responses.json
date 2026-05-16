@@ -1,0 +1,62 @@
+{
+  "preFix": {
+    "configmap/q03-coredns-corefile": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": { "name": "q03-coredns-corefile", "namespace": "cka-sim-troubleshooting-03" },
+      "data": { "Corefile": ".:53 {\n    errors\n    health\n    ready\n    forward . 203.0.113.53:53\n    cache 30\n    loop\n    reload\n    loadbalance\n}\n" }
+    },
+    "deployment/q03-coredns": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": { "name": "q03-coredns", "namespace": "cka-sim-troubleshooting-03" },
+      "spec": { "template": { "spec": { "containers": [ { "name": "coredns", "volumeMounts": [ { "name": "config", "mountPath": "/etc/coredns/Corefile", "subPath": "corefile" } ] } ] } } }
+    },
+    "service/q03-coredns": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": { "name": "q03-coredns", "namespace": "cka-sim-troubleshooting-03" },
+      "spec": { "clusterIP": "10.96.0.53", "ports": [ { "name": "dns-udp", "protocol": "UDP", "port": 53 }, { "name": "dns-tcp", "protocol": "TCP", "port": 53 } ] }
+    },
+    "pod/q03-dnsclient": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": { "name": "q03-dnsclient", "namespace": "cka-sim-troubleshooting-03" },
+      "spec": { "dnsPolicy": "None", "dnsConfig": { "nameservers": [ "10.96.0.53" ] } }
+    },
+    "exec": {
+      "q03-dnsclient/nslookup kubernetes.default.svc.cluster.local": { "rc": 1, "stdout": "", "stderr": "nslookup: can't resolve 'kubernetes.default.svc.cluster.local'" },
+      "q03-dnsclient/nslookup www.example.com": { "rc": 1, "stdout": "", "stderr": "nslookup: can't resolve 'www.example.com'" }
+    }
+  },
+  "postFix": {
+    "configmap/q03-coredns-corefile": {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": { "name": "q03-coredns-corefile", "namespace": "cka-sim-troubleshooting-03" },
+      "data": { "Corefile": ".:53 {\n    errors\n    health\n    ready\n    forward . /etc/resolv.conf\n    cache 30\n    loop\n    reload\n    loadbalance\n}\n" }
+    },
+    "deployment/q03-coredns": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": { "name": "q03-coredns", "namespace": "cka-sim-troubleshooting-03" },
+      "spec": { "template": { "spec": { "containers": [ { "name": "coredns", "volumeMounts": [ { "name": "config", "mountPath": "/etc/coredns/Corefile", "subPath": "Corefile" } ] } ] } } }
+    },
+    "service/q03-coredns": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": { "name": "q03-coredns", "namespace": "cka-sim-troubleshooting-03" },
+      "spec": { "clusterIP": "10.96.0.53", "ports": [ { "name": "dns-udp", "protocol": "UDP", "port": 53 }, { "name": "dns-tcp", "protocol": "TCP", "port": 53 } ] }
+    },
+    "pod/q03-dnsclient": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": { "name": "q03-dnsclient", "namespace": "cka-sim-troubleshooting-03" },
+      "spec": { "dnsPolicy": "None", "dnsConfig": { "nameservers": [ "10.96.0.53" ] } }
+    },
+    "exec": {
+      "q03-dnsclient/nslookup kubernetes.default.svc.cluster.local": { "rc": 0, "stdout": "Server: 10.96.0.53\nAddress: 10.96.0.53:53\n\nName: kubernetes.default.svc.cluster.local\nAddress: 10.96.0.1\n", "stderr": "" },
+      "q03-dnsclient/nslookup www.example.com": { "rc": 0, "stdout": "Server: 10.96.0.53\nAddress: 10.96.0.53:53\n\nName: www.example.com\nAddress: 93.184.216.34\n", "stderr": "" }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "wait --for=jsonpath={.status.phase}=Bound pvc/q03-rwo-pvc -n cka-sim-storage-03 --timeout=30s": {"stdout": "pvc/q03-rwo-pvc condition met", "rc": 0},
+  "wait --for=jsonpath={.status.phase}=Bound pvc/q03-rwx-pvc -n cka-sim-storage-03 --timeout=60s": {"stdout": "", "rc": 1},
+  "get persistentvolume q03-retain-pv -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get persistentvolume q03-retain-pv -o jsonpath={.metadata.resourceVersion}": {"stdout": "200", "rc": 0},
+  "get pvc q03-rwx-pvc -n cka-sim-storage-03 -o jsonpath={.status.phase}": {"stdout": "Pending", "rc": 0},
+  "get pv q03-retain-pv -o jsonpath={.spec.persistentVolumeReclaimPolicy}": {"stdout": "Retain", "rc": 0},
+  "get pv q03-delete-pv -o jsonpath={.spec.accessModes[0]}": {"stdout": "ReadWriteOnce", "rc": 0},
+  "get pv -l cka-sim/question-id=storage-access-modes-reclaim -o jsonpath={.items[?(@.spec.accessModes[0]==\"ReadWriteMany\")].metadata.name}": {"stdout": "", "rc": 0}
+}

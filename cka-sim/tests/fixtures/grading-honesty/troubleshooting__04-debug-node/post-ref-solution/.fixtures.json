@@ -1,0 +1,7 @@
+{
+  "get node worker-1 -o jsonpath={.status.nodeInfo.kernelVersion}": {"stdout": "5.15.0-92-generic", "rc": 0},
+  "get pods --all-namespaces -l kubectl.kubernetes.io/debug-source=worker-1 --field-selector=status.phase=Running -o name": {"stdout": "pod/node-debugger-worker-1", "rc": 0},
+  "get pods --all-namespaces -l kubectl.kubernetes.io/debug-source=worker-1 --field-selector=status.phase=Succeeded -o name": {"stdout": "", "rc": 0},
+  "get pods --all-namespaces -l kubectl.kubernetes.io/debug-source=worker-1 --field-selector=status.phase=Failed -o name": {"stdout": "", "rc": 0},
+  "get pods -n cka-sim-troubleshooting-04 -o jsonpath={.items[*].metadata.annotations.kubectl\\.kubernetes\\.io/debug-container}": {"stdout": "", "rc": 0}
+}

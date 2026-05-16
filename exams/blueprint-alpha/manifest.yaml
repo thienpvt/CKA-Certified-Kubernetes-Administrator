@@ -1,0 +1,47 @@
+exam:
+  id: blueprint-alpha
+  version: "1.0"
+  durationMinutes: 120
+  estimatedMinutesBudget: [120, 130]
+  disclaimer: "Not real CKA exam content; independently authored. Targets v1.35 CKA blueprint."
+  weighting:
+    storage: 10
+    workloads-scheduling: 15
+    services-networking: 20
+    cluster-architecture: 25
+    troubleshooting: 30
+questions:
+  - pack: storage
+    slug: 01-pvc-binding
+  - pack: troubleshooting
+    slug: 01-deploy-svc-mismatch
+  - pack: workloads-scheduling
+    slug: 02-rolling-update-rollback
+  - pack: services-networking
+    slug: 02-service-core
+  - pack: cluster-architecture
+    slug: 06-crd-basics
+  - pack: troubleshooting
+    slug: 02-netpol-dns-egress
+  - pack: workloads-scheduling
+    slug: 05-daemonset
+  - pack: services-networking
+    slug: 06-netpol-endport
+  - pack: cluster-architecture
+    slug: 04-pss-enforce
+  - pack: troubleshooting
+    slug: 04-debug-node
+  - pack: storage
+    slug: 02-storageclass-dynamic
+  - pack: cluster-architecture
+    slug: 07-cri-dockerd-endpoint
+  - pack: workloads-scheduling
+    slug: 01-deployment-requests
+  - pack: troubleshooting
+    slug: 03-coredns-resolution
+  - pack: services-networking
+    slug: 05-kube-proxy-mode
+  - pack: cluster-architecture
+    slug: 08-priorityclass
+  - pack: troubleshooting
+    slug: 05-static-pod-manifest

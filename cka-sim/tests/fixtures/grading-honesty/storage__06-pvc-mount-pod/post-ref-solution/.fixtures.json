@@ -1,0 +1,11 @@
+{
+  "wait --for=condition=Available deployment/q06-reader -n cka-sim-storage-06 --timeout=90s": {"stdout": "deployment.apps/q06-reader condition met", "rc": 0},
+  "get deployment q06-reader -n cka-sim-storage-06 -o name": {"stdout": "deployment.apps/q06-reader", "rc": 0},
+  "get deployment q06-reader -n cka-sim-storage-06 -o jsonpath={.spec.template.spec.volumes[0].persistentVolumeClaim.claimName}": {"stdout": "q06-data", "rc": 0},
+  "get deployment q06-reader -n cka-sim-storage-06 -o jsonpath={.spec.template.spec.containers[0].volumeMounts[0].readOnly}": {"stdout": "true", "rc": 0},
+  "exec -n cka-sim-storage-06 deployment/q06-reader -- cat /data/marker": {"stdout": "q06-marker\n", "rc": 0},
+  "get pod -n cka-sim-storage-06 -l app=q06-reader -o jsonpath={.items[0].metadata.name}": {"stdout": "q06-reader-7d9fc-xyz", "rc": 0},
+  "get pod q06-reader-7d9fc-xyz -n cka-sim-storage-06 -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get pod q06-reader-7d9fc-xyz -n cka-sim-storage-06 -o jsonpath={.metadata.resourceVersion}": {"stdout": "500", "rc": 0},
+  "get pod q06-reader-7d9fc-xyz -n cka-sim-storage-06 -o jsonpath={.spec.serviceAccountName}": {"stdout": "q06-reader-sa", "rc": 0}
+}

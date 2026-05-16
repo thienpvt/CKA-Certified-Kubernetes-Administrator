@@ -1,0 +1,12 @@
+pack:
+  id: demo
+  domain: storage
+  weight: 10
+  description: "Fixture pack for lint-coverage.sh unit tests (orphan scenario)."
+questions:
+  - id: demo-q1
+    path: 01-q1
+    estimatedMinutes: 5
+  - id: demo-q2
+    path: 02-q2
+    estimatedMinutes: 5

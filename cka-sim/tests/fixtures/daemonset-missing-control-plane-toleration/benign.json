@@ -1,0 +1,1 @@
+{"apiVersion":"apps/v1","kind":"Deployment","metadata":{"name":"q04-load","namespace":"cka-sim-workloads-scheduling-04"},"spec":{"replicas":2}}

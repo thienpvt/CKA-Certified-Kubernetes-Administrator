@@ -1,0 +1,13 @@
+{
+  "rollout status daemonset/q05-node-agent -n cka-sim-workloads-scheduling-05 --timeout=60s": {"stdout": "daemon set \"q05-node-agent\" successfully rolled out", "rc": 0},
+  "get daemonset q05-node-agent -n cka-sim-workloads-scheduling-05 -o name": {"stdout": "daemonset.apps/q05-node-agent", "rc": 0},
+  "get nodes --no-headers": {"stdout": "node-01 Ready control-plane 1d v1.32.0\nnode-02 Ready <none> 1d v1.32.0", "rc": 0},
+  "get daemonset q05-node-agent -n cka-sim-workloads-scheduling-05 -o jsonpath={.status.desiredNumberScheduled}": {"stdout": "1", "rc": 0},
+  "get daemonset q05-node-agent -n cka-sim-workloads-scheduling-05 -o jsonpath={.spec.template.spec.tolerations[?(@.key==\"node-role.kubernetes.io/control-plane\")].operator}": {"stdout": "Exists Exists", "rc": 0},
+  "get daemonset q05-node-agent -n cka-sim-workloads-scheduling-05 -o jsonpath={.spec.template.spec.containers[0].resources.requests.cpu}": {"stdout": "25m", "rc": 0},
+  "get pod -n cka-sim-workloads-scheduling-05 -l app=q05-node-agent -o jsonpath={.items[0].metadata.name}": {"stdout": "q05-node-agent-aaa", "rc": 0},
+  "get pod q05-node-agent-aaa -n cka-sim-workloads-scheduling-05 -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get pod q05-node-agent-aaa -n cka-sim-workloads-scheduling-05 -o jsonpath={.metadata.resourceVersion}": {"stdout": "300", "rc": 0},
+  "get pod q05-node-agent-aaa -n cka-sim-workloads-scheduling-05 -o jsonpath={.spec.serviceAccountName}": {"stdout": "q05-node-agent-sa", "rc": 0},
+  "get daemonset q05-node-agent -n cka-sim-workloads-scheduling-05 -o jsonpath={.spec.template.spec.tolerations[?(@.key==\"node-role.kubernetes.io/control-plane\")].key}": {"stdout": "node-role.kubernetes.io/control-plane node-role.kubernetes.io/control-plane", "rc": 0}
+}

@@ -1,0 +1,64 @@
+{
+  "fail": {
+    "deployment/web": {
+      "kind": "Deployment",
+      "apiVersion": "apps/v1",
+      "metadata": {"name": "web", "namespace": "cka-sim-troubleshooting-01"},
+      "status": {"readyReplicas": 2, "availableReplicas": 2, "conditions": [{"type": "Available", "status": "True"}]}
+    },
+    "deployment/web-canary": {
+      "kind": "Deployment",
+      "apiVersion": "apps/v1",
+      "metadata": {"name": "web-canary", "namespace": "cka-sim-troubleshooting-01"},
+      "status": {"replicas": 1, "readyReplicas": 0, "availableReplicas": 0}
+    },
+    "service/web-svc": {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {"name": "web-svc", "namespace": "cka-sim-troubleshooting-01"},
+      "spec": {"selector": {"app": "webserver"}, "ports": [{"port": 80, "targetPort": 80}]}
+    },
+    "endpoints/web-svc": {
+      "kind": "Endpoints",
+      "apiVersion": "v1",
+      "metadata": {"name": "web-svc", "namespace": "cka-sim-troubleshooting-01"},
+      "subsets": []
+    },
+    "pods/app=web-canary": {
+      "kind": "List",
+      "apiVersion": "v1",
+      "items": [
+        {
+          "kind": "Pod",
+          "metadata": {"name": "web-canary-abc", "namespace": "cka-sim-troubleshooting-01", "labels": {"app": "web-canary"}},
+          "status": {"containerStatuses": [{"name": "web-canary", "state": {"waiting": {"reason": "ImagePullBackOff"}}}]}
+        }
+      ]
+    }
+  },
+  "pass": {
+    "deployment/web": {
+      "kind": "Deployment",
+      "apiVersion": "apps/v1",
+      "metadata": {"name": "web", "namespace": "cka-sim-troubleshooting-01"},
+      "status": {"readyReplicas": 2, "availableReplicas": 2, "conditions": [{"type": "Available", "status": "True"}]}
+    },
+    "service/web-svc": {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {"name": "web-svc", "namespace": "cka-sim-troubleshooting-01"},
+      "spec": {"selector": {"app": "web"}, "ports": [{"port": 80, "targetPort": 80}]}
+    },
+    "endpoints/web-svc": {
+      "kind": "Endpoints",
+      "apiVersion": "v1",
+      "metadata": {"name": "web-svc", "namespace": "cka-sim-troubleshooting-01"},
+      "subsets": [{"addresses": [{"ip": "10.244.0.10"}], "ports": [{"port": 80}]}]
+    },
+    "pods/app=web-canary": {
+      "kind": "List",
+      "apiVersion": "v1",
+      "items": []
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"kind": "Deployment", "apiVersion": "apps/v1", "metadata": {"name": "web", "namespace": "cka-sim-test"}, "spec": {"replicas": 1}}

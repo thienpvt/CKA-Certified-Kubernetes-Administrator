@@ -1,0 +1,12 @@
+id: cluster-architecture-etcd-backup-restore
+domain: cluster-architecture
+estimatedMinutes: 10
+verified_against: "1.35"
+traps:
+  - etcd-snapshot-without-env-set
+  - etcd-restore-wrong-data-dir
+  - default-sa-used
+references:
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
+    note: etcd snapshot save and restore workflow
