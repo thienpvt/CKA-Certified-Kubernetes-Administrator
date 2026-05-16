@@ -240,6 +240,9 @@ cka_sim::baseline::is_candidate_modified() {
     "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
 
   # GENERATION-FIRST check
+  # Phase 07.1 D-26 — when generation is available on BOTH sides, treat it as authoritative.
+  # Falling through to rv comparison is wrong for resources whose status updates bump rv
+  # without any spec change (Deployment status, PV binding, etc.) → false "modified" verdicts.
   if [[ -n "$baseline_gen" ]] && [[ "$baseline_gen" != "null" ]]; then
     local current_gen
     if [[ -n "$ns" ]]; then
@@ -248,10 +251,13 @@ cka_sim::baseline::is_candidate_modified() {
       current_gen=$(kubectl get "$kind" "$name" -o jsonpath='{.metadata.generation}' 2>/dev/null)
     fi
 
-    if [[ -n "$current_gen" ]] && (( current_gen > baseline_gen )); then
-      return 0  # modified (generation increased)
+    if [[ -n "$current_gen" ]]; then
+      if (( current_gen > baseline_gen )); then
+        return 0  # modified (generation increased)
+      fi
+      return 1  # not modified (generation equal); skip unreliable rv fallback
     fi
-    # Generation equal or current_gen empty -> fall through to rv check
+    # current_gen empty (resource gone?) -> fall through to rv check as last resort
   fi
 
   # RV FALLBACK (reached when baseline_gen is null/empty OR generation comparison was equal)

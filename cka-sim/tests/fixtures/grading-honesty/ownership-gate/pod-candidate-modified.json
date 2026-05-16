@@ -4,7 +4,7 @@
   "metadata": {
     "name": "web-abc123",
     "namespace": "test-ns",
-    "generation": 1,
+    "generation": 2,
     "resourceVersion": "200"
   },
   "spec": {

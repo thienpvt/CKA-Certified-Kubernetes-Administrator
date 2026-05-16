@@ -36,3 +36,10 @@ spec:
         capabilities:
           drop: ["ALL"]
 EOF
+
+# Phase 07.1 D-26 — actually create the candidate pod. The previous ref-solution
+# only wrote the manifest to disk; grader requires q04-candidate to exist.
+kubectl apply -f "$sandbox/candidate-violator.yaml"
+
+# Wait for the candidate pod to be Ready (or at least admitted).
+kubectl wait --for=condition=Ready pod/q04-candidate -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
