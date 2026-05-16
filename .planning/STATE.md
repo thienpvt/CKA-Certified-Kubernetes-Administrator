@@ -2,25 +2,25 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-05-16T18:50:28.055Z"
-last_activity: 2026-05-16 -- Phase 07.1 execution complete (13/13 plans, all tests pass)
+status: Awaiting next milestone
+last_updated: "2026-05-16T17:45:51.542Z"
+last_activity: 2026-05-16 — Milestone v1.0 completed and archived
 progress:
   total_phases: 9
-  completed_phases: 7
+  completed_phases: 9
   total_plans: 88
-  completed_plans: 78
-  percent: 89
+  completed_plans: 89
+  percent: 100
 ---
 
 # State
 
 ## Current Position
 
-Phase: 07.1 (grading-honesty-rebuild) — COMPLETE
-Plan: 13 of 13
-Status: Complete — all waves executed, verification passed
-Last activity: 2026-05-16 -- Phase 07.1 execution complete (13/13 plans, all tests pass)
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-05-16 — Milestone v1.0 completed and archived
 
 ### Deferred Verification
 
@@ -99,3 +99,7 @@ These are intentionally deferred, not blockers for advancing.
 - IN-04 deferred: `cka_sim::grade::assert_custom` helper + 6-grader retrofit (library API addition, not a correctness bug)
 
 ---
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

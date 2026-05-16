@@ -1,0 +1,411 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator# cka-sim exam blueprint-alpha
+  Loading blueprint: blueprint-alpha
+  Questions: 17
+  Duration: 120 minutes
+  Session: 20260514T164858Z
+  Starting exam...
+
+  Setting up Q1...
+namespace/cka-sim-storage-01 created
+persistentvolume/q01-app-pv created
+persistentvolumeclaim/app-data created
+
+[Question 1/17 — storage — ~8m]
+─────────────────────────────────────────
+# storage/01-pvc-binding
+
+**Domain:** Storage  |  **Estimated time:** 8 minutes
+
+A `PersistentVolumeClaim` named `app-data` exists in your lab namespace and references a `PersistentVolume` named `q01-app-pv`. The PVC is stuck `Pending`.
+
+## Tasks
+
+1. Inspect the PVC `app-data` in `${CKA_SIM_LAB_NS}` and the PV `q01-app-pv` (cluster-scoped).
+2. Diagnose why the PVC is not binding. Read the PV spec and events carefully.
+3. Modify the PV in place so the PVC can bind successfully.
+
+## Constraints
+
+- Do NOT delete or recreate the PV — modify it in place.
+- Do NOT modify the PVC.
+- The lab cluster has 1 control-plane + 2 worker nodes. The PV must remain usable on any worker.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get pvc app-data -n ${CKA_SIM_LAB_NS}    # STATUS should be Bound
+kubectl get pv q01-app-pv                        # STATUS should be Bound
+```
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^C
+✓ Q1 flagged. Continuing…
+> ^C
+✓ Q1 flagged. Continuing…
+> ^C
+✓ Q1 flagged. Continuing…
+> n
+  Setting up Q2...
+namespace/cka-sim-troubleshooting-01 created
+^Zdeployment.apps/web created
+service/web-svc created
+deployment.apps/web-canary created
+deployment.apps/web condition met
+
+[Question 2/17 — troubleshooting — ~7m]
+─────────────────────────────────────────
+# Troubleshooting: Service has no endpoints
+
+**Domain:** Troubleshooting  |  **Estimated time:** 7 minutes
+
+A `Deployment` named `web` and a `Service` named `web-svc` exist in your lab namespace. Users report they cannot reach the Service. The pods are Running but the Service is not routing traffic.
+
+## Tasks
+
+1. Inspect the `Deployment` `web`, its Pods, and the `Service` `web-svc` in `${CKA_SIM_LAB_NS}`.
+2. Diagnose why `Service web-svc` has no endpoints despite the Deployment's Pods being Ready.
+3. Modify the `Service` (not the Deployment) so that the Service routes traffic to the Deployment's Pods.
+4. One replica of a sibling workload is also failing with a different symptom; identify and resolve that failure as part of the fix.
+
+## Constraints
+
+- Do NOT modify the Deployment or its pod template.
+- Do NOT recreate the Service — patch it in place.
+- The Pods should remain unchanged (same spec, same image, same replica count).
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```
+kubectl get endpoints web-svc -n ${CKA_SIM_LAB_NS}
+# ENDPOINTS column should list pod IPs, not <none>
+```
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^Z
+[1]+  Stopped                 cka-sim exam blueprint-alpha
+root@master:~/CKA-Certified-Kubernetes-Administrator# fg
+cka-sim exam blueprint-alpha
+
+✓ Resumed.
+⏱ ^Z1:59:12 remaining
+
+[1]+  Stopped                 cka-sim exam blueprint-alpha
+root@master:~/CKA-Certified-Kubernetes-Administrator# fg
+cka-sim exam blueprint-alpha
+
+✓ Resumed.
+⏱   Setting up Q3...g
+namespace/cka-sim-workloads-scheduling-02 created
+deployment.apps/web created
+Waiting for deployment "web" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "web" rollout to finish: 1 of 2 updated replicas are available...
+deployment "web" successfully rolled out
+deployment.apps/web annotated
+deployment.apps/web patched
+Waiting for deployment "web" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web" rollout to finish: 1 old replicas are pending termination...
+deployment "web" successfully rolled out
+
+[Question 3/17 — workloads-scheduling — ~7m]
+─────────────────────────────────────────
+# workloads-scheduling/02-rolling-update-rollback
+
+**Domain:** Workloads & Scheduling  |  **Estimated time:** 7 minutes
+
+A Deployment `web` in `${CKA_SIM_LAB_NS}` currently runs `nginx:1.25`. Ops asks you to try `nginx:1.27`, verify it works, and — if anything looks wrong — roll back.
+
+## Tasks
+
+1. Update Deployment `web` so its pods run `nginx:1.27`.
+2. Wait until the rollout finishes successfully.
+3. After verification, roll back one revision so `web` returns to `nginx:1.25`.
+
+## Constraints
+
+- Do NOT delete and recreate the Deployment.
+- Rollout must complete without replicas dropping to zero (RollingUpdate strategy is pre-configured).
+
+## Verify yourself
+
+```
+kubectl rollout status deployment/web -n ${CKA_SIM_LAB_NS}
+kubectl get deploy web -n ${CKA_SIM_LAB_NS} -o jsonpath='{.spec.template.spec.containers[0].image}'   # nginx:1.25
+kubectl rollout history deployment/web -n ${CKA_SIM_LAB_NS}
+```
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^Z
+[1]+  Stopped                 cka-sim exam blueprint-alpha
+root@master:~/CKA-Certified-Kubernetes-Administrator# fg
+cka-sim exam blueprint-alpha
+
+✓ Resumed.
+⏱   Setting up Q4...g
+namespace/cka-sim-services-networking-02 created
+deployment.apps/q02-web created
+deployment.apps/q02-web labeled
+deployment.apps/q02-web patched
+service/q02-web created
+deployment.apps/q02-web condition met
+⏱  01:58:42 remaining
+[Question 4/17 — services-networking — ~7m]
+─────────────────────────────────────────
+# services-networking/02-service-core
+
+**Domain:** Services & Networking  |  **Estimated time:** 7 minutes
+
+A Deployment named `q02-web` is healthy in your lab namespace. A Service named `q02-web` exists, but it has no endpoints and traffic cannot reach the Pods.
+
+## Tasks
+
+1. Inspect the Deployment labels and the Service selector in `${CKA_SIM_LAB_NS}`.
+2. Fix the Service so it routes to the existing `q02-web` Pods.
+3. Confirm the Service has at least one endpoint address.
+
+## Constraints
+
+- Do NOT modify Deployment labels.
+- Fix the Service selector.
+- Keep the Service name `q02-web`.
+
+## Verify yourself
+
+Before typing `done`, confirm:
+
+```bash
+kubectl get deploy q02-web -n ${CKA_SIM_LAB_NS} --show-labels
+kubectl get service q02-web -n ${CKA_SIM_LAB_NS} -o yaml
+kubectl get endpoints q02-web -n ${CKA_SIM_LAB_NS}
+```
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^C
+✓ Q4 flagged. Continuing…
+> n
+  Setting up Q5...
+namespace/cka-sim-cluster-architecture-06 created
+^Zconfigmap/q06-readme created
+
+[Question 5/17 — cluster-architecture — ~6m]
+─────────────────────────────────────────
+# CRD Basics
+
+Create a minimal namespaced CRD:
+
+- name: `q06widgets.cka-sim.io`
+- group: `cka-sim.io`
+- kind: `Q06Widget`
+- plural: `q06widgets`
+- scope: `Namespaced`
+
+Then create one `Q06Widget` custom resource in the lab namespace with numeric `spec.size`.
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> ^Z
+[1]+  Stopped                 cka-sim exam blueprint-alpha
+root@master:~/CKA-Certified-Kubernetes-Administrator# fg
+cka-sim exam blueprint-alpha
+
+✓ Resumed.
+⏱ ^Z1:58:03 remaining
+[1]+  Stopped                 cka-sim exam blueprint-alpha
+root@master:~/CKA-Certified-Kubernetes-Administrator# fg
+cka-sim exam blueprint-alpha
+
+✓ Resumed.
+⏱ ^Z1:58:01 remaining
+
+[1]+  Stopped                 cka-sim exam blueprint-alpha
+root@master:~/CKA-Certified-Kubernetes-Administrator# fg
+cka-sim exam blueprint-alpha
+
+✓ Resumed.
+⏱   Setting up Q6...g
+namespace/cka-sim-troubleshooting-02 created
+deployment.apps/web created
+deployment.apps/api created
+service/api-svc created
+networkpolicy.networking.k8s.io/default-deny-egress created
+networkpolicy.networking.k8s.io/allow-web-to-api created
+pod/web-6f99cb6465-9zk4g condition met
+
+[Question 6/17 — troubleshooting — ~8m]
+─────────────────────────────────────────
+# Troubleshooting: Pod cannot resolve or reach a backend
+
+**Domain:** Troubleshooting  |  **Estimated time:** 8 minutes
+
+A Pod in `${CKA_SIM_LAB_NS}` from `Deployment web` cannot resolve `kubernetes.default.svc.cluster.local` and cannot reach `Service api-svc` on TCP/8080. Pods are Running and Ready. A `Deployment api` exists behind the Service.
+
+## Tasks
+
+- Inspect namespaced workloads and Policy objects.
+- From inside the `web` Pod, reproduce both probe failures.
+- Restore both flows.
+
+## Constraints
+
+- Do not modify Deployments, Pods, or Service.
+- Do not delete any Policy.
+- Make only lab-ns-scoped changes; do not mutate cluster system namespaces.
+
+## Verify yourself
+
+```bash
+kubectl exec -n "$CKA_SIM_LAB_NS" deploy/web -- nslookup kubernetes.default.svc.cluster.local
+```
+
+```bash
+kubectl exec -n "$CKA_SIM_LAB_NS" deploy/web -- bash -c 'echo > /dev/tcp/api-svc/8080'
+```
+
+Both commands must exit 0.
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> y
+! Unknown action: 'y'. Use Enter/n/f/s/p/q.
+
+[Question 6/17 — troubleshooting — ~8m]
+─────────────────────────────────────────
+# Troubleshooting: Pod cannot resolve or reach a backend
+
+**Domain:** Troubleshooting  |  **Estimated time:** 8 minutes
+
+A Pod in `${CKA_SIM_LAB_NS}` from `Deployment web` cannot resolve `kubernetes.default.svc.cluster.local` and cannot reach `Service api-svc` on TCP/8080. Pods are Running and Ready. A `Deployment api` exists behind the Service.
+
+## Tasks
+
+- Inspect namespaced workloads and Policy objects.
+- From inside the `web` Pod, reproduce both probe failures.
+- Restore both flows.
+
+## Constraints
+
+- Do not modify Deployments, Pods, or Service.
+- Do not delete any Policy.
+- Make only lab-ns-scoped changes; do not mutate cluster system namespaces.
+
+## Verify yourself
+
+```bash
+kubectl exec -n "$CKA_SIM_LAB_NS" deploy/web -- nslookup kubernetes.default.svc.cluster.local
+```
+
+```bash
+kubectl exec -n "$CKA_SIM_LAB_NS" deploy/web -- bash -c 'echo > /dev/tcp/api-svc/8080'
+```
+
+Both commands must exit 0.
+
+[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [q]=end exam
+> q
+⏱  01:57:51 remaining
+━━━ Exam Summary ━━━
+Flagged: 2  Skipped: 0  Pending: 15
+
+Submit for grading? [y/n] y
+
+━━━ Grading ━━━
+  Grading Q1...
+✗ Q1: FAIL SCORE: 1/2
+  Grading Q2...
+✗ Q2: FAIL SCORE: 2/3
+  Grading Q3...
+✗ Q3: FAIL SCORE: 4/4
+  Grading Q4...
+✗ Q4: FAIL SCORE: 1/3
+  Grading Q5...
+✗ Q5: FAIL SCORE: 0/5
+  Grading Q6...
+✗ Q6: FAIL SCORE: 4/6
+  Grading Q7...
+✗ Q7: FAIL SCORE: 3/4
+  Grading Q8...
+✗ Q8: FAIL SCORE: 1/6
+  Grading Q9...
+✗ Q9: FAIL SCORE: 0/5
+  Grading Q10...
+✗ Q10: FAIL SCORE: 0/2
+  Grading Q11...
+✗ Q11: FAIL SCORE: 1/3
+  Grading Q12...
+✗ Q12: FAIL SCORE: 0/2
+  Grading Q13...
+✗ Q13: FAIL SCORE: 0/4
+  Grading Q14...
+✗ Q14: FAIL SCORE: 0/7
+  Grading Q15...
+✗ Q15: FAIL SCORE: 0/2
+  Grading Q16...
+✗ Q16: FAIL SCORE: 0/2
+  Grading Q17...
+✗ Q17: FAIL SCORE: 0/4
+
+━━━ Results ━━━
+# CKA Exam Report — 20260514T164858Z
+
+**Blueprint:** blueprint-alpha
+**Started:** 2026-05-14T16:48:58Z  **Completed:** 2026-05-14T16:52:00Z  **Duration:** 00:03:02
+**Total Score: 25/100  (FAIL vs 66% pass mark)**
+
+## Per-Domain Breakdown (weakest first)
+
+| Domain | Score | Percentage | Blueprint Weight |
+|--------|-------|------------|------------------|
+| cluster-architecture | 0/14 | 0% | 25% |
+| services-networking | 2/11 | 18% | 20% |
+| troubleshooting | 6/22 | 27% | 30% |
+| storage | 2/5 | 40% | 10% |
+| workloads-scheduling | 7/12 | 58% | 15% |
+
+## Top 5 Traps Hit
+
+| # | Trap ID | Count | Description |
+|---|---------|-------|-------------|
+| 1 | Service selector matches no Ready pods so endpoints are empty | 2 | Service selector matches no Ready pods so endpoints are empty |
+| 2 | CustomResourceDefinition omits spec.scope or uses the wrong scope value | 1 | CustomResourceDefinition omits spec.scope or uses the wrong scope value |
+| 3 | Default-deny NetworkPolicy with no allow path for required flow | 1 | Default-deny NetworkPolicy with no allow path for required flow |
+| 4 | Multiple PriorityClasses declare globalDefault true | 1 | Multiple PriorityClasses declare globalDefault true |
+| 5 | NetworkPolicy denies UDP/53 egress | 1 | NetworkPolicy denies UDP/53 egress |
+
+## Suggested Next Drills
+
+Your weakest domains: cluster-architecture, services-networking, troubleshooting. Drill these next:
+
+- `cka-sim drill cluster-architecture`
+- `cka-sim drill services-networking`
+- `cka-sim drill troubleshooting`
+
+## Question-by-Question Detail
+
+| # | Domain | Question | Score | Status | Traps |
+|---|--------|----------|-------|--------|-------|
+| 1 | storage | storage-01-pvc-binding | 1/2 | failed | hostPath PV without nodeAffinity |
+| 2 | troubleshooting | troubleshooting-01-deploy-svc-mismatch | 2/3 | failed | Service selector matches no Ready pods so endpoints are empty, Workload stuck in ImagePullBackOff due to non-existent image tag |
+| 3 | workloads-scheduling | workloads-scheduling-02-rolling-update-rollback | 4/4 | failed | Pod uses default ServiceAccount with auto-mounted token |
+| 4 | services-networking | services-networking-02-service-core | 1/3 | failed | Service selector matches no Ready pods so endpoints are empty |
+| 5 | cluster-architecture | cluster-architecture-06-crd-basics | 0/5 | failed | CustomResourceDefinition omits spec.scope or uses the wrong scope value |
+| 6 | troubleshooting | troubleshooting-02-netpol-dns-egress | 4/6 | failed | NetworkPolicy denies UDP/53 egress, Default-deny NetworkPolicy with no allow path for required flow, NetworkPolicy selector key does not match Pod label key |
+| 7 | workloads-scheduling | workloads-scheduling-05-daemonset | 3/4 | failed | — |
+| 8 | services-networking | services-networking-06-netpol-endport | 1/6 | failed | NetworkPolicy endPort rule omits explicit protocol |
+| 9 | cluster-architecture | cluster-architecture-04-pss-enforce | 0/5 | failed | — |
+| 10 | troubleshooting | troubleshooting-04-debug-node | 0/2 | failed | — |
+| 11 | storage | storage-02-storageclass-dynamic | 1/3 | failed | — |
+| 12 | cluster-architecture | cluster-architecture-07-cri-dockerd-endpoint | 0/2 | failed | — |
+| 13 | workloads-scheduling | workloads-scheduling-01-deployment-requests | 0/4 | failed | — |
+| 14 | troubleshooting | troubleshooting-03-coredns-resolution | 0/7 | failed | Pod dnsConfig or CoreDNS forward references an unreachable or non-cluster upstream |
+| 15 | services-networking | services-networking-05-kube-proxy-mode | 0/2 | failed | Reported kube-proxy mode does not match live kube-system/kube-proxy ConfigMap |
+| 16 | cluster-architecture | cluster-architecture-08-priorityclass | 0/2 | failed | Multiple PriorityClasses declare globalDefault true |
+| 17 | troubleshooting | troubleshooting-05-static-pod-manifest | 0/4 | failed | Static pod manifest has YAML parse error |
+
+  Report saved to: /root/.cka-sim/sessions/20260514T164858Z.md
+  Session data: /root/.cka-sim/sessions/20260514T164858Z.json
+Terminated
