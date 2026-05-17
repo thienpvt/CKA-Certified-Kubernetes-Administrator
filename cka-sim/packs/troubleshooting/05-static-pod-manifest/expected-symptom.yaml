@@ -1,0 +1,10 @@
+# troubleshooting/05-static-pod-manifest — filesystem-only question
+# (sandbox /tmp/q05-staticpod). Post-Phase-11 framing: YAML repair +
+# dry-run; no cluster-side state asserted.
+question: troubleshooting-static-pod-manifest
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

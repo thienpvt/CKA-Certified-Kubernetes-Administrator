@@ -1,0 +1,15 @@
+# troubleshooting/01-deploy-svc-mismatch — symptom: web Deployment Available;
+# web-svc Service present but selector mismatch -> 0 endpoints. Sibling
+# workload's separate failure not encoded (open-world).
+question: troubleshooting-deploy-svc-mismatch
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: web
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"
+  - kind: svc
+    name: web-svc
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}

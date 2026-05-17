@@ -1,0 +1,16 @@
+# troubleshooting/02-netpol-dns-egress — symptom: web + api Deployments
+# Available; NetworkPolicy blocks DNS + the api Service. Candidate adds
+# the right egress rules.
+question: troubleshooting-netpol-dns-egress
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: web
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"
+  - kind: deploy
+    name: api
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"

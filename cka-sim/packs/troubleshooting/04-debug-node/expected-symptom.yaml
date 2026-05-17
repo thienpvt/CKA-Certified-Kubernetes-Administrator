@@ -1,0 +1,9 @@
+# troubleshooting/04-debug-node — filesystem-only question
+# (sandbox /tmp/q04-debug-node).
+question: troubleshooting-debug-node
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

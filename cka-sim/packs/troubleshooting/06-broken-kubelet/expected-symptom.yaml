@@ -1,0 +1,9 @@
+# troubleshooting/06-broken-kubelet — filesystem-only question
+# (sandbox /tmp/q06-kubelet-flags).
+question: troubleshooting-broken-kubelet
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
