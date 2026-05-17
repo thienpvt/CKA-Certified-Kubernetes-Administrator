@@ -36,6 +36,17 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 - ✓ Documentation — README, AUTHORING, SCHEMA, CONTRIBUTING, GRADING-HONESTY — v1.0
 - ✓ Grading honesty (Phase 07.1) — setup-state vs candidate-authored distinction; baseline capture + ownership gates — v1.0
 
+## Current Milestone: v1.0.1 Full Audit Remediation
+
+**Goal:** Fix all 15 audit findings (6 HIGH + 9 MED) from `.planning/forensics/report-20260517-091657-full-audit.md`, plus add CI lints to prevent recurrence.
+
+**Target features:**
+- Fix 6 HIGH-severity question bugs (storage/01-pvc-binding, services-networking/05-kube-proxy-mode, cluster-architecture/04-pss-enforce, cluster-architecture/08-priorityclass, troubleshooting/04-debug-node, troubleshooting/05-static-pod-manifest)
+- Fix 9 MED-severity question bugs (3 metadata-orphan-trap, 3 grader-weaker-than-question, 2 question-framing, 1 grader-grep-pattern)
+- Add lint: every `metadata.yaml` trap → matching `record_trap` call in `grade.sh`
+- Add live-cluster CI step: `setup.sh && kubectl get ...` diff vs per-question expected-symptom YAML
+- Fix library bug `lib/setup.sh:218` (`kubernetes.io\metadata.name` → `/`)
+
 ### Active (v2.0 — not yet planned)
 
 Use `/gsd-new-milestone` to scope. Candidate ideas based on v1.0 outcomes:
@@ -115,4 +126,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-17 after v1.0 milestone*
+*Last updated: 2026-05-17 — v1.0.1 milestone opened (full audit remediation)*
