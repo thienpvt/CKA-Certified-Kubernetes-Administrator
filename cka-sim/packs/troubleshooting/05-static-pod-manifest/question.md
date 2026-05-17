@@ -1,10 +1,10 @@
-# Troubleshooting: Static pod never becomes Running
+# Troubleshooting: Repair the static-pod manifest
 
 **Domain:** Troubleshooting  |  **Estimated time:** 10 minutes
 
-Candidate static-pod manifest lives in sandbox. When manifest is placed in node-agent static workload directory, intended Pod `q05-cache` never appears in `kubectl get pods -A` or never reaches `Running`.
+A candidate static-pod manifest lives in the sandbox at `/tmp/q05-staticpod/manifest.yaml`. The file has intentional defects (tab-indented YAML and an image-tag typo) so it cannot be parsed as YAML and would never produce a valid Pod if the kubelet were to pick it up.
 
-Repair sandbox manifest so that when the node agent picks it up, Pod reaches `Running`.
+Repair the manifest in place so it is (a) valid YAML, (b) defines a single `Pod` named `q05-cache` in the `kube-system` namespace, and (c) passes `kubectl apply --dry-run=client`. The grader scores the file directly — it does NOT install the manifest into `/etc/kubernetes/manifests/` or wait for a Running Pod.
 
 ## Sandbox
 
@@ -20,10 +20,10 @@ Repair sandbox manifest so that when the node agent picks it up, Pod reaches `Ru
 
 ## Constraints
 
-- Do NOT place manifest into `/etc/kubernetes/manifests/`.
+- Do NOT place manifest into '/etc/kubernetes/manifests/'.
 - Do NOT restart node services.
 - Do NOT run live-service restart commands.
-- `metadata.name` must remain `q05-cache`.
+- 'metadata.name' must remain 'q05-cache'.
 
 ## Verify yourself
 
