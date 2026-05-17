@@ -2,12 +2,12 @@
 
 **Domain:** Troubleshooting  |  **Estimated time:** 8 minutes
 
-A debug Pod named `q03-dnsclient` in `${CKA_SIM_LAB_NS}` cannot resolve external names such as `www.example.com`. Cluster-internal names such as `kubernetes.default.svc.cluster.local` also fail. Other lab namespace infrastructure is running.
+A debug Pod named `q03-dnsclient` in `${CKA_SIM_LAB_NS}` cannot resolve external names such as `www.example.com`. Cluster-internal names such as `kubernetes.default.svc.cluster.local` also fail. A lab CoreDNS Deployment named `q03-coredns` is present in the same namespace but is failing to start; once you stabilise it, you must also fix its upstream forwarder so that DNS resolution works for both cluster-internal and external names.
 
 ## Tasks
-1. Inspect namespaced workloads and supporting resources in `${CKA_SIM_LAB_NS}`.
-2. Reproduce the DNS failure from inside `q03-dnsclient`.
-3. Restore name resolution for both external and cluster-internal names.
+1. Stabilise the `q03-coredns` Deployment so its Pod reaches Ready.
+2. Fix the lab CoreDNS upstream forwarder so cluster-internal and external names resolve.
+3. Verify both `kubernetes.default.svc.cluster.local` and `www.example.com` resolve from inside `q03-dnsclient`.
 
 ## Constraints
 - Make lab-namespace-scoped changes only. Do not mutate shared cluster DNS resources.
