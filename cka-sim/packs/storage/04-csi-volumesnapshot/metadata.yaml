@@ -5,7 +5,6 @@ verified_against: "1.35"
 traps:
   - csi-snapshot-wrong-driver
   - pvc-wrong-storageclass
-  - reclaim-policy-delete-data-loss
 references:
   - kind: k8s-doc
     target: "https://kubernetes.io/docs/concepts/storage/volume-snapshots/"
