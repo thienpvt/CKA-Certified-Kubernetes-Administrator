@@ -1,0 +1,11 @@
+# workloads-scheduling/02-rolling-update-rollback — symptom: web Deployment
+# exists, Available, on nginx:1.25 (pre-update state).
+question: workloads-scheduling-rolling-update-rollback
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: web
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"
+      spec.template.spec.containers[0].image: nginx:1.25

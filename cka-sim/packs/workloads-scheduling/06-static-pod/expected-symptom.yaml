@@ -1,0 +1,15 @@
+# workloads-scheduling/06-static-pod — symptom: lab ns exists; q06-static-nginx
+# mirror pod is candidate-authored on node-01. Setup state has no mirror pod.
+# Note: kind clusters in CI have no SSH path to a node; the lint here only
+# verifies the symptom (mirror pod absent at setup), not the candidate fix.
+question: workloads-scheduling-static-pod
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: pod
+    name: q06-static-nginx-node-01
+    namespace: default

@@ -1,0 +1,18 @@
+# workloads-scheduling/03-configmap-secret-env-volume — symptom: ConfigMap
+# q03-app-config + Secret q03-app-secret pre-exist; Pod q03-app is
+# candidate-authored.
+question: workloads-scheduling-configmap-secret-env-volume
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: configmap
+    name: q03-app-config
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}
+  - kind: secret
+    name: q03-app-secret
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}
+absent_resources:
+  - kind: pod
+    name: q03-app
+    namespace: ${CKA_SIM_LAB_NS}

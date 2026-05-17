@@ -1,0 +1,13 @@
+# workloads-scheduling/07-native-sidecar — symptom: q07-app Deployment
+# has app + log-tailer both in spec.containers (pre-fix state). Candidate
+# moves log-tailer to spec.initContainers with restartPolicy: Always.
+question: workloads-scheduling-native-sidecar
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: q07-app
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"
+      spec.template.spec.containers[0].image: nginx:1.27
+      spec.template.spec.containers[1].image: busybox:1.36

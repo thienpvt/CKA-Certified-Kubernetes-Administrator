@@ -1,0 +1,13 @@
+# workloads-scheduling/05-daemonset — symptom: lab ns exists; q05-node-agent
+# DaemonSet is candidate-authored (absent at setup).
+question: workloads-scheduling-daemonset
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: daemonset
+    name: q05-node-agent
+    namespace: ${CKA_SIM_LAB_NS}

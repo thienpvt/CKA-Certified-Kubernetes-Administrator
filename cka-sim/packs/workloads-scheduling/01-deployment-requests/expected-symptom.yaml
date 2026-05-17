@@ -1,0 +1,16 @@
+# workloads-scheduling/01-deployment-requests — symptom: load-app Deployment
+# exists, Available, but pod template has no SA + no resources.requests
+# (those are the candidate fixes). load-app-sa SA is candidate-authored.
+question: workloads-scheduling-deployment-requests
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: load-app
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"
+      spec.template.spec.containers[0].image: nginx:1.27
+absent_resources:
+  - kind: serviceaccount
+    name: load-app-sa
+    namespace: ${CKA_SIM_LAB_NS}

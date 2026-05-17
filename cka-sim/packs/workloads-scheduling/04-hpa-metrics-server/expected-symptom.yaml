@@ -1,0 +1,15 @@
+# workloads-scheduling/04-hpa-metrics-server — symptom: q04-load
+# Deployment exists with cpu/memory requests; HPA q04-load is
+# candidate-authored.
+question: workloads-scheduling-hpa-metrics-server
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: q04-load
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"
+absent_resources:
+  - kind: hpa
+    name: q04-load
+    namespace: ${CKA_SIM_LAB_NS}

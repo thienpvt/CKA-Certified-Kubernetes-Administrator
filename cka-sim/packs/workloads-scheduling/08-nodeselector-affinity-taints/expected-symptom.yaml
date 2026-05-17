@@ -1,0 +1,12 @@
+# workloads-scheduling/08-nodeselector-affinity-taints — symptom: q08-gpu-sim
+# Deployment exists; first non-CP worker is tainted gpu=true:NoSchedule but
+# does not carry the gpu=true label. Replicas Pending until candidate adds
+# toleration + nodeSelector.
+question: workloads-scheduling-nodeselector-affinity-taints
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: q08-gpu-sim
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "False"
