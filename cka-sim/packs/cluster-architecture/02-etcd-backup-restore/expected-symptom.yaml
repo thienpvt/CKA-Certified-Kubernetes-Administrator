@@ -1,0 +1,9 @@
+# cluster-architecture/02-etcd-backup-restore — filesystem-only question
+# (sandbox /tmp/q02-etcd-backup). Lab ns is the only kubectl-visible state.
+question: cluster-architecture-etcd-backup-restore
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

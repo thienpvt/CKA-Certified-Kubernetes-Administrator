@@ -1,0 +1,9 @@
+# cluster-architecture/07-cri-dockerd-endpoint — filesystem-only question
+# (sandbox /tmp/q07-kubelet-flags/).
+question: cluster-architecture-cri-dockerd-endpoint
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

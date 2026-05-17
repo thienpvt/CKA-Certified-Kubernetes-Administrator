@@ -1,0 +1,10 @@
+# cluster-architecture/06-crd-basics — symptom: lab ns Active. CRD
+# q06widgets.cka-sim.io is candidate-authored; CRDs and Q06Widget custom
+# resources are not in the symptom-diff allow-list, so we encode only ns.
+question: cluster-architecture-crd-basics
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

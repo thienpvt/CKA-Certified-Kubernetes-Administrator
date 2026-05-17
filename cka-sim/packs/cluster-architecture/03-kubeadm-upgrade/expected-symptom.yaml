@@ -1,0 +1,9 @@
+# cluster-architecture/03-kubeadm-upgrade — filesystem-only question
+# (sandbox /tmp/q03-kubeadm-upgrade). No kubectl-visible state beyond ns.
+question: cluster-architecture-kubeadm-upgrade
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

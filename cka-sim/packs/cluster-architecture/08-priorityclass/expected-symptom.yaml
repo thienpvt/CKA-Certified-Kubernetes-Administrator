@@ -1,0 +1,12 @@
+# cluster-architecture/08-priorityclass — symptom: q08-critical + q08-batch
+# both exist, both globalDefault=false.
+question: cluster-architecture-priorityclass
+resources:
+  - kind: priorityclass
+    name: q08-critical
+    expect:
+      globalDefault: "false"
+  - kind: priorityclass
+    name: q08-batch
+    expect:
+      globalDefault: "false"

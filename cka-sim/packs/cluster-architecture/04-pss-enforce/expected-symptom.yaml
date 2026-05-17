@@ -1,0 +1,12 @@
+# cluster-architecture/04-pss-enforce — symptom: lab ns is labelled for
+# restricted Pod Security at v1.35 (the question's stated condition).
+# Filesystem-only candidate work on /tmp/q04-pss-enforce/.
+question: cluster-architecture-pss-enforce
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+      metadata.labels.pod-security\.kubernetes\.io/enforce: restricted
+      metadata.labels.pod-security\.kubernetes\.io/enforce-version: v1.35

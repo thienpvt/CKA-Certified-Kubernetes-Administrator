@@ -1,0 +1,9 @@
+# cluster-architecture/05-audit-policy — filesystem-only question
+# (sandbox /tmp/q05-audit-policy/policy.yaml).
+question: cluster-architecture-audit-policy
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

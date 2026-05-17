@@ -1,0 +1,18 @@
+# cluster-architecture/01-rbac-viewer — symptom: viewer SA + pod-viewer Role
+# + viewer-binding RoleBinding all present, but Role rules don't permit the
+# right verbs (candidate fixes that). Presence is the symptom-diff claim.
+question: cluster-architecture-rbac-viewer
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: serviceaccount
+    name: viewer
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}
+  - kind: role
+    name: pod-viewer
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}
+  - kind: rolebinding
+    name: viewer-binding
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}
