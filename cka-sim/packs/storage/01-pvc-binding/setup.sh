@@ -49,3 +49,28 @@ spec:
       storage: 500Mi
   storageClassName: manual
 EOF
+
+# 4. Apply consumer Pod that mounts app-data — Pod stays Pending until candidate fixes the PV's nodeAffinity (real symptom of the trap).
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: q01-app-consumer
+  namespace: ${CKA_SIM_LAB_NS}
+  labels:
+    cka-sim/pack: storage
+    cka-sim/question-id: storage-pvc-binding
+spec:
+  restartPolicy: Never
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: app-data
+EOF

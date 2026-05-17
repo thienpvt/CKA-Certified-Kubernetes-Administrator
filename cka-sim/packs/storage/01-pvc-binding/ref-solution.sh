@@ -18,3 +18,9 @@ kubectl patch pv q01-app-pv --type=json -p='[
     }
   }}
 ]'
+
+# Wait for the consumer Pod to schedule onto a worker now that the PV has nodeAffinity.
+# Timeout is generous because the kubelet has to attach the hostPath volume, which
+# involves the DirectoryOrCreate hostPath check on the chosen node.
+kubectl wait --for=condition=Ready pod/q01-app-consumer \
+  -n "$CKA_SIM_LAB_NS" --timeout=60s
