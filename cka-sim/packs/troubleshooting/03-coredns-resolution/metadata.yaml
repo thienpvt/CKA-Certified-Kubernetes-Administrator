@@ -5,7 +5,6 @@ verified_against: "1.35"
 traps:
   - coredns-forward-to-invalid-upstream
   - coredns-sandbox-configmap-mount
-  - missing-dns-egress
 references:
   - kind: prior-art-exercise
     target: cka-sim/packs/services-networking/03-coredns-resolution/

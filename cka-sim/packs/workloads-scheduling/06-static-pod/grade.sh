@@ -25,4 +25,15 @@ cka_sim::grade::assert_field_eq pod q06-static-nginx-node-01 \
 # Assertion 3: pod Ready.
 cka_sim::grade::assert_pod_ready default q06-static-nginx-node-01
 
+# Trap detector (Phase 12 LINT-01): if pod exists but kubernetes.io/config.source
+# annotation != "file", the candidate created it via kubectl apply rather than
+# dropping the manifest into the kubelet's /etc/kubernetes/manifests/ dir.
+if kubectl get pod q06-static-nginx-node-01 -n default >/dev/null 2>&1; then
+  cfg_source=$(kubectl get pod q06-static-nginx-node-01 -n default \
+    -o jsonpath='{.metadata.annotations.kubernetes\.io/config\.source}' 2>/dev/null || echo "")
+  if [[ -n "$cfg_source" && "$cfg_source" != "file" ]]; then
+    cka_sim::grade::record_trap static-pod-applied-via-kubectl-apply
+  fi
+fi
+
 cka_sim::grade::emit_result

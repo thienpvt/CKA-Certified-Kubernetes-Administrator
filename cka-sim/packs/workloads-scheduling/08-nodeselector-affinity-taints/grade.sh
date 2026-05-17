@@ -80,4 +80,14 @@ else
   err "target worker discovery failed (no non-control-plane node visible)"
 fi
 
+# Trap detector (Phase 12 LINT-01): if any q08-gpu-sim pod is Pending AND no
+# node carries the gpu=true label, the candidate's required nodeAffinity has
+# no matching node — pods will never schedule until a node is labelled.
+pending_count=$(kubectl get pod -n "$CKA_SIM_LAB_NS" -l app=q08-gpu-sim \
+  --field-selector=status.phase=Pending --no-headers 2>/dev/null | wc -l | tr -d ' ')
+gpu_nodes=$(kubectl get nodes -l gpu=true --no-headers 2>/dev/null | wc -l | tr -d ' ')
+if (( pending_count > 0 )) && (( gpu_nodes == 0 )); then
+  cka_sim::grade::record_trap pod-unschedulable-nodeselector-no-matching-node
+fi
+
 cka_sim::grade::emit_result

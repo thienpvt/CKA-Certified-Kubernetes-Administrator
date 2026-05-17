@@ -5,7 +5,6 @@ verified_against: "1.35"
 traps:
   - static-pod-manifest-bad-yaml
   - static-pod-image-tag-typo
-  - default-sa-used
 references:
   - kind: prior-art-exercise
     target: cka-sim/packs/workloads-scheduling/06-static-pod/

@@ -4,8 +4,6 @@ estimatedMinutes: 8
 verified_against: "1.35"
 traps:
   - kube-proxy-mode-mismatch-ipvs-iptables
-  - missing-dns-egress
-  - default-sa-used
 references:
   - kind: k8s-doc
     target: https://kubernetes.io/docs/reference/networking/virtual-ips/

@@ -4,8 +4,6 @@ estimatedMinutes: 7
 verified_against: "1.35"
 traps:
   - netpol-endport-missing-protocol
-  - missing-dns-egress
-  - default-sa-used
 references:
   - kind: k8s-doc
     target: https://kubernetes.io/docs/concepts/services-networking/network-policies/

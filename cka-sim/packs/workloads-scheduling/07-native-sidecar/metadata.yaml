@@ -4,8 +4,6 @@ estimatedMinutes: 8
 verified_against: "1.35"
 traps:
   - sidecar-not-native-restartpolicy-always
-  - default-sa-used
-  - deployment-missing-requests
 references:
   - kind: k8s-doc
     target: "https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/"

@@ -4,8 +4,6 @@ estimatedMinutes: 8
 verified_against: "1.35"
 traps:
   - static-pod-applied-via-kubectl-apply
-  - default-sa-used
-  - deployment-missing-requests
 references:
   - kind: k8s-doc
     target: "https://kubernetes.io/docs/tasks/configure-pod-container/static-pod/"
