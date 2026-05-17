@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Awaiting next milestone
-last_updated: "2026-05-16T17:45:51.542Z"
-last_activity: 2026-05-16 — Milestone v1.0 completed and archived
+last_updated: "2026-05-17T05:52:24.621Z"
+last_activity: 2026-05-17 — Quick task 260517-hvo (exam-substitute-lab-ns) completed
 progress:
   total_phases: 9
   completed_phases: 9
@@ -103,3 +103,9 @@ These are intentionally deferred, not blockers for advancing.
 ## Operator Next Steps
 
 - Start the next milestone with /gsd-new-milestone
+
+## Quick Tasks Completed
+
+| Date       | Quick ID   | Slug                          | Files                                  |
+|------------|------------|-------------------------------|----------------------------------------|
+| 2026-05-17 | 260517-hvo | exam-substitute-lab-ns        | `cka-sim/lib/cmd/exam.sh`              |
