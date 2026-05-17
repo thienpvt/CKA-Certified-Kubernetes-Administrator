@@ -34,7 +34,7 @@ Full archive: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 - [x] **Phase 12: Trap-Coverage Lint + Orphan Cleanup** — Land trap-coverage lint, then trim 3 orphan trap entries it flags
 - [~] **Phase 13: Grader-Strengthening** — Add precise assertions to 3 graders that currently rubber-stamp structural shape (Awaiting UAT — live-cluster drills required)
 - [x] **Phase 14: Question Framing + Library Fixes** — Fix 3 candidate-confusing question framings + grep-comment-leak + library typo (Complete 2026-05-17)
-- [ ] **Phase 15: Live-Cluster Symptom-Diff CI** — Build per-question expected-symptom YAMLs + CI step that runs `setup.sh` and diffs cluster state
+- [~] **Phase 15: Live-Cluster Symptom-Diff CI** — Build per-question expected-symptom YAMLs + CI step that runs `setup.sh` and diffs cluster state (Awaiting UAT — live-cluster GHA run on merge PR)
 
 ### 📋 v2.0 (Not yet planned)
 
@@ -127,4 +127,4 @@ Use `/gsd-new-milestone` to scope and plan the next milestone.
 | 12. Trap-Coverage Lint + Orphan Cleanup            | v1.0.1    | 5/5   | Complete    | 2026-05-17  |
 | 13. Grader-Strengthening                           | v1.0.1    | 3/3   | Awaiting UAT | -           |
 | 14. Question Framing + Library Fixes               | v1.0.1    | 4/4   | Complete    | 2026-05-17  |
-| 15. Live-Cluster Symptom-Diff CI                   | v1.0.1    | 0/TBD | Not started | -           |
+| 15. Live-Cluster Symptom-Diff CI                   | v1.0.1    | 7/7   | Awaiting UAT | -           |
