@@ -2,27 +2,52 @@
 gsd_state_version: 1.0
 milestone: v1.0.1
 milestone_name: Full Audit Remediation
-status: executing
-last_updated: "2026-05-17T10:08:52.643Z"
-last_activity: 2026-05-17 -- Phase 12 planning complete
+status: "shipped (tech_debt — live UAT pending)"
+last_updated: "2026-05-18T00:00:00.000Z"
+last_activity: 2026-05-18 -- v1.0.1 milestone archived (tech_debt close-out)
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 6
   total_plans: 25
-  completed_plans: 0
-  percent: 0
+  completed_plans: 25
+  percent: 100
 ---
 
 # State
 
 ## Current Position
 
-Phase: 10 (not started — roadmap drafted, awaiting `/gsd-plan-phase 10`)
+Milestone: v1.0.1 — SHIPPED 2026-05-18 (tech_debt)
+Phase: —  (all 6 phases archived)
 Plan: —
-Status: Ready to execute
-Last activity: 2026-05-17 -- Phase 12 planning complete
+Status: Awaiting v1.0.1-followups (9 live-cluster drill UATs + 1 GHA first-run + 2 fixture regens) OR `/gsd-new-milestone v2.0`
+Last activity: 2026-05-18 -- v1.0.1 milestone archived (tech_debt close-out)
 
-### v1.0.1 Roadmap Snapshot
+### v1.0.1 Close-Out (2026-05-18)
+
+All 6 phases (10-15) shipped with `tech_debt` audit status. 18/18 requirements code-complete (8 satisfied + 10 addressed/uat_pending). Per-phase commit ranges and audit details in `.planning/milestones/v1.0.1-MILESTONE-AUDIT.md` and `.planning/milestones/v1.0.1-ROADMAP.md`.
+
+- Phase 10: HIGH Single-Question Edits — BUG-H01..H04 — commits `effcc3c..ce52428` + `6bcfaad`
+- Phase 11: HIGH Grader/Question Rework — BUG-H05, H06 — commits `3dbe2d0..c6821b9` + `87d8fc4`
+- Phase 12: Trap-Coverage Lint + Orphan Cleanup — LINT-01, BUG-M01..M03 — commits `fc508a7..532a539` + `84e99f7` (passed)
+- Phase 13: Grader-Strengthening — BUG-M04..M06 — commits `e0fa449..d267419` + `fbcf867`
+- Phase 14: Question Framing + Library Fixes — BUG-M07..M09, LIB-01 — commits `d411c05..ef11f08` + `7f165a5` (passed)
+- Phase 15: Live-Cluster Symptom-Diff CI — CI-01 — commits `bd29f0e..d75f4bd` + `5329d4d`
+
+### v1.0.1-followups (Tech Debt — Live UAT Pending)
+
+These are not blockers to v2.0 planning; they are validation tasks for already-shipped code.
+
+1. **9 live-cluster drill UATs** — Phases 10/11/13:
+   - P10: `cka-sim drill storage 01-pvc-binding`, `services-networking 05-kube-proxy-mode`, `cluster-architecture 04-pss-enforce`, `cluster-architecture 08-priorityclass`
+   - P11: `cka-sim drill troubleshooting 04-debug-node`, `troubleshooting 05-static-pod-manifest`
+   - P13: `cka-sim drill services-networking 06-netpol-endport`, `cluster-architecture 05-audit-policy`, `workloads-scheduling 04-hpa-metrics-server`
+2. **GHA `symptom-diff` job first run** — Phase 15 — open merge PR; observe end-to-end against kind+Calico.
+3. **2 fixture regens** — Phase 13:
+   - `cka-sim/tests/cases/services-networking__06-netpol-endport.sh` (0/6 -> 0/4 on no-CNI path)
+   - `cka-sim/tests/cases/workloads-scheduling__04-hpa-metrics-server.sh` (0/5 -> 0/7 after Assertions 5,6)
+
+### v1.0.1 Roadmap Snapshot (archived)
 
 - Phase 10: HIGH Single-Question Edits — BUG-H01, H02, H03, H04
 - Phase 11: HIGH Grader/Question Rework — BUG-H05, H06
@@ -114,7 +139,10 @@ These are intentionally deferred, not blockers for advancing.
 
 ## Operator Next Steps
 
-- Start Phase 10 with `/gsd-plan-phase 10` (HIGH single-question edits — BUG-H01..H04)
+- Execute the 9 v1.0.1-followup live-cluster drill UATs on the v1.0.1 lab cluster (see list above).
+- Open merge PR to trigger the GHA `symptom-diff` job first run (CI-01 end-to-end proof).
+- After live UAT confirms Phase 13 totals: regen 2 fixtures (`services-networking__06-netpol-endport`, `workloads-scheduling__04-hpa-metrics-server`).
+- Once all three confirm green, start v2.0 with `/gsd-new-milestone v2.0`.
 
 ## Quick Tasks Completed
 
