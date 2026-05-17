@@ -1,0 +1,24 @@
+# storage/03-access-modes-reclaim — symptom: q03-rwo-pvc Bound,
+# q03-rwx-pvc Pending (RWX request, all PVs RWO). Reclaim policies start
+# at Retain (q03-retain-pv) / Delete (q03-delete-pv).
+question: storage-access-modes-reclaim
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pvc
+    name: q03-rwo-pvc
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Bound
+  - kind: pvc
+    name: q03-rwx-pvc
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Pending
+  - kind: pv
+    name: q03-retain-pv
+    expect:
+      spec.persistentVolumeReclaimPolicy: Retain
+  - kind: pv
+    name: q03-delete-pv
+    expect:
+      spec.persistentVolumeReclaimPolicy: Delete

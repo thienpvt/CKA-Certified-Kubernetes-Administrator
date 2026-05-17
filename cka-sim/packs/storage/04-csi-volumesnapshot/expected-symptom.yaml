@@ -1,0 +1,18 @@
+# storage/04-csi-volumesnapshot — symptom: app-data PVC is already Bound
+# (backed by local-path-provisioner). Candidate authors VolumeSnapshotClass
+# q04-snapclass + VolumeSnapshot q04-snapshot; those are NOT in setup state.
+question: storage-csi-volumesnapshot
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pvc
+    name: app-data
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Bound
+      spec.storageClassName: local-path
+absent_resources:
+  - kind: volumesnapshotclass
+    name: q04-snapclass
+  - kind: volumesnapshot
+    name: q04-snapshot
+    namespace: ${CKA_SIM_LAB_NS}

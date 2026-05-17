@@ -1,0 +1,14 @@
+# storage/02-storageclass-dynamic — symptom: PVC app-cache stuck Pending
+# because storageClassName=fast-ssd has no matching StorageClass on the cluster.
+question: storage-storageclass-dynamic
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pvc
+    name: app-cache
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Pending
+      spec.storageClassName: fast-ssd
+absent_resources:
+  - kind: storageclass
+    name: fast-ssd

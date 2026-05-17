@@ -1,0 +1,19 @@
+# storage/06-pvc-mount-pod — symptom: q06-data PVC already Bound, backing
+# volume contains /data/marker (file content is not kubectl-visible, so we
+# encode only the bound state). q06-reader Deployment is candidate-authored.
+question: storage-pvc-mount-pod
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pvc
+    name: q06-data
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Bound
+  - kind: pv
+    name: q06-data-pv
+    expect:
+      status.phase: Bound
+absent_resources:
+  - kind: deploy
+    name: q06-reader
+    namespace: ${CKA_SIM_LAB_NS}

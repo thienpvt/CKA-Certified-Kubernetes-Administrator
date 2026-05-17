@@ -1,0 +1,22 @@
+# storage/05-wait-for-first-consumer — symptom: q05-claim stuck Pending
+# because StorageClass q05-wffc uses WaitForFirstConsumer. PV q05-wffc-pv
+# exists, Available, pinned to a worker. Candidate creates a Pod that
+# mounts the PVC; setup state is the Pending claim.
+question: storage-wait-for-first-consumer
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pvc
+    name: q05-claim
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Pending
+      spec.storageClassName: q05-wffc
+  - kind: storageclass
+    name: q05-wffc
+    expect:
+      volumeBindingMode: WaitForFirstConsumer
+  - kind: pv
+    name: q05-wffc-pv
+    expect:
+      status.phase: Available
+      spec.storageClassName: q05-wffc
