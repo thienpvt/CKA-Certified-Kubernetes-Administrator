@@ -29,7 +29,7 @@ Full archive: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 
 **Milestone Goal:** Fix all 15 question bugs (6 HIGH + 9 MED) surfaced by full pack audit `forensics/report-20260517-091657-full-audit.md`, plus add CI lints (LINT-01, CI-01) and library fix (LIB-01) to prevent recurrence. Drive every fix from per-bug evidence in the forensic report.
 
-- [ ] **Phase 10: HIGH Single-Question Edits** — Fix 4 HIGH bugs that are 1-2 file edits per question (no design rework needed)
+- [~] **Phase 10: HIGH Single-Question Edits** — Fix 4 HIGH bugs that are 1-2 file edits per question (no design rework needed) (Awaiting UAT — live-cluster drills required)
 - [ ] **Phase 11: HIGH Grader/Question Rework** — Fix 2 HIGH bugs requiring design decision (strengthen evidence vs loosen question; rescope vs expand grader)
 - [ ] **Phase 12: Trap-Coverage Lint + Orphan Cleanup** — Land trap-coverage lint, then trim 3 orphan trap entries it flags
 - [ ] **Phase 13: Grader-Strengthening** — Add precise assertions to 3 graders that currently rubber-stamp structural shape
