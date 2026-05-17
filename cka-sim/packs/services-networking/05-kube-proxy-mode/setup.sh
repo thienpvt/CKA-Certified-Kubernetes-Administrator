@@ -13,8 +13,12 @@ cka_sim::setup::wait_for_ns_active "$CKA_SIM_LAB_NS" services-networking service
 mkdir -p /tmp/q05-kube-proxy
 touch /tmp/q05-kube-proxy/.cka-sim-sentinel
 
-# Seed a WRONG initial mode so candidate must overwrite with the actual value
-SEED_MODE='ipvs'
+# Phase 10 BUG-H02: seed an out-of-enum placeholder. The previous value 'ipvs'
+# collided with the live mode on ipvs clusters, breaking the candidate-wrote
+# check (grade.sh:23) and gating Assertions 2 and 3 to fail. 'placeholder' is
+# outside {iptables, ipvs, nftables}, so reported != seeded for every valid
+# candidate write on every cluster.
+SEED_MODE='placeholder'
 echo "$SEED_MODE" > /tmp/q05-kube-proxy/reported-mode.txt
 chmod 0644 /tmp/q05-kube-proxy/reported-mode.txt
 
