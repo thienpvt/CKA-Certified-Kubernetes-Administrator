@@ -1,0 +1,10 @@
+# services-networking/05-kube-proxy-mode — symptom: lab ns Active. The
+# kube-proxy ConfigMap varies by cluster and is not asserted here. The
+# candidate's answer file is on the local filesystem, not kubectl-visible.
+question: services-networking-kube-proxy-mode
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active

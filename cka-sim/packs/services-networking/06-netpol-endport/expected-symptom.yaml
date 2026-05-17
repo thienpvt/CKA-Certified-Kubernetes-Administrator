@@ -1,0 +1,19 @@
+# services-networking/06-netpol-endport — symptom: q06-server + q06-client
+# Pods Running; q06-allow-range NetworkPolicy is candidate-authored.
+question: services-networking-netpol-endport
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pod
+    name: q06-server
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Running
+  - kind: pod
+    name: q06-client
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Running
+absent_resources:
+  - kind: networkpolicy
+    name: q06-allow-range
+    namespace: ${CKA_SIM_LAB_NS}

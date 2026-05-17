@@ -1,0 +1,12 @@
+# services-networking/03-coredns-resolution — symptom: q03-dnsclient
+# Pod Running with dnsPolicy=None and a wrong nameserver. Candidate fixes
+# the nameserver IP to kube-dns ClusterIP.
+question: services-networking-coredns-resolution
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pod
+    name: q03-dnsclient
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Running
+      spec.dnsPolicy: None

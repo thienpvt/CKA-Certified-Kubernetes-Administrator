@@ -1,0 +1,14 @@
+# services-networking/01-networkpolicy-egress — symptom: probe Pod Running;
+# NetworkPolicy egress-restrict in place (block DNS — candidate restores it).
+question: services-networking-networkpolicy-egress
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pod
+    name: probe
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Running
+  - kind: networkpolicy
+    name: egress-restrict
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}

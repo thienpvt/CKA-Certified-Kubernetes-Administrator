@@ -1,0 +1,15 @@
+# services-networking/02-service-core — symptom: q02-web Deployment
+# Available; q02-web Service exists but has a wrong selector so endpoints
+# are empty.
+question: services-networking-service-core
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: q02-web
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "True"
+  - kind: svc
+    name: q02-web
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}

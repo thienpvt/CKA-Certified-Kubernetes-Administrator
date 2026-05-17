@@ -1,0 +1,14 @@
+# services-networking/04-ingress-path-host — symptom: q04-web Service +
+# backing Deployment Available; IngressClass q04-nginx pre-exists;
+# Ingress q04-web is candidate-authored (absent at setup).
+question: services-networking-ingress-path-host
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: svc
+    name: q04-web
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}
+absent_resources:
+  - kind: ingress
+    name: q04-web
+    namespace: ${CKA_SIM_LAB_NS}
