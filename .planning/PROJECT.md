@@ -10,13 +10,15 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 
 ## Current State
 
+**Shipped v1.0.1 (2026-05-18, tech_debt):** Full audit remediation — all 15 question bugs (6 HIGH + 9 MED) addressed in code + 2 systemic CI gates added (trap-coverage lint, live-cluster symptom-diff CI). 18/18 requirements code-complete; live-cluster drill UATs (9), GHA first-run, and 2 fixture regens deferred to v1.0.1-followups.
+
 **Shipped v1.0 (2026-05-17):** Full CKA exam simulator operational on live cluster.
 - 38 questions across 5 domain packs (Storage 10%, W&S 15%, S&N 20%, CA 25%, Troubleshooting 30%)
 - 2 mock exam blueprints (alpha, bravo) — 17 questions / 130 minutes each
 - Bash-only runtime (~1000 LOC core + 19000 LOC tests/fixtures/docs)
 - Trap framework: 47 catalog entries, 8 root-cause detectors
 - Live cluster UAT: 17/17 ref-solution round-trip PASS, empty=0/100 verified
-- CI: shellcheck, lint-packs (298 checks), lint-traps (47 entries), test.sh (78 cases)
+- CI: shellcheck, lint-packs (298 checks), lint-traps (47 entries), test.sh (78 cases) + trap-coverage lint + symptom-diff lint (v1.0.1)
 
 **Tech stack:** Pure Bash + kubectl + jq + standard Ubuntu 22.04 binaries. No external runtime dependencies beyond what `apt-get` ships.
 
@@ -36,16 +38,21 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 - ✓ Documentation — README, AUTHORING, SCHEMA, CONTRIBUTING, GRADING-HONESTY — v1.0
 - ✓ Grading honesty (Phase 07.1) — setup-state vs candidate-authored distinction; baseline capture + ownership gates — v1.0
 
-## Current Milestone: v1.0.1 Full Audit Remediation
+### Validated (v1.0.1 — tech_debt, live UAT pending)
 
-**Goal:** Fix all 15 audit findings (6 HIGH + 9 MED) from `.planning/forensics/report-20260517-091657-full-audit.md`, plus add CI lints to prevent recurrence.
+6 phases (10-15), 25 plans, 18/18 requirements code-complete. Status `tech_debt`: 8 satisfied + 10 addressed (uat_pending). See `milestones/v1.0.1-MILESTONE-AUDIT.md`.
 
-**Target features:**
-- Fix 6 HIGH-severity question bugs (storage/01-pvc-binding, services-networking/05-kube-proxy-mode, cluster-architecture/04-pss-enforce, cluster-architecture/08-priorityclass, troubleshooting/04-debug-node, troubleshooting/05-static-pod-manifest)
-- Fix 9 MED-severity question bugs (3 metadata-orphan-trap, 3 grader-weaker-than-question, 2 question-framing, 1 grader-grep-pattern)
-- Add lint: every `metadata.yaml` trap → matching `record_trap` call in `grade.sh`
-- Add live-cluster CI step: `setup.sh && kubectl get ...` diff vs per-question expected-symptom YAML
-- Fix library bug `lib/setup.sh:218` (`kubernetes.io\metadata.name` → `/`)
+- ✓ BUG-H01..H04 — 4 HIGH single-question edits (Phase 10) — v1.0.1 (live drill UAT pending)
+- ✓ BUG-H05, H06 — 2 HIGH grader/question rework (Phase 11) — v1.0.1 (live drill UAT pending)
+- ✓ BUG-M01..M03 + LINT-01 — trap-coverage lint + 3 orphan trap cleanups (Phase 12) — v1.0.1
+- ✓ BUG-M04..M06 — 3 MED grader strengthening (Phase 13) — v1.0.1 (live drill UAT + 2 fixture regens pending)
+- ✓ BUG-M07..M09, LIB-01 — 3 question framing fixes + library typo fix (Phase 14) — v1.0.1
+- ✓ CI-01 — live-cluster symptom-diff CI (Phase 15, 34 expected-symptom YAMLs + symptom-diff lint + 4th GHA job) — v1.0.1 (GHA first-run pending on merge PR)
+
+**v1.0.1-followups (tracked as tech debt):**
+- 9 live-cluster drill UATs across Phases 10/11/13
+- GHA `symptom-diff` job first run on merge PR (CI-01 end-to-end proof)
+- Regen 2 fixtures: `services-networking__06-netpol-endport` and `workloads-scheduling__04-hpa-metrics-server` (Phase 13 strengthened-grader totals)
 
 ### Active (v2.0 — not yet planned)
 
@@ -126,4 +133,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-17 — v1.0.1 milestone opened (full audit remediation)*
+*Last updated: 2026-05-18 — v1.0.1 milestone shipped (tech_debt — live UAT pending); see `milestones/v1.0.1-MILESTONE-AUDIT.md`*
