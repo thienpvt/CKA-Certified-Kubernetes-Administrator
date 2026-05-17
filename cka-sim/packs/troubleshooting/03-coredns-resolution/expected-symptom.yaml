@@ -1,0 +1,26 @@
+# troubleshooting/03-coredns-resolution — post-setup.sh symptom.
+# Question claim: q03-dnsclient cannot resolve; supporting q03-coredns
+# Deployment is unhealthy (broken subPath in setup, not just bad upstream).
+# BUG-M08 motivator: any future regression that lets q03-coredns reach
+# Available, or that omits q03-dnsclient, trips this diff.
+question: troubleshooting-coredns-resolution
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: deploy
+    name: q03-coredns
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.conditions[?(@.type=="Available")].status: "False"
+  - kind: pod
+    name: q03-dnsclient
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Running
+  - kind: configmap
+    name: q03-coredns-corefile
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}
+  - kind: svc
+    name: q03-coredns
+    namespace: ${CKA_SIM_LAB_NS}
+    expect: {}

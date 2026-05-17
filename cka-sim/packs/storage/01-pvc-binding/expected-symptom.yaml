@@ -1,0 +1,22 @@
+# storage/01-pvc-binding — post-setup.sh symptom expected by question.md.
+# Question claim: PVC app-data exists; PV q01-app-pv exists; consumer Pod
+# q01-app-consumer fails to schedule. Per setup.sh, PV is missing nodeAffinity,
+# so the PV stays Available and the PVC stays Pending until the candidate
+# adds nodeAffinity in place.
+# BUG-H01 motivator: any future regression that lets the PVC bind too early
+# (or seeds a different storage class) trips this diff.
+question: storage-pvc-binding
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: pvc
+    name: app-data
+    namespace: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Pending
+      spec.storageClassName: manual
+  - kind: pv
+    name: q01-app-pv
+    expect:
+      status.phase: Available
+      spec.storageClassName: manual
+      spec.persistentVolumeReclaimPolicy: Retain

@@ -39,4 +39,8 @@ info "step 6: run bash unit cases"
 "$CKA_SIM_ROOT/tests/run.sh"
 ok "all unit cases passed"
 
+info "step 7: lint question symptom (live-cluster gated)"
+"$CKA_SIM_ROOT/scripts/lint-question-symptom.sh"
+ok "symptom-diff lint passed (or skipped — see above)"
+
 ok "test.sh complete"
