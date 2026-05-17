@@ -1,7 +1,7 @@
 #!/bin/bash
 # Phase 07.1 D-16 / D-22: this question's grader is structurally thin —
-# 5 preconditions are setup-state (weight=0); 1 scoring assertion checks the
-# candidate-authored Pod q04-candidate. Flagged for v1.x rebuild in 07.1-VERIFICATION.md.
+# Phase 10 BUG-H03 — 5 preconditions are setup-state (weight=0); 5 scoring
+# assertions check candidate-authored YAML at /tmp/q04-pss-enforce/candidate-violator.yaml directly per question.md.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -46,14 +46,126 @@ else
   err "q04-compliant has no ready replicas (precondition)"
 fi
 
-# ---------- Scoring assertion (candidate work) ----------
+# ---------- Scoring assertions (candidate-authored file) ----------
+# Phase 10 BUG-H03 — score the candidate-violator.yaml file directly per
+# question.md's literal claim ("the grader inspects file contents directly
+# and does not require you to kubectl apply anything"). Each restricted-PSS
+# field listed in question.md is one weight=1 assertion. kubectl apply
+# --dry-run=client validates schema without touching the cluster.
 
-# Phase 07.1 D-16 — score the candidate's actual deliverable.
-# Q04 is pedagogy-thin (audit-escape per CONTEXT D-22): without this assertion,
-# all 5 preconditions are setup-state. Candidate's task per question.md ends
-# with kubectl apply -f /tmp/q04-pss-enforce/candidate-violator.yaml, producing
-# Pod q04-candidate.
-cka_sim::grade::assert_resource_candidate_authored pod q04-candidate -n "$CKA_SIM_LAB_NS"
+# Pre-flight: candidate file must exist and be syntactically valid YAML.
+if [[ ! -r "$candidate_file" ]]; then
+  err "candidate-violator.yaml missing or unreadable at $candidate_file"
+  CKA_SIM_GRADE_FAILS+=("candidate-violator.yaml missing or unreadable")
+  # Do not exit — let the trap detectors and emit_result still run so the
+  # candidate sees their score and traps in one shot.
+fi
+
+# Helper: query a single jsonpath against the candidate file via dry-run.
+# Returns the extracted string (or empty) on stdout. --dry-run=client never
+# contacts the apiserver, so this works even if the candidate's manifest
+# would be rejected by the live PSS admission controller.
+_q04_field() {
+  local jp="$1"
+  kubectl apply --dry-run=client -f "$candidate_file" -o jsonpath="$jp" 2>/dev/null
+}
+
+# Assertion 1 (weight=1): no privileged containers (privileged absent OR false).
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+privileged_vals=$(_q04_field '{.spec.containers[*].securityContext.privileged}')
+# Pass: empty (field absent on every container) OR every token is "false".
+pass_priv=1
+if [[ -n "$privileged_vals" ]]; then
+  for v in $privileged_vals; do
+    [[ "$v" == "false" ]] || { pass_priv=0; break; }
+  done
+fi
+if (( pass_priv == 1 )); then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("no privileged containers in candidate-violator.yaml")
+  ok "no privileged containers in candidate-violator.yaml"
+else
+  CKA_SIM_GRADE_FAILS+=("candidate-violator.yaml has privileged container(s) (got '$privileged_vals')")
+  err "candidate-violator.yaml has privileged container(s) (got '$privileged_vals')"
+fi
+
+# Assertion 2 (weight=1): pod-level runAsNonRoot == true.
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+run_as_non_root=$(_q04_field '{.spec.securityContext.runAsNonRoot}')
+if [[ "$run_as_non_root" == "true" ]]; then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("pod-level runAsNonRoot: true")
+  ok "pod-level runAsNonRoot: true"
+else
+  CKA_SIM_GRADE_FAILS+=("pod-level runAsNonRoot != true (got '${run_as_non_root:-<absent>}')")
+  err "pod-level runAsNonRoot != true (got '${run_as_non_root:-<absent>}')"
+fi
+
+# Assertion 3 (weight=1): every container drops ALL capabilities.
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+# Get container count + count of containers whose capabilities.drop list contains "ALL".
+# We compare totals: pass iff every container has a drop list and every list contains "ALL".
+container_count=$(_q04_field '{range .spec.containers[*]}{"x"}{end}')   # one "x" per container
+drop_all_hits=$(_q04_field '{range .spec.containers[*]}{.securityContext.capabilities.drop}{"|"}{end}')
+pass_drop=1
+[[ -z "$container_count" ]] && pass_drop=0
+if (( pass_drop == 1 )); then
+  # Iterate per-container drop entries (separated by '|'), require each contains "ALL".
+  IFS='|' read -ra _drops <<< "$drop_all_hits"
+  n_containers=${#container_count}
+  n_passes=0
+  for d in "${_drops[@]}"; do
+    [[ -z "$d" ]] && continue
+    # The jsonpath array print yields tokens like "[ALL]" or "[NET_ADMIN ALL]".
+    if [[ "$d" =~ (^|[^A-Z_])ALL([^A-Z_]|$) ]]; then
+      n_passes=$(( n_passes + 1 ))
+    fi
+  done
+  (( n_passes == n_containers )) || pass_drop=0
+fi
+if (( pass_drop == 1 )); then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("every container drops ALL capabilities")
+  ok "every container drops ALL capabilities"
+else
+  CKA_SIM_GRADE_FAILS+=("not every container drops ALL capabilities (got '$drop_all_hits')")
+  err "not every container drops ALL capabilities (got '$drop_all_hits')"
+fi
+
+# Assertion 4 (weight=1): seccompProfile.type == RuntimeDefault (pod-level).
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+seccomp_type=$(_q04_field '{.spec.securityContext.seccompProfile.type}')
+if [[ "$seccomp_type" == "RuntimeDefault" ]]; then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("pod-level seccompProfile.type: RuntimeDefault")
+  ok "pod-level seccompProfile.type: RuntimeDefault"
+else
+  CKA_SIM_GRADE_FAILS+=("pod-level seccompProfile.type != RuntimeDefault (got '${seccomp_type:-<absent>}')")
+  err "pod-level seccompProfile.type != RuntimeDefault (got '${seccomp_type:-<absent>}')"
+fi
+
+# Assertion 5 (weight=1): every container has allowPrivilegeEscalation: false.
+CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
+ape_vals=$(_q04_field '{.spec.containers[*].securityContext.allowPrivilegeEscalation}')
+pass_ape=1
+if [[ -z "$ape_vals" ]]; then
+  pass_ape=0
+else
+  for v in $ape_vals; do
+    [[ "$v" == "false" ]] || { pass_ape=0; break; }
+  done
+  # Also require one value per container (no missing fields).
+  ape_count=$(printf '%s\n' $ape_vals | wc -w | tr -d ' ')
+  [[ -n "$container_count" && "$ape_count" == "${#container_count}" ]] || pass_ape=0
+fi
+if (( pass_ape == 1 )); then
+  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+  CKA_SIM_GRADE_PASSES+=("every container has allowPrivilegeEscalation: false")
+  ok "every container has allowPrivilegeEscalation: false"
+else
+  CKA_SIM_GRADE_FAILS+=("not every container has allowPrivilegeEscalation: false (got '$ape_vals')")
+  err "not every container has allowPrivilegeEscalation: false (got '$ape_vals')"
+fi
 
 # ---------- Trap detection ----------
 

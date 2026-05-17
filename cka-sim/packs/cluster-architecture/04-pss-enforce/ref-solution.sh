@@ -37,9 +37,7 @@ spec:
           drop: ["ALL"]
 EOF
 
-# Phase 07.1 D-26 — actually create the candidate pod. The previous ref-solution
-# only wrote the manifest to disk; grader requires q04-candidate to exist.
-kubectl apply -f "$sandbox/candidate-violator.yaml"
-
-# Wait for the candidate pod to be Ready (or at least admitted).
-kubectl wait --for=condition=Ready pod/q04-candidate -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
+# Phase 10 BUG-H03 — ref-solution writes the file only. The grader inspects
+# /tmp/q04-pss-enforce/candidate-violator.yaml directly via kubectl apply
+# --dry-run=client (no live apply). Restoring kubectl apply here would
+# re-introduce the question/grader contradiction documented in BUG-H03.
