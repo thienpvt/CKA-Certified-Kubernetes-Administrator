@@ -4,6 +4,8 @@
 
 A scheduling decision depends on a kernel property of one specific worker node. Discover the exact kernel version string from that worker's host and record it in the sandbox answer file, without modifying anything on the worker host.
 
+You may use any Kubernetes-native node-introspection technique: 'kubectl debug node/<worker>', a hand-rolled privileged Pod with 'hostPID' or 'hostNetwork' bound to the worker via 'nodeName', an ephemeral debug container, or any other read-only Pod-based approach. The grader scores '/tmp/q04-debug-node/answer.txt' only — it does not inspect which mechanism you used.
+
 ## Sandbox
 
 Work in `/tmp/q04-debug-node/`.
@@ -15,7 +17,7 @@ Work in `/tmp/q04-debug-node/`.
 
 - Do not modify any file on the worker host.
 - Do not SSH to the worker; use a Kubernetes-native mechanism.
-- Do not add or modify cluster objects outside `/tmp/q04-debug-node/` and transient inspection tooling you use.
+- Do not add or modify cluster objects outside '/tmp/q04-debug-node/' and transient inspection tooling you use.
 
 ## Verify yourself
 

@@ -12,4 +12,4 @@ references:
     note: "Related prior-art: node-level control-plane inspection without mutation"
   - kind: k8s-doc
     target: https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/
-    note: kubectl debug node/<name> semantics and chroot /host
+    note: kubectl debug node/<name> — one valid technique; question accepts any Kubernetes-native node-introspection approach
