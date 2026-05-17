@@ -11,10 +11,12 @@ id: storage-pvc-binding          # RFC 1123, unique within pack
 domain: storage                   # enum: storage|workloads-scheduling|services-networking|cluster-architecture|troubleshooting
 estimatedMinutes: 8               # integer, 4-12
 verified_against: "1.35"          # k8s version string
-traps:                            # ≥3 trap IDs from catalog
+traps:                            # ≥1 trap IDs from catalog; each must have
+                                  # a matching cka_sim::grade::record_trap call
+                                  # in the sibling grade.sh (LINT-01 Phase 12).
+                                  # Orphan-trap trimming permitted — declare
+                                  # only what your grader detects.
   - trap-wrong-access-mode
-  - trap-missing-storageclass
-  - trap-pvc-pending-no-pv
 references:                       # related resources
   - kind: doc
     target: "https://kubernetes.io/docs/concepts/storage/persistent-volumes/"

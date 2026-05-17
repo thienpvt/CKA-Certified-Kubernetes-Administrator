@@ -38,7 +38,7 @@ Required fields (lint-packs.sh enforces):
 | `domain` | One of: storage, workloads-scheduling, services-networking, cluster-architecture, troubleshooting |
 | `estimatedMinutes` | Integer in `[4, 12]` |
 | `verified_against` | Exact string `"1.35"` (the CKA blueprint version the question is validated against) |
-| `traps` | List of ≥3 trap ids, each registered in `cka-sim/traps/catalog.yaml` |
+| `traps` | List of ≥1 trap ids, each registered in `cka-sim/traps/catalog.yaml`. Every declared id MUST have a matching `cka_sim::grade::record_trap <id>` call in the sibling `grade.sh` (enforced by `lint-trap-coverage.sh`, Phase 12 LINT-01). Orphan-trap trimming is permitted — declare only what you detect. |
 | `references` | List of `{kind, target, note}` objects. `kind` ∈ {prior-art-exercise, k8s-doc, concerns-md, community} |
 
 ### 2.2 question.md
@@ -240,7 +240,7 @@ Full field reference for `metadata.yaml`:
 | `domain` | enum | One of: storage, workloads-scheduling, services-networking, cluster-architecture, troubleshooting |
 | `estimatedMinutes` | integer | Range `[4, 12]` — time budget for a prepared candidate |
 | `verified_against` | string | Exact k8s version the question was validated on (currently `"1.35"`) |
-| `traps` | array | ≥3 trap IDs, each must exist in `cka-sim/traps/catalog.yaml` |
+| `traps` | array | ≥1 trap IDs, each must exist in `cka-sim/traps/catalog.yaml`. Every declared id MUST have a matching `cka_sim::grade::record_trap` call in the sibling `grade.sh` (enforced by Phase 12 LINT-01 `lint-trap-coverage.sh`). Orphan-trap trimming is permitted — declare only what you detect. |
 | `references` | array | Objects with `{kind, target, note}`. `kind` ∈ {prior-art-exercise, k8s-doc, concerns-md, community} |
 
 See `cka-sim/SCHEMA.md` for full YAML examples of all schemas.

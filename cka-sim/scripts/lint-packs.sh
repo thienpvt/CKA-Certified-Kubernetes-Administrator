@@ -141,8 +141,14 @@ while IFS= read -r meta_yaml; do
     err "$meta_yaml: verified_against must be \"1.35\" (got '$m_verified')"
     errors=$(( errors + 1 ))
   fi
-  if (( ${#m_traps[@]} < 3 )); then
-    err "$meta_yaml: traps[] has ${#m_traps[@]} entries, need >=3 (GRADE-04)"
+  # Phase 12: GRADE-04 floor relaxed from >=3 to >=1 to enable honest trap-coverage
+  # under LINT-01 (lint-trap-coverage.sh). Authors used to pad metadata with shared
+  # seeded traps (default-sa-used, missing-dns-egress, etc.) to satisfy the old >=3
+  # floor, but those seeds had no per-question detector. The LINT-01 cross-correlation
+  # lint surfaced 35 orphans under the >=3 regime; relaxing to >=1 lets each question
+  # declare only the traps its grade.sh actually records.
+  if (( ${#m_traps[@]} < 1 )); then
+    err "$meta_yaml: traps[] has ${#m_traps[@]} entries, need >=1 (GRADE-04, relaxed in Phase 12)"
     errors=$(( errors + 1 ))
   fi
   for tid in "${m_traps[@]}"; do
