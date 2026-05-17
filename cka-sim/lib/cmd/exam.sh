@@ -187,7 +187,13 @@ cka_sim::exam::present_question() {
   printf '%s\n' "─────────────────────────────────────────"
 
   if [[ -r "$qdir/question.md" ]]; then
-    cat "$qdir/question.md"
+    # Substitute the per-question lab namespace inline so candidates see the
+    # concrete value (e.g. cka-sim-services-networking-02) instead of the
+    # literal ${CKA_SIM_LAB_NS} placeholder. Pure-bash expansion — no
+    # envsubst dependency, and only the one token we own is replaced.
+    local question_content
+    question_content=$(<"$qdir/question.md")
+    printf '%s\n' "${question_content//\$\{CKA_SIM_LAB_NS\}/$CKA_SIM_LAB_NS}"
   fi
 
   printf '\n%s[Enter/n]=next  [f]=flag  [s]=skip  [p]=prev  [t]=time  [q]=end exam%s\n' "$YELLOW" "$NC"
