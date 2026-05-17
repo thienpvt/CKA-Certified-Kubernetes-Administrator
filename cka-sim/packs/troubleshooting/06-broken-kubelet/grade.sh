@@ -13,6 +13,19 @@ set -uo pipefail
 source "$CKA_SIM_ROOT/lib/grade.sh"
 source "$CKA_SIM_ROOT/lib/traps.sh"
 
+# Phase 14 BUG-M09 — comment-aware trap detection.
+# _strip_comments_from FILE
+#   Emit FILE's content with whole-line shell comments removed and trailing
+#   inline '# ...' content stripped. Used ONLY by the three comment-vulnerable
+#   trap detectors below; the bash-parseable + correct-CRI-endpoint scoring
+#   assertions continue to read the raw file because comments are part of
+#   bash-parseability semantics. Returns the stripped stream on stdout.
+_strip_comments_from() {
+  local _f="$1"
+  [[ -r "$_f" ]] || return 0
+  sed -E -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' "$_f"
+}
+
 sandbox="/tmp/q06-kubelet-flags"
 flags="$sandbox/kubeadm-flags.env"
 kubeconfig="$sandbox/kubelet.conf"
@@ -46,15 +59,15 @@ else
   err "correct CRI endpoint missing"
 fi
 
-if grep -q "$removed_flag" "$flags" 2>/dev/null; then
+if _strip_comments_from "$flags" | grep -q "$removed_flag" 2>/dev/null; then
   cka_sim::grade::record_trap removed-container-runtime-flag
 fi
 
-if grep -q 'container-runtime-endpoint' "$kubeconfig" 2>/dev/null; then
+if _strip_comments_from "$kubeconfig" | grep -q 'container-runtime-endpoint' 2>/dev/null; then
   cka_sim::grade::record_trap kubelet-runtime-flag-in-kubeconfig
 fi
 
-endpoint=$(awk -F'container-runtime-endpoint=' '/container-runtime-endpoint=/{print $2}' "$flags" 2>/dev/null | awk '{print $1}' | tr -d '"' | head -1)
+endpoint=$(_strip_comments_from "$flags" | awk -F'container-runtime-endpoint=' '/container-runtime-endpoint=/{print $2}' 2>/dev/null | awk '{print $1}' | tr -d '"' | head -1)
 if [[ -n "$endpoint" && "$endpoint" != unix://* ]]; then
   cka_sim::grade::record_trap cri-endpoint-unix-prefix-missing
 fi
