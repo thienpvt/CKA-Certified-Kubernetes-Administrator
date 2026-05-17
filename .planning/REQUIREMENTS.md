@@ -59,34 +59,34 @@ Carried from PROJECT.md v2.0 candidate ideas — not in v1.0.1 scope.
 
 ## Traceability
 
-Empty initially. Populated by `gsd-roadmapper`.
+Populated by `gsd-roadmapper` 2026-05-17. Phases 10-15 cover all 18 v1.0.1 requirements (100% coverage).
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-H01 | TBD | Pending |
-| BUG-H02 | TBD | Pending |
-| BUG-H03 | TBD | Pending |
-| BUG-H04 | TBD | Pending |
-| BUG-H05 | TBD | Pending |
-| BUG-H06 | TBD | Pending |
-| BUG-M01 | TBD | Pending |
-| BUG-M02 | TBD | Pending |
-| BUG-M03 | TBD | Pending |
-| BUG-M04 | TBD | Pending |
-| BUG-M05 | TBD | Pending |
-| BUG-M06 | TBD | Pending |
-| BUG-M07 | TBD | Pending |
-| BUG-M08 | TBD | Pending |
-| BUG-M09 | TBD | Pending |
-| LINT-01 | TBD | Pending |
-| CI-01 | TBD | Pending |
-| LIB-01 | TBD | Pending |
+| BUG-H01 | Phase 10 | Pending |
+| BUG-H02 | Phase 10 | Pending |
+| BUG-H03 | Phase 10 | Pending |
+| BUG-H04 | Phase 10 | Pending |
+| BUG-H05 | Phase 11 | Pending |
+| BUG-H06 | Phase 11 | Pending |
+| BUG-M01 | Phase 12 | Pending |
+| BUG-M02 | Phase 12 | Pending |
+| BUG-M03 | Phase 12 | Pending |
+| BUG-M04 | Phase 13 | Pending |
+| BUG-M05 | Phase 13 | Pending |
+| BUG-M06 | Phase 13 | Pending |
+| BUG-M07 | Phase 14 | Pending |
+| BUG-M08 | Phase 14 | Pending |
+| BUG-M09 | Phase 14 | Pending |
+| LINT-01 | Phase 12 | Pending |
+| CI-01 | Phase 15 | Pending |
+| LIB-01 | Phase 14 | Pending |
 
 **Coverage:**
 - v1.0.1 requirements: 18 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 18 ⚠ (resolved at roadmap step)
+- Mapped to phases: 18 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-17*
-*Last updated: 2026-05-17 at milestone v1.0.1 opening*
+*Last updated: 2026-05-17 — phase mappings filled in by gsd-roadmapper*

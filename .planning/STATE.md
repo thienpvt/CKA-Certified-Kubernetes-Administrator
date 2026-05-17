@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.0.1
 milestone_name: Full Audit Remediation
 status: planning
-last_updated: "2026-05-17T09:23:43.051Z"
+last_updated: "2026-05-17T10:15:00.000Z"
 last_activity: 2026-05-17
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,12 +17,21 @@ progress:
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 10 (not started — roadmap drafted, awaiting `/gsd-plan-phase 10`)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-17 — Milestone v1.0.1 started
+Status: Roadmap defined for v1.0.1 (6 phases, 18 reqs mapped, 100% coverage)
+Last activity: 2026-05-17 — Roadmap written for v1.0.1 full audit remediation
 
-### Deferred Verification
+### v1.0.1 Roadmap Snapshot
+
+- Phase 10: HIGH Single-Question Edits — BUG-H01, H02, H03, H04
+- Phase 11: HIGH Grader/Question Rework — BUG-H05, H06
+- Phase 12: Trap-Coverage Lint + Orphan Cleanup — LINT-01, BUG-M01, M02, M03
+- Phase 13: Grader-Strengthening — BUG-M04, M05, M06
+- Phase 14: Question Framing + Library Fixes — BUG-M07, M08, M09, LIB-01
+- Phase 15: Live-Cluster Symptom-Diff CI — CI-01
+
+### Deferred Verification (carried from v1.0)
 
 These are intentionally deferred, not blockers for advancing.
 
@@ -44,6 +53,7 @@ These are intentionally deferred, not blockers for advancing.
 6. **Phase 6 live drill verification** — CLOSED (2026-05-13). All 6 troubleshooting drills + host-safety sweep pass on live 1+2 cluster.
    - Tracking: `.planning/phases/06-troubleshooting-pack/06-HUMAN-UAT.md` and `06-VERIFICATION.md`
    - Final result: 22/22 PASS (6 drills × pre-fix + post-fix + host-safety, plus post-sweep with idempotency). Q04 ref-solution fixed (replaced `kubectl debug node` with explicit privileged debug pod manifest carrying same `kubectl.kubernetes.io/debug-source` label).
+   - **Note:** This ref-solution shortcut is now BUG-H05 in v1.0.1 — the forged-label workaround tests neither `kubectl debug node` nor enforces the skill being graded. Phase 11 will fix.
 
 7. **Phase 7 UAT** — CLOSED (2026-05-15). 11/12 pass; Test 12 (scoring honesty) acknowledged and routed to Phase 07.1. Test 2 (signal handling) PASS on re-run #4 after 15 fix commits (be88426 → 62c8c34). Both interactive tests (timer/signals) now verified on live cluster.
    - Tracking: `.planning/phases/07-exam-mode-blueprint-alpha-reporting/07-UAT.md`
@@ -64,11 +74,13 @@ These are intentionally deferred, not blockers for advancing.
 
 ### Roadmap Evolution
 
+- 2026-05-17 — Milestone v1.0.1 opened. Forensic audit (`forensics/report-20260517-091657-full-audit.md`) surfaced 6 HIGH + 9 MED question bugs + 1 library typo. Roadmap defines 6 phases (10-15) covering 18 requirements with 100% coverage.
 - Phase 07.1 inserted after Phase 7: Grading honesty rebuild — empty submissions must score 0/100 (Phase 7 UAT Test 12) (URGENT)
-- 2026-05-15 — Phase 07 COMPLETE. All 7 plans landed (07-01..07-07). UAT Test 2 (signal handling) closed via 07-07 + 15-commit follow-up chain (re-run #4 ✅). Test 12 acknowledged + deferred to 07.1. Next: `/gsd-discuss-phase 07.1` or `/gsd-plan-phase 07.1`.
+- 2026-05-15 — Phase 07 COMPLETE. All 7 plans landed (07-01..07-07). UAT Test 2 (signal handling) closed via 07-07 + 15-commit follow-up chain (re-run #4 ✅). Test 12 acknowledged + deferred to 07.1.
 
 ### Decisions
 
+- 2026-05-17 — v1.0.1 phase grouping derived from forensic-report bug shape, not arbitrary template: HIGH single-edits (P10), HIGH design rework (P11), lint-then-trim systemic orphans (P12), grader-strengthening (P13), question framing + lib (P14), durable CI net last (P15).
 - 2026-05-07 — Rebuild new exam-sim packs from the v1.35 Study Progress Tracker; existing 31 exercises kept as superseded reference-only (not deleted, not retrofitted).
 - 2026-05-07 — Target OS: Ubuntu 22.04 (matches PSI real exam env).
 - 2026-05-07 — Existing cluster only — no VM provisioning, no `kubeadm init/join` automation.
@@ -91,7 +103,7 @@ These are intentionally deferred, not blockers for advancing.
 
 ### Blockers
 
-- None. All phases verified and closed.
+- None.
 
 ### Pending Todos
 
@@ -102,7 +114,7 @@ These are intentionally deferred, not blockers for advancing.
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Start Phase 10 with `/gsd-plan-phase 10` (HIGH single-question edits — BUG-H01..H04)
 
 ## Quick Tasks Completed
 
