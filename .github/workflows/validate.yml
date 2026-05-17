@@ -87,3 +87,72 @@ jobs:
 
       - name: Run validate-local
         run: bash cka-sim/scripts/validate-local.sh
+
+  symptom-diff:
+    name: Live-cluster symptom diff (kind + Calico)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq + python3-yaml + kubectl + kind
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq jq python3-yaml
+          # kubectl
+          KUBECTL_VERSION="v1.30.0"
+          curl -fsSL -o /tmp/kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          sudo install -m 0755 /tmp/kubectl /usr/local/bin/kubectl
+          kubectl version --client
+          # kind
+          KIND_VERSION="v0.23.0"
+          curl -fsSL -o /tmp/kind "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64"
+          sudo install -m 0755 /tmp/kind /usr/local/bin/kind
+          kind version
+
+      - name: Create kind cluster (no default CNI; Calico will own networking)
+        run: |
+          cat > /tmp/kind-config.yaml <<'EOF'
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          networking:
+            disableDefaultCNI: true
+            podSubnet: "192.168.0.0/16"
+          nodes:
+            - role: control-plane
+            - role: worker
+          EOF
+          kind create cluster --name cka-sim --config /tmp/kind-config.yaml --wait 120s || true
+          # Don't fail on initial wait — nodes go Ready only after Calico installs.
+          kubectl get nodes
+
+      - name: Install Calico v3.27.3
+        run: |
+          set -euo pipefail
+          kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/calico.yaml
+          # Wait for Calico controller and node DaemonSet to be ready.
+          kubectl -n kube-system wait --for=condition=Available deployment/calico-kube-controllers --timeout=180s
+          kubectl -n kube-system rollout status daemonset/calico-node --timeout=180s
+          kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+      - name: Verify expected-symptom.yaml count
+        run: |
+          count=$(find cka-sim/packs -name 'expected-symptom.yaml' | wc -l)
+          echo "expected-symptom.yaml files: $count"
+          if [[ "$count" -ne 34 ]]; then
+            echo "::error::expected 34 expected-symptom.yaml files; found $count"
+            exit 1
+          fi
+
+      - name: Run live-cluster symptom diff
+        env:
+          CKA_SIM_ROOT: ${{ github.workspace }}/cka-sim
+        run: |
+          bash cka-sim/scripts/lint-question-symptom.sh
+
+      - name: Capture diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get nodes -o wide || true
+          kubectl get pods -A || true
+          kubectl get events -A --sort-by=.lastTimestamp | tail -100 || true

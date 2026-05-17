@@ -31,6 +31,9 @@ fi
 total=0
 failed=0
 
+# Phase 15 plan 07: symptom-diff regression case lands automatically via the
+# `find ... -name '*.sh'` walk below. The case self-skips with rc=0 when no
+# live cluster is reachable, so local runs without kind/kubeadm pass.
 while IFS= read -r -d '' case_file; do
   total=$(( total + 1 ))
   header "$(basename "$case_file" .sh)"
