@@ -30,7 +30,7 @@ Full archive: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 **Milestone Goal:** Fix all 15 question bugs (6 HIGH + 9 MED) surfaced by full pack audit `forensics/report-20260517-091657-full-audit.md`, plus add CI lints (LINT-01, CI-01) and library fix (LIB-01) to prevent recurrence. Drive every fix from per-bug evidence in the forensic report.
 
 - [~] **Phase 10: HIGH Single-Question Edits** — Fix 4 HIGH bugs that are 1-2 file edits per question (no design rework needed) (Awaiting UAT — live-cluster drills required)
-- [ ] **Phase 11: HIGH Grader/Question Rework** — Fix 2 HIGH bugs requiring design decision (strengthen evidence vs loosen question; rescope vs expand grader)
+- [~] **Phase 11: HIGH Grader/Question Rework** — Fix 2 HIGH bugs requiring design decision (strengthen evidence vs loosen question; rescope vs expand grader) (Awaiting UAT — live-cluster drills required)
 - [ ] **Phase 12: Trap-Coverage Lint + Orphan Cleanup** — Land trap-coverage lint, then trim 3 orphan trap entries it flags
 - [ ] **Phase 13: Grader-Strengthening** — Add precise assertions to 3 graders that currently rubber-stamp structural shape
 - [ ] **Phase 14: Question Framing + Library Fixes** — Fix 3 candidate-confusing question framings + grep-comment-leak + library typo
@@ -123,7 +123,7 @@ Use `/gsd-new-milestone` to scope and plan the next milestone.
 | 07.1. Grading Honesty Rebuild                      | v1.0      | 13/13 | Complete    | 2026-05-17  |
 | 8. Blueprint Bravo + Banners + Docs + CI           | v1.0      | 5/5   | Complete    | 2026-05-14  |
 | 10. HIGH Single-Question Edits                     | v1.0.1    | 0/TBD | Not started | -           |
-| 11. HIGH Grader/Question Rework                    | v1.0.1    | 0/TBD | Not started | -           |
+| 11. HIGH Grader/Question Rework                    | v1.0.1    | 2/2   | Awaiting UAT | -           |
 | 12. Trap-Coverage Lint + Orphan Cleanup            | v1.0.1    | 0/TBD | Not started | -           |
 | 13. Grader-Strengthening                           | v1.0.1    | 0/TBD | Not started | -           |
 | 14. Question Framing + Library Fixes               | v1.0.1    | 0/TBD | Not started | -           |
