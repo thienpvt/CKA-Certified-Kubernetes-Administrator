@@ -1,12 +1,16 @@
 #!/bin/bash
 # Phase 07.1 AUDIT-01 — no leak (HPA is candidate-authored; setup only creates Deployment) → header added
 # workloads-scheduling/04-hpa-metrics-server/grade.sh — read-only grader.
+# Phase 13 BUG-M06 — added Assertions 5 and 6 to enforce target.type=Utilization
+# and target.averageUtilization=50; the prior behavioural check renumbers to 7.
 # Assertions:
 #   1. HPA q04-load exists in lab ns (candidate-authored)
 #   2. minReplicas == 1
 #   3. maxReplicas == 5
 #   4. spec.metrics[type=Resource].resource.name == cpu
-#   5. Behavioural: kubectl top pod returns readings (metrics-server alive)
+#   5. spec.metrics[type=Resource].resource.target.type == Utilization
+#   6. spec.metrics[type=Resource].resource.target.averageUtilization == 50
+#   7. Behavioural: kubectl top pod returns readings (metrics-server alive)
 # Trap: hpa-missing-metrics-server when AbleToScale condition reason == FailedGetResourceMetric.
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
@@ -32,7 +36,15 @@ cka_sim::grade::assert_field_eq hpa q04-load \
 cka_sim::grade::assert_field_eq hpa q04-load \
   '{.spec.metrics[?(@.type=="Resource")].resource.name}' 'cpu' -n "$CKA_SIM_LAB_NS"
 
-# Assertion 5: behavioural — metrics-server returns pod readings.
+# Assertion 5: target type is Utilization (not AverageValue / Value).
+cka_sim::grade::assert_field_eq hpa q04-load \
+  '{.spec.metrics[?(@.type=="Resource")].resource.target.type}' 'Utilization' -n "$CKA_SIM_LAB_NS"
+
+# Assertion 6: target.averageUtilization == 50 (the question mandates 50%).
+cka_sim::grade::assert_field_eq hpa q04-load \
+  '{.spec.metrics[?(@.type=="Resource")].resource.target.averageUtilization}' '50' -n "$CKA_SIM_LAB_NS"
+
+# Assertion 7: behavioural — metrics-server returns pod readings.
 # metrics-server needs up to 60s after install for the first scrape to land.
 # Phase 07.1 D-22 audit-escape: retries + sleep are env-overridable so kubectl-stub fixture
 # tests don't pay the 60s wall-clock cost; defaults preserve production cluster behaviour.
