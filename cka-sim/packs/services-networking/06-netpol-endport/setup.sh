@@ -113,3 +113,31 @@ EOF
 
 kubectl wait --for=condition=Ready pod/q06-server -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
 kubectl wait --for=condition=Ready pod/q06-client -n "$CKA_SIM_LAB_NS" --timeout=60s 2>/dev/null || true
+
+# Phase 13 BUG-M04 — CNI-enforcement probe.
+# Apply a temp deny-all-ingress NP scoped to q06-server, then wget from q06-client.
+# On enforcing CNI the probe times out → sentinel='true'. On non-enforcing CNI
+# the wget succeeds despite the deny-all → sentinel='false'. The grader reads
+# this sentinel to decide whether to run the reachability matrix or only score
+# structural NP authoring. Idempotent: same NP name, sentinel overwritten, NP cleaned.
+mkdir -p /tmp/q06-netpol-endport
+kubectl apply -f - <<EOF
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: q06-cni-probe-deny
+  namespace: ${CKA_SIM_LAB_NS}
+spec:
+  podSelector:
+    matchLabels:
+      app: q06-server
+  policyTypes:
+    - Ingress
+EOF
+sleep 3  # allow CNI to program rules
+if kubectl exec -n "$CKA_SIM_LAB_NS" q06-client -- wget -qO- --timeout=3 q06-server:8085 >/dev/null 2>&1; then
+  printf 'false\n' > /tmp/q06-netpol-endport/.cni-enforces
+else
+  printf 'true\n'  > /tmp/q06-netpol-endport/.cni-enforces
+fi
+kubectl delete networkpolicy q06-cni-probe-deny -n "$CKA_SIM_LAB_NS" --ignore-not-found --wait=false 2>/dev/null || true
