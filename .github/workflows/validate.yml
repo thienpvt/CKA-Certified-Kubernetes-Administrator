@@ -19,6 +19,10 @@ on:
       - '**.yaml'
       - '**.yml'
       - '**.sh'
+  # Manual-fire trigger so the symptom-diff job can be exercised on demand
+  # (covers Actions-disabled / first-run scenarios where push events haven't
+  # yet kicked off a workflow run).
+  workflow_dispatch:
 
 jobs:
   yamllint:

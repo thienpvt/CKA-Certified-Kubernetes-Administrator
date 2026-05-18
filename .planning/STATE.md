@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0.1
 milestone_name: Full Audit Remediation
-status: "shipped (tech_debt — live UAT pending)"
-last_updated: "2026-05-18T00:00:00.000Z"
-last_activity: 2026-05-18 -- v1.0.1 milestone archived (tech_debt close-out)
+status: "shipped (tech_debt — GHA first-run pending)"
+last_updated: "2026-05-18T16:37:00.000Z"
+last_activity: 2026-05-18 -- v1.0.1 followups: 9 live UATs green, 4 fixtures regen'd, BUG-M10 closed
 progress:
   total_phases: 6
   completed_phases: 6
@@ -17,11 +17,11 @@ progress:
 
 ## Current Position
 
-Milestone: v1.0.1 — SHIPPED 2026-05-18 (tech_debt)
+Milestone: v1.0.1 — SHIPPED 2026-05-18 (tech_debt — most followups closed)
 Phase: —  (all 6 phases archived)
 Plan: —
-Status: Awaiting v1.0.1-followups (9 live-cluster drill UATs + 1 GHA first-run + 2 fixture regens) OR `/gsd-new-milestone v2.0`
-Last activity: 2026-05-18 -- v1.0.1 milestone archived (tech_debt close-out)
+Status: Phase 15 GHA `symptom-diff` first run in flight (push 2a8580f→cc8d230 to main at 16:35 UTC). Otherwise tech_debt cleared.
+Last activity: 2026-05-18T16:37 -- v1.0.1 followups: 9 live UATs green, 4 fixtures regen'd, BUG-M10 closed
 
 ### v1.0.1 Close-Out (2026-05-18)
 
@@ -38,14 +38,24 @@ All 6 phases (10-15) shipped with `tech_debt` audit status. 18/18 requirements c
 
 These are not blockers to v2.0 planning; they are validation tasks for already-shipped code.
 
-1. **9 live-cluster drill UATs** — Phases 10/11/13:
-   - P10: `cka-sim drill storage 01-pvc-binding`, `services-networking 05-kube-proxy-mode`, `cluster-architecture 04-pss-enforce`, `cluster-architecture 08-priorityclass`
-   - P11: `cka-sim drill troubleshooting 04-debug-node`, `troubleshooting 05-static-pod-manifest`
-   - P13: `cka-sim drill services-networking 06-netpol-endport`, `cluster-architecture 05-audit-policy`, `workloads-scheduling 04-hpa-metrics-server`
-2. **GHA `symptom-diff` job first run** — Phase 15 — open merge PR; observe end-to-end against kind+Calico.
-3. **2 fixture regens** — Phase 13:
-   - `cka-sim/tests/cases/services-networking__06-netpol-endport.sh` (0/6 -> 0/4 on no-CNI path)
-   - `cka-sim/tests/cases/workloads-scheduling__04-hpa-metrics-server.sh` (0/5 -> 0/7 after Assertions 5,6)
+1. **9 live-cluster drill UATs** — Phases 10/11/13: ✅ ALL GREEN (2026-05-18)
+   - Driven by `cka-sim/scripts/uat-phase{10,11,13}.sh` on the v1.0.1 lab cluster (Calico, enforcing CNI).
+   - P10: 12/12 sub-checks. P11: 7/7 sub-checks. P13: 7/7 sub-checks (after BUG-M10 fix).
+   - UAT artifacts: `.planning/phases/{10,11,13}-*/{10,11,13}-UAT.md` (commit cc8d230).
+   - Driver hygiene: all 3 drivers source `lib/baseline.sh` and wire `prep_baseline` between setup and grade (mirrors `lib/cmd/drill.sh:309-318`).
+2. **GHA `symptom-diff` job first run** — Phase 15: 🟡 IN FLIGHT (push 2a8580f→cc8d230 to main at 2026-05-18T16:35 UTC). Workflow registered, awaiting first scheduler pickup.
+3. **4 fixture regens** — ✅ ALL GREEN (2026-05-18, commit 71e97e4):
+   - `cka-sim/tests/grading-honesty/services-networking__06-netpol-endport.sh` (0/6→0/4 missing-sentinel branch, 6/6→4/4)
+   - `cka-sim/tests/grading-honesty/workloads-scheduling__04-hpa-metrics-server.sh` (0/5→0/7, 5/5→7/7)
+   - `cka-sim/tests/grading-honesty/storage__01-pvc-binding.sh` (0/1→0/3, 1/1→3/3) — Phase 10 BUG-H01 collateral
+   - `cka-sim/tests/grading-honesty/cluster-architecture__04-pss-enforce.sh` (0/1→0/5, 1/1→5/5) — Phase 10 BUG-H03 collateral
+   - Unit suite: 6 reds → 2 reds (the remaining 2 are pre-existing, unrelated — see Pending Todos).
+
+### v1.0.1 grading-honesty leak found and closed (2026-05-18, BUG-M10)
+
+Phase 13 live UAT for workloads-scheduling/04-hpa-metrics-server surfaced a 1-point leak: empty submission scored 1/7 instead of 0/7. Assertion 7 (`kubectl top pod`) bumped TOTAL/PASSED unconditionally — on any cluster with metrics-server alive, A7 returned readings against the setup-seeded q04-load Deployment regardless of candidate work. Same class of leak Phase 07.1 closed.
+
+Fix (commit bfa9755): gate A7 on (HPA exists AND `is_candidate_modified`). TOTAL still increments unconditionally (preserves max=7 stable across paths); PASSED only on the gated path. Two-revision history in `13-UAT.md`'s `Closed Issues` section.
 
 ### v1.0.1 Roadmap Snapshot (archived)
 
@@ -134,6 +144,7 @@ These are intentionally deferred, not blockers for advancing.
 
 - WR-01 deferred: full vendoring of CSI + metrics-server manifests under `cka-sim/vendor/` with recorded SHA256 (non-correctness enhancement)
 - IN-04 deferred: `cka_sim::grade::assert_custom` helper + 6-grader retrofit (library API addition, not a correctness bug)
+- v1.0.2 candidate: 2 unit-suite reds unrelated to v1.0.1 — `storage__02-storageclass-dynamic` (ref 0/1 instead of 1/1) and `workloads-scheduling__05-daemonset` (ref 3/4 instead of 4/4). Surfaced during v1.0.1 fixture-regen audit; not Phase 10/11/13 collateral. Investigate whether grader regression or fixture drift.
 
 ---
 
