@@ -48,24 +48,40 @@ cka_sim::grade::assert_field_eq hpa q04-load \
 # metrics-server needs up to 60s after install for the first scrape to land.
 # Phase 07.1 D-22 audit-escape: retries + sleep are env-overridable so kubectl-stub fixture
 # tests don't pay the 60s wall-clock cost; defaults preserve production cluster behaviour.
+# Phase 13 BUG-M10 — gate A7 on HPA q04-load existing AND being candidate-authored.
+# Without this gate, any cluster with metrics-server alive grants 1 point on empty
+# submissions because `kubectl top pod -l app=q04-load` returns readings against the
+# setup-seeded Deployment regardless of candidate work — same class of grading-honesty
+# leak Phase 07.1 closed.
+#
+# Note: is_candidate_modified returns 0 ("modified") when the resource is absent from
+# baseline (setup doesn't create the HPA — that's the candidate's job). So we MUST also
+# require the resource to exist. TOTAL is incremented unconditionally to keep the
+# scoring denominator stable at 7 across all candidate paths.
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))
-top_ok=0
-retries="${CKA_SIM_GRADE_TOP_RETRIES:-12}"
-sleep_s="${CKA_SIM_GRADE_TOP_SLEEP:-5}"
-for i in $(seq 1 "$retries"); do
-  if kubectl top pod -n "$CKA_SIM_LAB_NS" -l app=q04-load >/dev/null 2>&1; then
-    top_ok=1
-    break
+if kubectl get hpa q04-load -n "$CKA_SIM_LAB_NS" >/dev/null 2>&1 \
+   && cka_sim::baseline::is_candidate_modified hpa q04-load -n "$CKA_SIM_LAB_NS"; then
+  top_ok=0
+  retries="${CKA_SIM_GRADE_TOP_RETRIES:-12}"
+  sleep_s="${CKA_SIM_GRADE_TOP_SLEEP:-5}"
+  for i in $(seq 1 "$retries"); do
+    if kubectl top pod -n "$CKA_SIM_LAB_NS" -l app=q04-load >/dev/null 2>&1; then
+      top_ok=1
+      break
+    fi
+    sleep "$sleep_s"
+  done
+  if (( top_ok == 1 )); then
+    CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
+    CKA_SIM_GRADE_PASSES+=("kubectl top pod returns readings (metrics-server alive)")
+    ok "kubectl top pod returns readings (metrics-server alive)"
+  else
+    CKA_SIM_GRADE_FAILS+=("kubectl top pod failed (metrics-server unreachable or not installed)")
+    err "kubectl top pod failed (metrics-server unreachable or not installed)"
   fi
-  sleep "$sleep_s"
-done
-if (( top_ok == 1 )); then
-  CKA_SIM_GRADE_PASSED=$(( CKA_SIM_GRADE_PASSED + 1 ))
-  CKA_SIM_GRADE_PASSES+=("kubectl top pod returns readings (metrics-server alive)")
-  ok "kubectl top pod returns readings (metrics-server alive)"
 else
-  CKA_SIM_GRADE_FAILS+=("kubectl top pod failed (metrics-server unreachable or not installed)")
-  err "kubectl top pod failed (metrics-server unreachable or not installed)"
+  CKA_SIM_GRADE_FAILS+=("metrics-server probe skipped (HPA q04-load not candidate-authored)")
+  err "metrics-server probe skipped (HPA q04-load not candidate-authored)"
 fi
 
 # Trap detector: HPA condition AbleToScale=False with reason FailedGetResourceMetric.
