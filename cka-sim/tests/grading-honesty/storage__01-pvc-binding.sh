@@ -1,8 +1,9 @@
 #!/bin/bash
 # Phase 07.1 grading-honesty regression: storage/01-pvc-binding
-# AUDIT-01: no leak found (PVC stays Pending at setup; PV lacks nodeAffinity).
-# Asserts empty submission (post-setup state) scores 0/2
-# AND ref-solution (post-ref-solution state) scores 2/2.
+# Phase 10 BUG-H01 reshape: 1 weight=1 → 3 weight=1 (PV nodeAffinity key/operator/required-terms)
+# plus 2 weight=0 preconditions (PVC Bound, Pod q01-app-consumer Ready).
+# Empty submission: 0/3 (preconditions: PVC Bound passes, Pod not Ready fails).
+# Ref-solution: 3/3 + 2 preconditions both pass.
 
 set -uo pipefail
 : "${CKA_SIM_ROOT:?}"
@@ -21,7 +22,7 @@ export CKA_SIM_LAB_NS="cka-sim-storage-01"
 out=$(bash "$qdir/grade.sh" 2>&1)
 
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_setup_score="SCORE: 0/1"
+expected_setup_score="SCORE: 0/3"
 
 if [[ "$score_line" == "$expected_setup_score" ]]; then
   ok "empty submission $test_id: $expected_setup_score"
@@ -36,7 +37,7 @@ export CKA_SIM_BASELINE_PATH="$CKA_SIM_TEST_FIXTURES_DIR/grading-honesty/${test_
 
 out=$(bash "$qdir/grade.sh" 2>&1)
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_ref_score="SCORE: 1/1"
+expected_ref_score="SCORE: 3/3"
 
 if [[ "$score_line" == "$expected_ref_score" ]]; then
   ok "ref-solution $test_id: $expected_ref_score"

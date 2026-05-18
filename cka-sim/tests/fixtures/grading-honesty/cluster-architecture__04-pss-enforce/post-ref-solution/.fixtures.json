@@ -5,5 +5,11 @@
   "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o name": {"stdout": "deployment.apps/q04-compliant", "rc": 0},
   "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o jsonpath={.status.readyReplicas}": {"stdout": "1", "rc": 0},
   "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o jsonpath={.metadata.generation}": {"stdout": "1", "rc": 0},
-  "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o jsonpath={.metadata.resourceVersion}": {"stdout": "601", "rc": 0}
+  "get deployment q04-compliant -n cka-sim-cluster-architecture-04 -o jsonpath={.metadata.resourceVersion}": {"stdout": "601", "rc": 0},
+  "apply --dry-run=client -f /tmp/q04-pss-enforce/candidate-violator.yaml -o jsonpath={.spec.containers[*].securityContext.privileged}": {"stdout": "false", "rc": 0},
+  "apply --dry-run=client -f /tmp/q04-pss-enforce/candidate-violator.yaml -o jsonpath={.spec.securityContext.runAsNonRoot}": {"stdout": "true", "rc": 0},
+  "apply --dry-run=client -f /tmp/q04-pss-enforce/candidate-violator.yaml -o jsonpath={range .spec.containers[*]}{\"x\"}{end}": {"stdout": "x", "rc": 0},
+  "apply --dry-run=client -f /tmp/q04-pss-enforce/candidate-violator.yaml -o jsonpath={range .spec.containers[*]}{.securityContext.capabilities.drop}{\"|\"}{end}": {"stdout": "[ALL]|", "rc": 0},
+  "apply --dry-run=client -f /tmp/q04-pss-enforce/candidate-violator.yaml -o jsonpath={.spec.securityContext.seccompProfile.type}": {"stdout": "RuntimeDefault", "rc": 0},
+  "apply --dry-run=client -f /tmp/q04-pss-enforce/candidate-violator.yaml -o jsonpath={.spec.containers[*].securityContext.allowPrivilegeEscalation}": {"stdout": "false", "rc": 0}
 }

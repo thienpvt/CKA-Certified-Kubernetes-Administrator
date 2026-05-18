@@ -1,8 +1,11 @@
 {
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04": {"stdout": "NAME       REFERENCE             TARGETS\nq04-load   Deployment/q04-load   1%/50%", "rc": 0},
   "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o name": {"stdout": "horizontalpodautoscaler.autoscaling/q04-load", "rc": 0},
   "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.minReplicas}": {"stdout": "1", "rc": 0},
   "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.maxReplicas}": {"stdout": "5", "rc": 0},
   "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.metrics[?(@.type==\"Resource\")].resource.name}": {"stdout": "cpu", "rc": 0},
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.metrics[?(@.type==\"Resource\")].resource.target.type}": {"stdout": "Utilization", "rc": 0},
+  "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.spec.metrics[?(@.type==\"Resource\")].resource.target.averageUtilization}": {"stdout": "50", "rc": 0},
   "top pod -n cka-sim-workloads-scheduling-04 -l app=q04-load": {"stdout": "NAME CPU\nq04-load-xxxx 1m", "rc": 0},
   "get hpa q04-load -n cka-sim-workloads-scheduling-04 -o jsonpath={.status.conditions[?(@.type==\"AbleToScale\")].reason}": {"stdout": "ReadyForNewScale", "rc": 0}
 }

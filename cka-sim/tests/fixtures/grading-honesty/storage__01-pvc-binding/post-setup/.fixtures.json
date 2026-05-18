@@ -1,6 +1,11 @@
 {
-  "get pvc app-data -n cka-sim-storage-01 -o jsonpath={.status.phase}": {"stdout": "Pending", "rc": 0},
+  "get pvc app-data -n cka-sim-storage-01 -o jsonpath={.status.phase}": {"stdout": "Bound", "rc": 0},
+  "wait --for=condition=Ready pod/q01-app-consumer -n cka-sim-storage-01 --timeout=10s": {"stdout": "", "rc": 1},
+  "get pod q01-app-consumer -n cka-sim-storage-01 -o jsonpath={.status.conditions[?(@.type==\"Ready\")].status}": {"stdout": "False", "rc": 0},
   "get pv q01-app-pv -o jsonpath={.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].key}": {"stdout": "", "rc": 0},
+  "get pv q01-app-pv -o jsonpath={.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].operator}": {"stdout": "", "rc": 0},
+  "get pv q01-app-pv -o jsonpath={.spec.nodeAffinity.required.nodeSelectorTerms[*].matchExpressions[*].key}": {"stdout": "", "rc": 0},
   "get pv q01-app-pv -o jsonpath={.metadata.resourceVersion}": {"stdout": "200", "rc": 0},
-  "get pv q01-app-pv -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0}
+  "get pv q01-app-pv -o jsonpath={.metadata.generation}": {"stdout": "", "rc": 0},
+  "get pv q01-app-pv -o json": {"stdout": "{\"spec\":{\"hostPath\":{\"path\":\"/tmp/q01-app-pv\"}}}", "rc": 0}
 }

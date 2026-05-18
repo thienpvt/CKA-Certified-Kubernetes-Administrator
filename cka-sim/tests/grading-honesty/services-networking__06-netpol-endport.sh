@@ -1,9 +1,15 @@
 #!/bin/bash
 # Phase 07.1 grading-honesty regression: services-networking/06-netpol-endport
-# Asserts empty submission (post-setup state) scores 1/6 (only unreachability on :8095 passes)
-# AND ref-solution (post-ref-solution state) scores 6/6.
-# NOTE: When Wave 3 (07.1-05) rewrites this grader to gate reachability on candidate-authored NP,
-# the post-setup score should drop to 0. Update fixtures via --regen at that time.
+# Phase 13 BUG-M04 reshape — grader is now CNI-enforcement-aware:
+#   sentinel=true   → 4 structural + 4 reachability = max 8
+#   sentinel=false  → 4 structural only             = max 4
+#   sentinel missing→ 4 structural only             = max 4
+# Unit tests run with no sentinel file present → exercises the missing-sentinel
+# branch → max 4. Exec-line fixture entries below are dead code on this branch
+# but kept so the test stays accurate if someone hand-injects the sentinel.
+# Empty submission: 0/4. Ref-solution: 4/4.
+# NOTE: The 6-port enforcing-CNI flow (max 8) is exercised by the live UAT
+# driver `cka-sim/scripts/uat-phase13.sh` instead of this unit fixture.
 
 set -uo pipefail
 : "${CKA_SIM_ROOT:?}"
@@ -22,7 +28,7 @@ export CKA_SIM_LAB_NS="cka-sim-services-networking-06"
 out=$(bash "$qdir/grade.sh" 2>&1)
 
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_setup_score="SCORE: 0/6"
+expected_setup_score="SCORE: 0/4"
 
 if [[ "$score_line" == "$expected_setup_score" ]]; then
   ok "empty submission $test_id: $expected_setup_score"
@@ -37,7 +43,7 @@ export CKA_SIM_BASELINE_PATH="$CKA_SIM_TEST_FIXTURES_DIR/grading-honesty/${test_
 
 out=$(bash "$qdir/grade.sh" 2>&1)
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_ref_score="SCORE: 6/6"
+expected_ref_score="SCORE: 4/4"
 
 if [[ "$score_line" == "$expected_ref_score" ]]; then
   ok "ref-solution $test_id: $expected_ref_score"
