@@ -1,12 +1,14 @@
 # cluster-architecture/08-priorityclass — symptom: q08-critical + q08-batch
-# both exist, both globalDefault=false.
+# both exist as PriorityClasses. Their globalDefault field is intentionally
+# unset (post-BUG-H04 setup); kubectl jsonpath returns <missing> not 'false'
+# for unset booleans, so we do not encode globalDefault here. Open-world
+# handles missing fields silently. The trap "candidate sets globalDefault=true"
+# is detected by grade.sh's PriorityClass parsing, not by symptom-diff.
 question: cluster-architecture-priorityclass
 resources:
   - kind: priorityclass
     name: q08-critical
-    expect:
-      globalDefault: "false"
+    expect: {}
   - kind: priorityclass
     name: q08-batch
-    expect:
-      globalDefault: "false"
+    expect: {}

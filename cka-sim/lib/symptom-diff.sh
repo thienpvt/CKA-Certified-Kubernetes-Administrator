@@ -164,6 +164,31 @@ PY
     return 1
   }
 
+  # Pattern D (BLG-04): Calico-on-kind Deployment Available convergence.
+  # For each E event claiming a Deployment's status.conditions[Available].status=True,
+  # invoke kubectl wait with a 90s timeout BEFORE the JSON-capture pass so the
+  # subsequent get reflects post-convergence state. Tolerate timeout — the diff
+  # captures the actual state regardless. Skipped for Available=False claims so
+  # questions like troubleshooting/03-coredns-resolution don't pay 90s for nothing.
+  local w_tag w_kind w_name w_jp w_expected
+  while IFS=$'\t' read -r w_tag w_kind w_name w_jp w_expected; do
+    [[ "$w_tag" == "E" ]] || continue
+    [[ "$w_kind" == "deploy" ]] || continue
+    [[ "$w_jp" =~ ^(status|spec)\.conditions\[\?\(@\.type==\"Available\"\)\]\.status$ ]] || continue
+    [[ "$w_expected" == "True" ]] || continue
+    local wait_ns=""
+    local r_tag r_kind r_name r_rns _r_rest
+    while IFS=$'\t' read -r r_tag r_kind r_name r_rns _r_rest; do
+      [[ "$r_tag" == "R" ]] || continue
+      [[ "$r_kind" == "$w_kind" && "$r_name" == "$w_name" ]] || continue
+      wait_ns="$r_rns"
+      break
+    done <<<"$parsed"
+    [[ -n "$wait_ns" ]] || continue
+    info "$pack/$q_name: waiting up to 90s for deploy/$w_name Available=True (BLG-04)"
+    kubectl wait "deployment/$w_name" -n "$wait_ns" --for=condition=Available --timeout=90s >/dev/null 2>&1 || true
+  done <<<"$parsed"
+
   local tmp_dir
   tmp_dir="$(mktemp -d)"
   local local_fail=0
