@@ -53,6 +53,10 @@ while IFS= read -r yaml_file; do
   if [[ -n "$target_arg" && "$pack/$q_name" != "$target_arg" ]]; then
     continue
   fi
+  if cka_sim::symptom_diff::is_unsupported_on_kind "$q_dir"; then
+    warn "$pack/$q_name: skipped (unsupported-on-kind)"
+    continue
+  fi
   checked=$(( checked + 1 ))
   info "==> $pack/$q_name"
   if ! cka_sim::symptom_diff::run_one "$yaml_file" "$q_dir" "$pack" "$q_name" "lint"; then

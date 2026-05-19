@@ -234,6 +234,7 @@ cka_sim::audit::main() {
   _AUDIT_PASS=0
   _AUDIT_FAIL=0
   _AUDIT_ERROR=0
+  _AUDIT_SKIPPED=0
   _AUDIT_REPORT_BUFFER=""
 
   local f q_dir pack q_name tsv_tmp rc
@@ -241,6 +242,13 @@ cka_sim::audit::main() {
     q_dir="$(dirname "$f")"
     pack="$(basename "$(dirname "$q_dir")")"
     q_name="$(basename "$q_dir")"
+
+    if cka_sim::symptom_diff::is_unsupported_on_kind "$q_dir"; then
+      info "$pack/$q_name: skipped (unsupported-on-kind)"
+      _AUDIT_SKIPPED=$(( _AUDIT_SKIPPED + 1 ))
+      _AUDIT_REPORT_BUFFER+="ⓘ $pack/$q_name: SKIPPED (unsupported-on-kind)"$'\n---\n'
+      continue
+    fi
 
     tsv_tmp="$(mktemp)"
     rc=0
@@ -254,8 +262,8 @@ cka_sim::audit::main() {
 
   local total=$(( _AUDIT_PASS + _AUDIT_FAIL + _AUDIT_ERROR ))
   local summary
-  summary="$(printf '─── audit summary ───\n%s/%s PASS, %s FAIL, %s errors' \
-    "$_AUDIT_PASS" "$total" "$_AUDIT_FAIL" "$_AUDIT_ERROR")"
+  summary="$(printf '─── audit summary ───\n%s/%s PASS, %s FAIL, %s errors, %s skipped' \
+    "$_AUDIT_PASS" "$total" "$_AUDIT_FAIL" "$_AUDIT_ERROR" "$_AUDIT_SKIPPED")"
   printf '\n%s\n' "$summary"
   _AUDIT_REPORT_BUFFER+=$'\n'"$summary"$'\n'
 

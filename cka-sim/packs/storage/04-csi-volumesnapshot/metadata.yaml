@@ -2,6 +2,8 @@ id: storage-csi-volumesnapshot
 domain: storage
 estimatedMinutes: 9
 verified_against: "1.35"
+# Skipped by kind-based audit/lint harness (BLG-02): requires a CSI driver supporting VolumeSnapshots.
+unsupported-on-kind: true
 traps:
   - csi-snapshot-wrong-driver
   - pvc-wrong-storageclass

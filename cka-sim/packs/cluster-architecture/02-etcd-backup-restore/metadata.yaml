@@ -2,6 +2,8 @@ id: cluster-architecture-etcd-backup-restore
 domain: cluster-architecture
 estimatedMinutes: 10
 verified_against: "1.35"
+# Skipped by kind-based audit/lint harness (BLG-02): requires etcd snapshot CLI on the CP node.
+unsupported-on-kind: true
 traps:
   - etcd-snapshot-without-env-set
   - etcd-restore-wrong-data-dir

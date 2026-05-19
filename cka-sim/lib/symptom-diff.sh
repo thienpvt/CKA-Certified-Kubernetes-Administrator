@@ -67,6 +67,16 @@ _jsonpath_to_jq() {
   printf '.%s' "$jp"
 }
 
+# --- BLG-02: kind-based harness skip flag ---------------------------------
+# Returns 0 (true; skip the question) if the question's metadata.yaml declares
+# unsupported-on-kind=true at the top level. Returns 1 otherwise. Args: q_dir.
+cka_sim::symptom_diff::is_unsupported_on_kind() {
+  local q_dir="$1"
+  local meta="$q_dir/metadata.yaml"
+  [[ -f "$meta" ]] || return 1
+  grep -qE '^unsupported-on-kind:[[:space:]]*true[[:space:]]*(#.*)?$' "$meta"
+}
+
 # --- Per-question lab namespace builder (RFC 1123, <=63 chars) ------------
 # $1 = prefix (e.g. "lint" or "audit"), $2 = pack, $3 = q_name
 cka_sim::symptom_diff::compute_ns() {
