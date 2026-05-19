@@ -12,19 +12,24 @@
 
 ### Audit Harness — Question-Intent Baseline
 
-New audit-only test artifact derived from `question.md` prose. The polarity is intent → reality: hand-authored YAML captures *what the question claims the candidate will see after setup*; the audit harness runs `setup.sh` and diffs. NOT shipped to candidates. NOT wired to GHA `validate.yml` (audit-only — re-run during forensic phases). Distinct from Phase 15's `expected-symptom.yaml` (which captures actual post-setup state and only catches regressions).
+**Re-scoped 2026-05-19 during `/gsd-discuss-phase 16`:** the question-intent baseline artifact already ships as Phase 15's `expected-symptom.yaml` (per-question YAML, hand-derived from `question.md` prose, lint-checked by `cka-sim/scripts/lint-question-symptom.sh`). All 34 domain questions already have a committed YAML. The schema is documented at `cka-sim/packs/EXPECTED-SYMPTOM-SCHEMA.md`.
 
-- [ ] **BASELINE-01**: A `cka-sim audit <pack> <q>` (or `scripts/audit-question.sh`) entry point runs `setup.sh` against a clean kind+Calico cluster, captures actual post-setup state, and diffs against the hand-authored `intent.yaml` for that question. Diff output is human-readable with question-id × claimed-state × actual-state × verdict columns.
-- [ ] **BASELINE-02**: Every question across 5 domain packs (38 questions) has a committed `intent.yaml` hand-authored from its `question.md` prose. The acceptance criterion is reviewer-verifiable: a reader of `question.md` and `intent.yaml` agrees the YAML faithfully encodes the prose.
-- [ ] **BASELINE-03**: Both mock exam packs (blueprint-alpha 17 questions, blueprint-bravo 17 questions) have their own committed `intent.yaml` per question — separate from domain-pack baselines. Catches framing-drift bugs where a mock question reframes a domain-pack question with different prose.
-- [ ] **BASELINE-04**: `intent.yaml` schema and the audit-only role documented in `docs/AUTHORING.md` (or `docs/SCHEMA.md`). New question authors know the full triplet of test artifacts: `intent.yaml` (question-prose-state, audit-only), `expected-symptom.yaml` (actual-post-setup-state, CI-checked), `lib/baseline.sh` snapshot (pre-candidate-state, runtime grading).
+What's actually missing for v1.0.2: an audit-mode tool with human-readable diff output for forensic triage (the existing lint emits CI-style 0/1 only), an `AUTHORING.md` workflow guide, and the prose-fidelity discipline check (executed in Phase 18 by reading each `question.md` + `expected-symptom.yaml` pair side-by-side). NOT shipped to candidates. NOT wired to GHA `validate.yml` (audit-only — re-run during forensic phases).
+
+- [ ] **BASELINE-01**: `cka-sim audit` subcommand (lib/cmd/audit.sh) accepts three scopes — `cka-sim audit <pack>/<q>` | `cka-sim audit <pack>` | `cka-sim audit` (all 34) — runs `setup.sh` against a clean kind+Calico cluster, captures actual post-setup state, and emits a human-readable flat table per question (columns: question, resource, jsonpath, claimed, actual, verdict). Each question's diff includes a `Claim source:` block with question.md prose excerpts. PASS prints a one-line `✓ <id>: PASS (N/N expectations met)`. Aggregate summary at end: `N/34 PASS, M FAIL, K errors`. `--report path/to.md` flag persists the same content to markdown.
+- [ ] **BASELINE-04**: `docs/AUTHORING.md` updated with the `cka-sim audit` workflow, the test-artifact triplet (`expected-symptom.yaml` / `lib/baseline.sh` snapshot / `lib/grade.sh`), and a worked example showing how to author a new question's `expected-symptom.yaml` from `question.md` prose. Cross-links to `cka-sim/packs/EXPECTED-SYMPTOM-SCHEMA.md` (schema) and `cka-sim/lib/GRADING-HONESTY.md` (candidate-state baseline). Discoverable from cka-sim/README.md.
+
+**Removed from this milestone:**
+
+- ~~BASELINE-02 (commit per-question intent.yaml for 38 domain questions)~~ — N/A: 34 questions (not 38; PROJECT.md count is wrong) already have `expected-symptom.yaml` from Phase 15. Prose-fidelity is audited manually in Phase 18, not coverage-authored in Phase 16.
+- ~~BASELINE-03 (commit per-framing intent.yaml for 34 mock framings)~~ — N/A: blueprint manifests at `exams/blueprint-{alpha,bravo}/manifest.yaml` are `(pack, slug)` reference lists, not reframed prose. Mocks resolve to domain-pack `question.md` at runtime — no per-mock prose to baseline.
 
 ### Forensic Re-Audit (Blind)
 
 Every question audited against v1.35 blueprint AND its question-intent baseline (BASELINE-02 / BASELINE-03). No prior knowledge of which questions are wrong; output is the bug ledger that drives remediation phases.
 
-- [ ] **AUDIT-01**: All 38 domain-pack questions audited via `cka-sim audit` (BASELINE-01); intent-vs-actual diffs recorded with severity (HIGH / MED / LOW) and root-cause classification (setup-drift / question-prose-wrong / framing-mismatch / grader-disagrees).
-- [ ] **AUDIT-02**: Both mock exam packs (blueprint-alpha 17, blueprint-bravo 17) audited against their own `intent.yaml` (BASELINE-03); framing-drift bugs surfaced where a mock reframes a domain-pack question and the reframe disagrees with what the underlying setup produces.
+- [ ] **AUDIT-01**: All 34 domain-pack questions audited via `cka-sim audit`; intent-vs-actual diffs recorded with severity (HIGH / MED / LOW) and root-cause classification (setup-drift / question-prose-wrong / framing-mismatch / grader-disagrees). Each finding also carries a prose-fidelity verdict (faithful / drifted / ambiguous) from a manual question.md + expected-symptom.yaml side-by-side review.
+- [ ] **AUDIT-02**: Both mock exam packs (blueprint-alpha 17, blueprint-bravo 17) cross-checked against their domain-pack source questions. Manifests are reference-only `(pack, slug)` lists — verify each reference resolves to a passing domain-pack audit. No separate mock-prose review required.
 - [ ] **AUDIT-03**: `FORENSIC-v102.md` ledger published in `.planning/forensics/` with question-id × bug-class × severity × suggested fix, comparable to the v1.0.1 forensic report shape.
 - [ ] **AUDIT-04**: Forensic ledger informs which remediation phases are inserted; phase plan is generated from the ledger via `/gsd-phase --insert` after audit lands (not pre-baked in this roadmap).
 
@@ -34,7 +39,7 @@ Phase plan derived from the AUDIT-03 ledger; this roadmap reserves remediation s
 
 - [ ] **REMEDIATE-01**: All HIGH-severity findings from AUDIT-03 closed in code (single-question edits or grader rework). Phase shape mirrors v1.0.1 P10/P11.
 - [ ] **REMEDIATE-02**: All MED-severity findings from AUDIT-03 closed in code (grader strengthening, framing fixes, library typos). Phase shape mirrors v1.0.1 P13/P14.
-- [ ] **REMEDIATE-03**: Every fixed question's `intent.yaml` re-verified against the post-fix `setup.sh` via `cka-sim audit`; intent-vs-actual diff is empty for all remediated questions.
+- [ ] **REMEDIATE-03**: Every fixed question's `expected-symptom.yaml` re-verified against the post-fix `setup.sh` via `cka-sim audit`; intent-vs-actual diff is empty for all remediated questions.
 
 ### v1.0.2 Backlog Cleanup (from Phase 15 first-run)
 
@@ -49,7 +54,7 @@ Pre-traced findings carried from STATE.md `v1.0.2 Backlog` section. GHA run `260
 
 ### Documentation
 
-- [ ] **DOC-01**: `docs/AUTHORING.md` updated with the question-intent baseline workflow and `cka-sim audit` invocation. New question authors know the full triplet of test artifacts: `intent.yaml` (question-prose-state, audit-only), `expected-symptom.yaml` (actual-post-setup-state, CI-checked), `lib/baseline.sh` snapshot (pre-candidate-state, runtime grading).
+- [ ] **DOC-01**: Subsumed by **BASELINE-04** above. (Original DOC-01: AUTHORING.md update — folded into BASELINE-04 since they describe the same artifact.)
 
 ## Future Requirements
 
@@ -80,10 +85,10 @@ Each requirement maps to exactly one phase. Sub-phase BUG-* requirements for Pha
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | BASELINE-01 | Phase 16 | Pending |
-| BASELINE-02 | Phase 16 | Pending |
-| BASELINE-03 | Phase 16 | Pending |
+| BASELINE-02 | — | Removed (already shipped Phase 15) |
+| BASELINE-03 | — | Removed (mocks reference-only — see ### Audit Harness note) |
 | BASELINE-04 | Phase 16 | Pending |
-| DOC-01 | Phase 16 | Pending |
+| DOC-01 | Phase 16 | Folded into BASELINE-04 |
 | BLG-01 | Phase 17 | Pending |
 | BLG-02 | Phase 17 | Pending |
 | BLG-03 | Phase 17 | Pending |
@@ -99,10 +104,10 @@ Each requirement maps to exactly one phase. Sub-phase BUG-* requirements for Pha
 | REMEDIATE-03 | Phase 21 | Pending |
 
 **Coverage:**
-- v1.0.2 requirements: 18 total
-- Mapped to phases: 18 (100%)
+- v1.0.2 active requirements: 15 total (was 18; BASELINE-02 / BASELINE-03 removed during `/gsd-discuss-phase 16` reframing; DOC-01 folded into BASELINE-04)
+- Mapped to phases: 15 (100%)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-19*
-*Last updated: 2026-05-19 — roadmap landed; traceability filled by gsd-roadmapper*
+*Last updated: 2026-05-19 — Phase 16 reframing during /gsd-discuss-phase: question-intent baseline already ships as Phase 15's expected-symptom.yaml; BASELINE-02/03 removed; DOC-01 folded into BASELINE-04*
