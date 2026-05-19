@@ -138,14 +138,14 @@ for r in (d.get('resources') or []):
     kind = r.get('kind') or ''
     name = r.get('name') or ''
     rns = sub(r.get('namespace') if r.get('namespace') is not None else top_ns)
-    print('R', kind, name, rns, sep='\t')
+    print('R', kind, sub(name), rns, sep='\t')
     for jp, ev in (r.get('expect') or {}).items():
-        print('E', kind, name, jp, sub(str(ev)), sep='\t')
+        print('E', kind, sub(name), jp, sub(str(ev)), sep='\t')
 for r in (d.get('absent_resources') or []):
     kind = r.get('kind') or ''
     name = r.get('name') or ''
     rns = sub(r.get('namespace') if r.get('namespace') is not None else top_ns)
-    print('A', kind, name, rns, sep='\t')
+    print('A', kind, sub(name), rns, sep='\t')
 PY
   )" || {
     err "$pack/$q_name: failed to parse $yaml_file"
