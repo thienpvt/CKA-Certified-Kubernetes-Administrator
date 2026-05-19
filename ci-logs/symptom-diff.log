@@ -1,0 +1,431 @@
+2026-05-19T01:03:01.9934877Z Current runner version: '2.334.0'
+2026-05-19T01:03:01.9959935Z ##[group]Runner Image Provisioner
+2026-05-19T01:03:01.9960648Z Hosted Compute Agent
+2026-05-19T01:03:01.9961161Z Version: 20260213.493
+2026-05-19T01:03:01.9961708Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-05-19T01:03:01.9962341Z Build Date: 2026-02-13T00:28:41Z
+2026-05-19T01:03:01.9963193Z Worker ID: {3d01d128-0f73-48da-960d-92bd81abf1f2}
+2026-05-19T01:03:01.9963780Z Azure Region: centralus
+2026-05-19T01:03:01.9964281Z ##[endgroup]
+2026-05-19T01:03:01.9966020Z ##[group]Operating System
+2026-05-19T01:03:01.9966609Z Ubuntu
+2026-05-19T01:03:01.9967003Z 24.04.4
+2026-05-19T01:03:01.9967422Z LTS
+2026-05-19T01:03:01.9967805Z ##[endgroup]
+2026-05-19T01:03:01.9968251Z ##[group]Runner Image
+2026-05-19T01:03:01.9968737Z Image: ubuntu-24.04
+2026-05-19T01:03:01.9969195Z Version: 20260513.135.3
+2026-05-19T01:03:01.9970228Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260513.135/images/ubuntu/Ubuntu2404-Readme.md
+2026-05-19T01:03:01.9971482Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260513.135
+2026-05-19T01:03:01.9972329Z ##[endgroup]
+2026-05-19T01:03:01.9973786Z ##[group]GITHUB_TOKEN Permissions
+2026-05-19T01:03:01.9975938Z Contents: read
+2026-05-19T01:03:01.9976398Z Metadata: read
+2026-05-19T01:03:01.9976861Z Packages: read
+2026-05-19T01:03:01.9977306Z ##[endgroup]
+2026-05-19T01:03:01.9979381Z Secret source: Actions
+2026-05-19T01:03:01.9980075Z Prepare workflow directory
+2026-05-19T01:03:02.0307014Z Prepare all required actions
+2026-05-19T01:03:02.0346171Z Getting action download info
+2026-05-19T01:03:02.3658705Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-05-19T01:03:02.5686220Z Complete job name: Live-cluster symptom diff (kind + Calico)
+2026-05-19T01:03:02.6356992Z ##[group]Run actions/checkout@v4
+2026-05-19T01:03:02.6357899Z with:
+2026-05-19T01:03:02.6358454Z   repository: thienpvt/CKA-Certified-Kubernetes-Administrator
+2026-05-19T01:03:02.6359357Z   token: ***
+2026-05-19T01:03:02.6359807Z   ssh-strict: true
+2026-05-19T01:03:02.6360226Z   ssh-user: git
+2026-05-19T01:03:02.6360673Z   persist-credentials: true
+2026-05-19T01:03:02.6361481Z   clean: true
+2026-05-19T01:03:02.6361939Z   sparse-checkout-cone-mode: true
+2026-05-19T01:03:02.6362416Z   fetch-depth: 1
+2026-05-19T01:03:02.6363079Z   fetch-tags: false
+2026-05-19T01:03:02.6363525Z   show-progress: true
+2026-05-19T01:03:02.6364216Z   lfs: false
+2026-05-19T01:03:02.6364643Z   submodules: false
+2026-05-19T01:03:02.6365066Z   set-safe-directory: true
+2026-05-19T01:03:02.6365915Z ##[endgroup]
+2026-05-19T01:03:02.7496438Z Syncing repository: thienpvt/CKA-Certified-Kubernetes-Administrator
+2026-05-19T01:03:02.7498552Z ##[group]Getting Git version info
+2026-05-19T01:03:02.7499699Z Working directory is '/home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator'
+2026-05-19T01:03:02.7501107Z [command]/usr/bin/git version
+2026-05-19T01:03:02.7545951Z git version 2.54.0
+2026-05-19T01:03:02.7571291Z ##[endgroup]
+2026-05-19T01:03:02.7587044Z Temporarily overriding HOME='/home/runner/work/_temp/14361263-b6e6-4be2-8cfc-0774139611fc' before making global git config changes
+2026-05-19T01:03:02.7589315Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-19T01:03:02.7602917Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator
+2026-05-19T01:03:02.7648401Z Deleting the contents of '/home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator'
+2026-05-19T01:03:02.7651473Z ##[group]Initializing the repository
+2026-05-19T01:03:02.7657881Z [command]/usr/bin/git init /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator
+2026-05-19T01:03:02.7748122Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-19T01:03:02.7749398Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-19T01:03:02.7750510Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-19T01:03:02.7751691Z hint: call:
+2026-05-19T01:03:02.7752390Z hint:
+2026-05-19T01:03:02.7753370Z hint: 	git config --global init.defaultBranch <name>
+2026-05-19T01:03:02.7753976Z hint:
+2026-05-19T01:03:02.7754591Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-19T01:03:02.7755401Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-19T01:03:02.7756071Z hint:
+2026-05-19T01:03:02.7756451Z hint: 	git branch -m <name>
+2026-05-19T01:03:02.7756951Z hint:
+2026-05-19T01:03:02.7757807Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-19T01:03:02.7759297Z Initialized empty Git repository in /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/.git/
+2026-05-19T01:03:02.7763999Z [command]/usr/bin/git remote add origin https://github.com/thienpvt/CKA-Certified-Kubernetes-Administrator
+2026-05-19T01:03:02.7802851Z ##[endgroup]
+2026-05-19T01:03:02.7803664Z ##[group]Disabling automatic garbage collection
+2026-05-19T01:03:02.7807213Z [command]/usr/bin/git config --local gc.auto 0
+2026-05-19T01:03:02.7833190Z ##[endgroup]
+2026-05-19T01:03:02.7834083Z ##[group]Setting up auth
+2026-05-19T01:03:02.7839201Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-19T01:03:02.7868086Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-19T01:03:02.8165436Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-19T01:03:02.8191862Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-19T01:03:02.8368055Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-19T01:03:02.8396758Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-19T01:03:02.8589102Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-19T01:03:02.8622254Z ##[endgroup]
+2026-05-19T01:03:02.8624624Z ##[group]Fetching the repository
+2026-05-19T01:03:02.8632101Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +5f56515ca9d47ff6f2f2c2860b31785a959a815c:refs/remotes/origin/main
+2026-05-19T01:03:03.6821171Z From https://github.com/thienpvt/CKA-Certified-Kubernetes-Administrator
+2026-05-19T01:03:03.6823440Z  * [new ref]         5f56515ca9d47ff6f2f2c2860b31785a959a815c -> origin/main
+2026-05-19T01:03:03.6854523Z ##[endgroup]
+2026-05-19T01:03:03.6856059Z ##[group]Determining the checkout info
+2026-05-19T01:03:03.6857753Z ##[endgroup]
+2026-05-19T01:03:03.6859404Z [command]/usr/bin/git sparse-checkout disable
+2026-05-19T01:03:03.6897677Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-19T01:03:03.6921120Z ##[group]Checking out the ref
+2026-05-19T01:03:03.6925031Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-05-19T01:03:03.7469942Z Switched to a new branch 'main'
+2026-05-19T01:03:03.7471978Z branch 'main' set up to track 'origin/main'.
+2026-05-19T01:03:03.7478192Z ##[endgroup]
+2026-05-19T01:03:03.7514983Z [command]/usr/bin/git log -1 --format=%H
+2026-05-19T01:03:03.7536598Z 5f56515ca9d47ff6f2f2c2860b31785a959a815c
+2026-05-19T01:03:03.7899750Z ##[group]Run set -euo pipefail
+2026-05-19T01:03:03.7901135Z [36;1mset -euo pipefail[0m
+2026-05-19T01:03:03.7902254Z [36;1msudo apt-get update -qq[0m
+2026-05-19T01:03:03.7903969Z [36;1msudo apt-get install -y -qq jq python3-yaml[0m
+2026-05-19T01:03:03.7905559Z [36;1m# kubectl[0m
+2026-05-19T01:03:03.7906519Z [36;1mKUBECTL_VERSION="v1.30.0"[0m
+2026-05-19T01:03:03.7908608Z [36;1mcurl -fsSL -o /tmp/kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"[0m
+2026-05-19T01:03:03.7911023Z [36;1msudo install -m 0755 /tmp/kubectl /usr/local/bin/kubectl[0m
+2026-05-19T01:03:03.7912672Z [36;1mkubectl version --client[0m
+2026-05-19T01:03:03.7913720Z [36;1m# kind[0m
+2026-05-19T01:03:03.7914569Z [36;1mKIND_VERSION="v0.23.0"[0m
+2026-05-19T01:03:03.7916301Z [36;1mcurl -fsSL -o /tmp/kind "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64"[0m
+2026-05-19T01:03:03.7918387Z [36;1msudo install -m 0755 /tmp/kind /usr/local/bin/kind[0m
+2026-05-19T01:03:03.7919782Z [36;1mkind version[0m
+2026-05-19T01:03:03.7946995Z shell: /usr/bin/bash -e {0}
+2026-05-19T01:03:03.7948101Z ##[endgroup]
+2026-05-19T01:03:14.2206079Z Client Version: v1.30.0
+2026-05-19T01:03:14.2206753Z Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+2026-05-19T01:03:14.7872952Z kind v0.23.0 go1.21.10 linux/amd64
+2026-05-19T01:03:14.7911318Z ##[group]Run cat > /tmp/kind-config.yaml <<'EOF'
+2026-05-19T01:03:14.7911711Z [36;1mcat > /tmp/kind-config.yaml <<'EOF'[0m
+2026-05-19T01:03:14.7911994Z [36;1mkind: Cluster[0m
+2026-05-19T01:03:14.7912251Z [36;1mapiVersion: kind.x-k8s.io/v1alpha4[0m
+2026-05-19T01:03:14.7912731Z [36;1mnetworking:[0m
+2026-05-19T01:03:14.7913041Z [36;1m  disableDefaultCNI: true[0m
+2026-05-19T01:03:14.7913303Z [36;1m  podSubnet: "192.168.0.0/16"[0m
+2026-05-19T01:03:14.7913566Z [36;1mnodes:[0m
+2026-05-19T01:03:14.7913787Z [36;1m  - role: control-plane[0m
+2026-05-19T01:03:14.7914055Z [36;1m  - role: worker[0m
+2026-05-19T01:03:14.7914280Z [36;1mEOF[0m
+2026-05-19T01:03:14.7914660Z [36;1mkind create cluster --name cka-sim --config /tmp/kind-config.yaml --wait 120s || true[0m
+2026-05-19T01:03:14.7915262Z [36;1m# Don't fail on initial wait — nodes go Ready only after Calico installs.[0m
+2026-05-19T01:03:14.7915661Z [36;1mkubectl get nodes[0m
+2026-05-19T01:03:14.7937535Z shell: /usr/bin/bash -e {0}
+2026-05-19T01:03:14.7937820Z ##[endgroup]
+2026-05-19T01:03:17.2227450Z Creating cluster "cka-sim" ...
+2026-05-19T01:03:17.2228383Z  • Ensuring node image (kindest/node:v1.30.0) 🖼  ...
+2026-05-19T01:03:27.6989668Z  ✓ Ensuring node image (kindest/node:v1.30.0) 🖼
+2026-05-19T01:03:27.6990072Z  • Preparing nodes 📦 📦   ...
+2026-05-19T01:03:30.7204862Z  ✓ Preparing nodes 📦 📦
+2026-05-19T01:03:30.7574946Z  • Writing configuration 📜  ...
+2026-05-19T01:03:30.9700628Z  ✓ Writing configuration 📜
+2026-05-19T01:03:30.9701234Z  • Starting control-plane 🕹️  ...
+2026-05-19T01:03:41.7987064Z  ✓ Starting control-plane 🕹️
+2026-05-19T01:03:41.7987486Z  • Installing StorageClass 💾  ...
+2026-05-19T01:03:42.1268186Z  ✓ Installing StorageClass 💾
+2026-05-19T01:03:42.1795031Z  • Joining worker nodes 🚜  ...
+2026-05-19T01:03:59.3846530Z  ✓ Joining worker nodes 🚜
+2026-05-19T01:03:59.3846957Z  • Waiting ≤ 2m0s for control-plane = Ready ⏳  ...
+2026-05-19T01:05:59.4720257Z  ✗ Waiting ≤ 2m0s for control-plane = Ready ⏳
+2026-05-19T01:05:59.4720749Z  • WARNING: Timed out waiting for Ready ⚠️
+2026-05-19T01:05:59.6291838Z Set kubectl context to "kind-cka-sim"
+2026-05-19T01:05:59.6292348Z You can now use your cluster with:
+2026-05-19T01:05:59.6292784Z
+2026-05-19T01:05:59.6292944Z kubectl cluster-info --context kind-cka-sim
+2026-05-19T01:05:59.6293241Z
+2026-05-19T01:05:59.6294062Z Not sure what to do next? 😅  Check out https://kind.sigs.k8s.io/docs/user/quick-start/
+2026-05-19T01:05:59.6868917Z NAME                    STATUS     ROLES           AGE     VERSION
+2026-05-19T01:05:59.6870030Z cka-sim-control-plane   NotReady   control-plane   2m21s   v1.30.0
+2026-05-19T01:05:59.6870822Z cka-sim-worker          NotReady   <none>          2m      v1.30.0
+2026-05-19T01:05:59.6904731Z ##[group]Run set -euo pipefail
+2026-05-19T01:05:59.6905002Z [36;1mset -euo pipefail[0m
+2026-05-19T01:05:59.6905457Z [36;1mkubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/calico.yaml[0m
+2026-05-19T01:05:59.6906180Z [36;1m# Wait for Calico controller and node DaemonSet to be ready.[0m
+2026-05-19T01:05:59.6906710Z [36;1mkubectl -n kube-system wait --for=condition=Available deployment/calico-kube-controllers --timeout=180s[0m
+2026-05-19T01:05:59.6907277Z [36;1mkubectl -n kube-system rollout status daemonset/calico-node --timeout=180s[0m
+2026-05-19T01:05:59.6907718Z [36;1mkubectl wait --for=condition=Ready nodes --all --timeout=120s[0m
+2026-05-19T01:05:59.6928531Z shell: /usr/bin/bash -e {0}
+2026-05-19T01:05:59.6928758Z ##[endgroup]
+2026-05-19T01:06:00.2086035Z poddisruptionbudget.policy/calico-kube-controllers created
+2026-05-19T01:06:00.2137778Z serviceaccount/calico-kube-controllers created
+2026-05-19T01:06:00.2195815Z serviceaccount/calico-node created
+2026-05-19T01:06:00.2238637Z serviceaccount/calico-cni-plugin created
+2026-05-19T01:06:00.2281953Z configmap/calico-config created
+2026-05-19T01:06:00.2352219Z customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
+2026-05-19T01:06:00.2414398Z customresourcedefinition.apiextensions.k8s.io/bgpfilters.crd.projectcalico.org created
+2026-05-19T01:06:00.2521937Z customresourcedefinition.apiextensions.k8s.io/bgppeers.crd.projectcalico.org created
+2026-05-19T01:06:00.2713344Z customresourcedefinition.apiextensions.k8s.io/blockaffinities.crd.projectcalico.org created
+2026-05-19T01:06:00.2838638Z customresourcedefinition.apiextensions.k8s.io/caliconodestatuses.crd.projectcalico.org created
+2026-05-19T01:06:00.2969493Z customresourcedefinition.apiextensions.k8s.io/clusterinformations.crd.projectcalico.org created
+2026-05-19T01:06:00.3153964Z customresourcedefinition.apiextensions.k8s.io/felixconfigurations.crd.projectcalico.org created
+2026-05-19T01:06:00.3373047Z customresourcedefinition.apiextensions.k8s.io/globalnetworkpolicies.crd.projectcalico.org created
+2026-05-19T01:06:00.3624800Z customresourcedefinition.apiextensions.k8s.io/globalnetworksets.crd.projectcalico.org created
+2026-05-19T01:06:00.3880311Z customresourcedefinition.apiextensions.k8s.io/hostendpoints.crd.projectcalico.org created
+2026-05-19T01:06:00.4079920Z customresourcedefinition.apiextensions.k8s.io/ipamblocks.crd.projectcalico.org created
+2026-05-19T01:06:00.4171176Z customresourcedefinition.apiextensions.k8s.io/ipamconfigs.crd.projectcalico.org created
+2026-05-19T01:06:00.4225990Z customresourcedefinition.apiextensions.k8s.io/ipamhandles.crd.projectcalico.org created
+2026-05-19T01:06:00.4312406Z customresourcedefinition.apiextensions.k8s.io/ippools.crd.projectcalico.org created
+2026-05-19T01:06:00.4398143Z customresourcedefinition.apiextensions.k8s.io/ipreservations.crd.projectcalico.org created
+2026-05-19T01:06:00.4534375Z customresourcedefinition.apiextensions.k8s.io/kubecontrollersconfigurations.crd.projectcalico.org created
+2026-05-19T01:06:00.4720771Z customresourcedefinition.apiextensions.k8s.io/networkpolicies.crd.projectcalico.org created
+2026-05-19T01:06:00.4856457Z customresourcedefinition.apiextensions.k8s.io/networksets.crd.projectcalico.org created
+2026-05-19T01:06:00.4913112Z clusterrole.rbac.authorization.k8s.io/calico-kube-controllers created
+2026-05-19T01:06:00.4980217Z clusterrole.rbac.authorization.k8s.io/calico-node created
+2026-05-19T01:06:00.5033203Z clusterrole.rbac.authorization.k8s.io/calico-cni-plugin created
+2026-05-19T01:06:00.5086135Z clusterrolebinding.rbac.authorization.k8s.io/calico-kube-controllers created
+2026-05-19T01:06:00.5132588Z clusterrolebinding.rbac.authorization.k8s.io/calico-node created
+2026-05-19T01:06:00.5169534Z clusterrolebinding.rbac.authorization.k8s.io/calico-cni-plugin created
+2026-05-19T01:06:00.5247234Z daemonset.apps/calico-node created
+2026-05-19T01:06:00.5313873Z deployment.apps/calico-kube-controllers created
+2026-05-19T01:06:15.2544418Z deployment.apps/calico-kube-controllers condition met
+2026-05-19T01:06:15.3382136Z Waiting for daemon set "calico-node" rollout to finish: 0 of 2 updated pods are available...
+2026-05-19T01:06:20.9518256Z Waiting for daemon set "calico-node" rollout to finish: 1 of 2 updated pods are available...
+2026-05-19T01:06:20.9583612Z daemon set "calico-node" successfully rolled out
+2026-05-19T01:06:21.1073729Z node/cka-sim-control-plane condition met
+2026-05-19T01:06:21.2088310Z node/cka-sim-worker condition met
+2026-05-19T01:06:21.2126222Z ##[group]Run count=$(find cka-sim/packs -name 'expected-symptom.yaml' | wc -l)
+2026-05-19T01:06:21.2126727Z [36;1mcount=$(find cka-sim/packs -name 'expected-symptom.yaml' | wc -l)[0m
+2026-05-19T01:06:21.2127093Z [36;1mecho "expected-symptom.yaml files: $count"[0m
+2026-05-19T01:06:21.2127367Z [36;1mif [[ "$count" -ne 34 ]]; then[0m
+2026-05-19T01:06:21.2127705Z [36;1m  echo "::error::expected 34 expected-symptom.yaml files; found $count"[0m
+2026-05-19T01:06:21.2128037Z [36;1m  exit 1[0m
+2026-05-19T01:06:21.2128199Z [36;1mfi[0m
+2026-05-19T01:06:21.2148781Z shell: /usr/bin/bash -e {0}
+2026-05-19T01:06:21.2149055Z ##[endgroup]
+2026-05-19T01:06:21.2293157Z expected-symptom.yaml files: 34
+2026-05-19T01:06:21.2355266Z ##[group]Run bash cka-sim/scripts/lint-question-symptom.sh
+2026-05-19T01:06:21.2355667Z [36;1mbash cka-sim/scripts/lint-question-symptom.sh[0m
+2026-05-19T01:06:21.2376121Z shell: /usr/bin/bash -e {0}
+2026-05-19T01:06:21.2376345Z env:
+2026-05-19T01:06:21.2376796Z   CKA_SIM_ROOT: /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim
+2026-05-19T01:06:21.2377307Z ##[endgroup]
+2026-05-19T01:06:21.2449550Z
+2026-05-19T01:06:21.2450151Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-19T01:06:21.2450811Z  live-cluster symptom diff
+2026-05-19T01:06:21.2451677Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-05-19T01:06:21.2451995Z
+2026-05-19T01:06:21.3306239Z   ==> cluster-architecture/01-rbac-viewer
+2026-05-19T01:06:21.9450663Z   ==> cluster-architecture/02-etcd-backup-restore
+2026-05-19T01:06:22.0940684Z ✗ cluster-architecture/02-etcd-backup-restore: setup.sh failed against ns=cka-sim-lint-cluster-architecture-02-etcd-backup-restore
+2026-05-19T01:06:22.1517264Z   ==> cluster-architecture/03-kubeadm-upgrade
+2026-05-19T01:06:22.3806548Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/cluster-architecture/03-kubeadm-upgrade/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-cluster-architecture-03-kubeadm-upgrade)
+2026-05-19T01:06:22.4379948Z   ==> cluster-architecture/04-pss-enforce
+2026-05-19T01:06:26.3426127Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/cluster-architecture/04-pss-enforce/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-cluster-architecture-04-pss-enforce)
+2026-05-19T01:06:26.4003765Z   ==> cluster-architecture/05-audit-policy
+2026-05-19T01:06:26.6300595Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/cluster-architecture/05-audit-policy/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-cluster-architecture-05-audit-policy)
+2026-05-19T01:06:26.6893449Z   ==> cluster-architecture/06-crd-basics
+2026-05-19T01:06:27.0448816Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/cluster-architecture/06-crd-basics/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-cluster-architecture-06-crd-basics)
+2026-05-19T01:06:27.1528992Z   ==> cluster-architecture/07-cri-dockerd-endpoint
+2026-05-19T01:06:27.4284365Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/cluster-architecture/07-cri-dockerd-endpoint/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-cluster-architecture-07-cri-dockerd-endpoint)
+2026-05-19T01:06:27.5044917Z   ==> cluster-architecture/08-priorityclass
+2026-05-19T01:06:27.9846893Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/cluster-architecture/08-priorityclass/expected-symptom.yaml:8: priorityclass/q08-critical globalDefault expected 'false', got '<missing>'
+2026-05-19T01:06:27.9902120Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/cluster-architecture/08-priorityclass/expected-symptom.yaml:8: priorityclass/q08-batch globalDefault expected 'false', got '<missing>'
+2026-05-19T01:06:28.1003181Z   ==> services-networking/01-networkpolicy-egress
+2026-05-19T01:06:35.4493419Z   ==> services-networking/02-service-core
+2026-05-19T01:06:40.5768460Z   ==> services-networking/03-coredns-resolution
+2026-05-19T01:06:43.5349008Z   ==> services-networking/04-ingress-path-host
+2026-05-19T01:06:45.7242175Z   ==> services-networking/05-kube-proxy-mode
+2026-05-19T01:06:46.1231898Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/services-networking/05-kube-proxy-mode/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-services-networking-05-kube-proxy-mode)
+2026-05-19T01:06:46.1816799Z   ==> services-networking/06-netpol-endport
+2026-05-19T01:06:53.9927136Z   ==> storage/01-pvc-binding
+2026-05-19T01:06:54.5485545Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/storage/01-pvc-binding/expected-symptom.yaml:15: pvc/app-data status.phase expected 'Pending', got 'Bound'
+2026-05-19T01:06:54.5587971Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/storage/01-pvc-binding/expected-symptom.yaml:15: pv/q01-app-pv status.phase expected 'Available', got 'Bound'
+2026-05-19T01:07:27.4626924Z   ==> storage/02-storageclass-dynamic
+2026-05-19T01:07:27.9668410Z   ==> storage/03-access-modes-reclaim
+2026-05-19T01:07:33.8049276Z   ==> storage/04-csi-volumesnapshot
+2026-05-19T01:07:33.9881572Z ✗ storage/04-csi-volumesnapshot: setup.sh failed against ns=cka-sim-lint-storage-04-csi-volumesnapshot
+2026-05-19T01:07:34.0944284Z   ==> storage/05-wait-for-first-consumer
+2026-05-19T01:07:34.9609576Z   ==> storage/06-pvc-mount-pod
+2026-05-19T01:07:43.9257833Z   ==> troubleshooting/01-deploy-svc-mismatch
+2026-05-19T01:07:48.6892843Z   ==> troubleshooting/02-netpol-dns-egress
+2026-05-19T01:07:50.6439871Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/troubleshooting/02-netpol-dns-egress/expected-symptom.yaml:11: deploy/api status.conditions[?(@.type=="Available")].status expected 'True', got 'False'
+2026-05-19T01:07:50.7134270Z   ==> troubleshooting/03-coredns-resolution
+2026-05-19T01:08:52.9137834Z   ==> troubleshooting/04-debug-node
+2026-05-19T01:08:53.1936668Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/troubleshooting/04-debug-node/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-troubleshooting-04-debug-node)
+2026-05-19T01:08:53.2966279Z   ==> troubleshooting/05-static-pod-manifest
+2026-05-19T01:08:53.5270796Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/troubleshooting/05-static-pod-manifest/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-troubleshooting-05-static-pod-manifest)
+2026-05-19T01:08:53.5840213Z   ==> troubleshooting/06-broken-kubelet
+2026-05-19T01:08:53.8163655Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/troubleshooting/06-broken-kubelet/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-troubleshooting-06-broken-kubelet)
+2026-05-19T01:08:53.8742614Z   ==> workloads-scheduling/01-deployment-requests
+2026-05-19T01:08:54.1803151Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/workloads-scheduling/01-deployment-requests/expected-symptom.yaml:11: deploy/load-app status.conditions[?(@.type=="Available")].status expected 'True', got 'False'
+2026-05-19T01:08:54.2874457Z   ==> workloads-scheduling/02-rolling-update-rollback
+2026-05-19T01:09:00.9333237Z   ==> workloads-scheduling/03-configmap-secret-env-volume
+2026-05-19T01:09:01.5707825Z   ==> workloads-scheduling/04-hpa-metrics-server
+2026-05-19T01:09:02.8643276Z   ==> workloads-scheduling/05-daemonset
+2026-05-19T01:09:03.0948546Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/workloads-scheduling/05-daemonset/expected-symptom.yaml:?: namespace/${CKA_SIM_LAB_NS} not found in cluster (ns=cka-sim-lint-workloads-scheduling-05-daemonset)
+2026-05-19T01:09:03.2012150Z   ==> workloads-scheduling/06-static-pod
+2026-05-19T01:09:03.2612894Z ✗ workloads-scheduling/06-static-pod: setup.sh failed against ns=cka-sim-lint-workloads-scheduling-06-static-pod
+2026-05-19T01:09:03.3844975Z   ==> workloads-scheduling/07-native-sidecar
+2026-05-19T01:09:03.7163194Z ✗ /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator/cka-sim/packs/workloads-scheduling/07-native-sidecar/expected-symptom.yaml:11: deploy/q07-app status.conditions[?(@.type=="Available")].status expected 'True', got 'False'
+2026-05-19T01:09:03.7827777Z   ==> workloads-scheduling/08-nodeselector-affinity-taints
+2026-05-19T01:09:04.5281011Z ✗ 18 question(s) had symptom-diff failures across 34 checked
+2026-05-19T01:09:04.5296018Z ##[error]Process completed with exit code 1.
+2026-05-19T01:09:04.5345006Z ##[group]Run kubectl get nodes -o wide || true
+2026-05-19T01:09:04.5345438Z [36;1mkubectl get nodes -o wide || true[0m
+2026-05-19T01:09:04.5345763Z [36;1mkubectl get pods -A || true[0m
+2026-05-19T01:09:04.5346094Z [36;1mkubectl get events -A --sort-by=.lastTimestamp | tail -100 || true[0m
+2026-05-19T01:09:04.5365855Z shell: /usr/bin/bash -e {0}
+2026-05-19T01:09:04.5366085Z ##[endgroup]
+2026-05-19T01:09:04.5881549Z NAME                    STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION      CONTAINER-RUNTIME
+2026-05-19T01:09:04.5883083Z cka-sim-control-plane   Ready    control-plane   5m26s   v1.30.0   172.18.0.2    <none>        Debian GNU/Linux 12 (bookworm)   6.17.0-1013-azure   containerd://1.7.15
+2026-05-19T01:09:04.5884330Z cka-sim-worker          Ready    <none>          5m5s    v1.30.0   172.18.0.3    <none>        Debian GNU/Linux 12 (bookworm)   6.17.0-1013-azure   containerd://1.7.15
+2026-05-19T01:09:04.6414624Z NAMESPACE                                                         NAME                                            READY   STATUS              RESTARTS   AGE
+2026-05-19T01:09:04.6415783Z cka-sim-lint-troubleshooting-03-coredns-resolution                q03-dnsclient                                   1/1     Terminating         0          13s
+2026-05-19T01:09:04.6417220Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      web-7599578dbf-54fbx                            1/1     Running             0          6s
+2026-05-19T01:09:04.6418128Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      web-7599578dbf-6mq2h                            1/1     Running             0          5s
+2026-05-19T01:09:04.6419004Z cka-sim-lint-workloads-scheduling-04-hpa-metrics-server           q04-load-84577dc46-m6h45                        1/1     Running             0          3s
+2026-05-19T01:09:04.6420030Z cka-sim-lint-workloads-scheduling-07-native-sidecar               q07-app-787f486974-9r4xx                        0/2     ContainerCreating   0          1s
+2026-05-19T01:09:04.6420947Z cka-sim-lint-workloads-scheduling-08-nodeselector-affinity-tain   q08-gpu-sim-fbd45b975-5ms5v                     0/1     Pending             0          0s
+2026-05-19T01:09:04.6421933Z cka-sim-lint-workloads-scheduling-08-nodeselector-affinity-tain   q08-gpu-sim-fbd45b975-zm75b                     0/1     Pending             0          0s
+2026-05-19T01:09:04.6423338Z kube-system                                                       calico-kube-controllers-ddf655445-dmf4s         1/1     Running             0          3m4s
+2026-05-19T01:09:04.6424064Z kube-system                                                       calico-node-2sw9s                               1/1     Running             0          3m4s
+2026-05-19T01:09:04.6424832Z kube-system                                                       calico-node-q4jl7                               1/1     Running             0          3m4s
+2026-05-19T01:09:04.6425705Z kube-system                                                       coredns-7db6d8ff4d-5ch8w                        1/1     Running             0          5m7s
+2026-05-19T01:09:04.6426668Z kube-system                                                       coredns-7db6d8ff4d-lswtv                        1/1     Running             0          5m7s
+2026-05-19T01:09:04.6427391Z kube-system                                                       etcd-cka-sim-control-plane                      1/1     Running             0          5m24s
+2026-05-19T01:09:04.6428102Z kube-system                                                       kube-apiserver-cka-sim-control-plane            1/1     Running             0          5m23s
+2026-05-19T01:09:04.6429267Z kube-system                                                       kube-controller-manager-cka-sim-control-plane   1/1     Running             0          5m23s
+2026-05-19T01:09:04.6430609Z kube-system                                                       kube-proxy-hb88c                                1/1     Running             0          5m5s
+2026-05-19T01:09:04.6431499Z kube-system                                                       kube-proxy-w566w                                1/1     Running             0          5m8s
+2026-05-19T01:09:04.6432746Z kube-system                                                       kube-scheduler-cka-sim-control-plane            1/1     Running             0          5m23s
+2026-05-19T01:09:04.6434138Z local-path-storage                                                local-path-provisioner-988d74bc-cnw9b           1/1     Running             0          5m7s
+2026-05-19T01:09:04.7206051Z kube-system                                                       3m4s        Normal    Scheduled                 pod/calico-node-q4jl7                               Successfully assigned kube-system/calico-node-q4jl7 to cka-sim-worker
+2026-05-19T01:09:04.7208378Z kube-system                                                       3m4s        Normal    Scheduled                 pod/calico-node-2sw9s                               Successfully assigned kube-system/calico-node-2sw9s to cka-sim-control-plane
+2026-05-19T01:09:04.7210663Z kube-system                                                       3m4s        Normal    Pulling                   pod/calico-node-2sw9s                               Pulling image "docker.io/calico/cni:v3.27.3"
+2026-05-19T01:09:04.7212277Z kube-system                                                       3m4s        Normal    Pulling                   pod/calico-node-q4jl7                               Pulling image "docker.io/calico/cni:v3.27.3"
+2026-05-19T01:09:04.7213657Z kube-system                                                       3m1s        Normal    Pulled                    pod/calico-node-2sw9s                               Successfully pulled image "docker.io/calico/cni:v3.27.3" in 2.533s (2.533s including waiting). Image size: 88418575 bytes.
+2026-05-19T01:09:04.7214722Z kube-system                                                       3m1s        Normal    Created                   pod/calico-node-2sw9s                               Created container upgrade-ipam
+2026-05-19T01:09:04.7215514Z kube-system                                                       3m1s        Normal    Started                   pod/calico-node-2sw9s                               Started container upgrade-ipam
+2026-05-19T01:09:04.7216761Z kube-system                                                       3m          Normal    Created                   pod/calico-node-q4jl7                               Created container upgrade-ipam
+2026-05-19T01:09:04.7217573Z kube-system                                                       3m          Normal    Started                   pod/calico-node-2sw9s                               Started container install-cni
+2026-05-19T01:09:04.7218347Z kube-system                                                       3m          Normal    Created                   pod/calico-node-2sw9s                               Created container install-cni
+2026-05-19T01:09:04.7219129Z kube-system                                                       3m          Normal    Started                   pod/calico-node-q4jl7                               Started container upgrade-ipam
+2026-05-19T01:09:04.7220146Z kube-system                                                       3m          Normal    Pulled                    pod/calico-node-q4jl7                               Successfully pulled image "docker.io/calico/cni:v3.27.3" in 3.673s (3.673s including waiting). Image size: 88418575 bytes.
+2026-05-19T01:09:04.7221254Z kube-system                                                       3m          Normal    Pulled                    pod/calico-node-2sw9s                               Container image "docker.io/calico/cni:v3.27.3" already present on machine
+2026-05-19T01:09:04.7222292Z kube-system                                                       2m59s       Normal    Pulling                   pod/calico-node-2sw9s                               Pulling image "docker.io/calico/node:v3.27.3"
+2026-05-19T01:09:04.7223254Z kube-system                                                       2m59s       Normal    Started                   pod/calico-node-q4jl7                               Started container install-cni
+2026-05-19T01:09:04.7224029Z kube-system                                                       2m59s       Normal    Created                   pod/calico-node-q4jl7                               Created container install-cni
+2026-05-19T01:09:04.7224921Z kube-system                                                       2m59s       Normal    Pulled                    pod/calico-node-q4jl7                               Container image "docker.io/calico/cni:v3.27.3" already present on machine
+2026-05-19T01:09:04.7225846Z kube-system                                                       2m58s       Normal    Pulling                   pod/calico-node-q4jl7                               Pulling image "docker.io/calico/node:v3.27.3"
+2026-05-19T01:09:04.7226955Z kube-system                                                       2m56s       Normal    Pulled                    pod/calico-node-2sw9s                               Successfully pulled image "docker.io/calico/node:v3.27.3" in 3.398s (3.398s including waiting). Image size: 116104833 bytes.
+2026-05-19T01:09:04.7228114Z kube-system                                                       2m56s       Normal    Created                   pod/calico-node-2sw9s                               Created container mount-bpffs
+2026-05-19T01:09:04.7228891Z kube-system                                                       2m56s       Normal    Started                   pod/calico-node-2sw9s                               Started container mount-bpffs
+2026-05-19T01:09:04.7229670Z kube-system                                                       2m55s       Normal    Started                   pod/calico-node-q4jl7                               Started container mount-bpffs
+2026-05-19T01:09:04.7230782Z kube-system                                                       2m55s       Normal    Pulled                    pod/calico-node-q4jl7                               Successfully pulled image "docker.io/calico/node:v3.27.3" in 3.741s (3.741s including waiting). Image size: 116104833 bytes.
+2026-05-19T01:09:04.7231803Z kube-system                                                       2m55s       Normal    Created                   pod/calico-node-q4jl7                               Created container mount-bpffs
+2026-05-19T01:09:04.7232904Z kube-system                                                       2m54s       Normal    Started                   pod/calico-node-2sw9s                               Started container calico-node
+2026-05-19T01:09:04.7233814Z kube-system                                                       2m54s       Normal    Pulled                    pod/calico-node-2sw9s                               Container image "docker.io/calico/node:v3.27.3" already present on machine
+2026-05-19T01:09:04.7234718Z kube-system                                                       2m54s       Normal    Created                   pod/calico-node-2sw9s                               Created container calico-node
+2026-05-19T01:09:04.7235612Z kube-system                                                       2m53s       Normal    Pulled                    pod/calico-node-q4jl7                               Container image "docker.io/calico/node:v3.27.3" already present on machine
+2026-05-19T01:09:04.7236501Z kube-system                                                       2m53s       Normal    Started                   pod/calico-node-q4jl7                               Started container calico-node
+2026-05-19T01:09:04.7237269Z kube-system                                                       2m53s       Normal    Created                   pod/calico-node-q4jl7                               Created container calico-node
+2026-05-19T01:09:04.7238724Z kube-system                                                       2m53s       Warning   Unhealthy                 pod/calico-node-2sw9s                               Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/bird/bird.ctl: connect: no such file or directory
+2026-05-19T01:09:04.7240331Z local-path-storage                                                2m52s       Normal    Scheduled                 pod/local-path-provisioner-988d74bc-cnw9b           Successfully assigned local-path-storage/local-path-provisioner-988d74bc-cnw9b to cka-sim-worker
+2026-05-19T01:09:04.7241577Z kube-system                                                       2m52s       Normal    Scheduled                 pod/coredns-7db6d8ff4d-lswtv                        Successfully assigned kube-system/coredns-7db6d8ff4d-lswtv to cka-sim-worker
+2026-05-19T01:09:04.7242785Z kube-system                                                       2m52s       Normal    Scheduled                 pod/coredns-7db6d8ff4d-5ch8w                        Successfully assigned kube-system/coredns-7db6d8ff4d-5ch8w to cka-sim-worker
+2026-05-19T01:09:04.7244413Z kube-system                                                       2m52s       Warning   Unhealthy                 pod/calico-node-q4jl7                               Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/bird/bird.ctl: connect: no such file or directory
+2026-05-19T01:09:04.7245693Z default                                                           2m52s       Normal    NodeReady                 node/cka-sim-worker                                 Node cka-sim-worker status is now: NodeReady
+2026-05-19T01:09:04.7246773Z kube-system                                                       2m52s       Normal    Scheduled                 pod/calico-kube-controllers-ddf655445-dmf4s         Successfully assigned kube-system/calico-kube-controllers-ddf655445-dmf4s to cka-sim-worker
+2026-05-19T01:09:04.7248272Z kube-system                                                       2m52s       Warning   Unhealthy                 pod/calico-node-2sw9s                               Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/calico/bird.ctl: connect: connection refused
+2026-05-19T01:09:04.7250047Z kube-system                                                       2m51s       Warning   FailedMount               pod/coredns-7db6d8ff4d-5ch8w                        MountVolume.SetUp failed for volume "config-volume" : failed to sync configmap cache: timed out waiting for the condition
+2026-05-19T01:09:04.7251244Z local-path-storage                                                2m51s       Normal    Created                   pod/local-path-provisioner-988d74bc-cnw9b           Created container local-path-provisioner
+2026-05-19T01:09:04.7252435Z kube-system                                                       2m51s       Warning   FailedMount               pod/coredns-7db6d8ff4d-lswtv                        MountVolume.SetUp failed for volume "config-volume" : failed to sync configmap cache: timed out waiting for the condition
+2026-05-19T01:09:04.7254012Z local-path-storage                                                2m51s       Normal    Pulled                    pod/local-path-provisioner-988d74bc-cnw9b           Container image "docker.io/kindest/local-path-provisioner:v20240202-8f1494ea" already present on machine
+2026-05-19T01:09:04.7255419Z kube-system                                                       2m51s       Normal    Pulling                   pod/calico-kube-controllers-ddf655445-dmf4s         Pulling image "docker.io/calico/kube-controllers:v3.27.3"
+2026-05-19T01:09:04.7256898Z kube-system                                                       2m51s       Warning   Unhealthy                 pod/calico-node-q4jl7                               Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/calico/bird.ctl: connect: connection refused
+2026-05-19T01:09:04.7258251Z local-path-storage                                                2m51s       Normal    Started                   pod/local-path-provisioner-988d74bc-cnw9b           Started container local-path-provisioner
+2026-05-19T01:09:04.7259244Z default                                                           2m50s       Normal    NodeReady                 node/cka-sim-control-plane                          Node cka-sim-control-plane status is now: NodeReady
+2026-05-19T01:09:04.7260524Z kube-system                                                       2m50s       Normal    Pulled                    pod/calico-kube-controllers-ddf655445-dmf4s         Successfully pulled image "docker.io/calico/kube-controllers:v3.27.3" in 1.893s (1.893s including waiting). Image size: 33422304 bytes.
+2026-05-19T01:09:04.7261823Z kube-system                                                       2m50s       Normal    Pulled                    pod/coredns-7db6d8ff4d-lswtv                        Container image "registry.k8s.io/coredns/coredns:v1.11.1" already present on machine
+2026-05-19T01:09:04.7263009Z kube-system                                                       2m50s       Normal    Created                   pod/calico-kube-controllers-ddf655445-dmf4s         Created container calico-kube-controllers
+2026-05-19T01:09:04.7264051Z kube-system                                                       2m50s       Normal    Pulled                    pod/coredns-7db6d8ff4d-5ch8w                        Container image "registry.k8s.io/coredns/coredns:v1.11.1" already present on machine
+2026-05-19T01:09:04.7265069Z kube-system                                                       2m49s       Normal    Started                   pod/calico-kube-controllers-ddf655445-dmf4s         Started container calico-kube-controllers
+2026-05-19T01:09:04.7265960Z kube-system                                                       2m49s       Normal    Started                   pod/coredns-7db6d8ff4d-lswtv                        Started container coredns
+2026-05-19T01:09:04.7266778Z kube-system                                                       2m49s       Normal    Created                   pod/coredns-7db6d8ff4d-lswtv                        Created container coredns
+2026-05-19T01:09:04.7267697Z kube-system                                                       2m49s       Normal    Started                   pod/coredns-7db6d8ff4d-5ch8w                        Started container coredns
+2026-05-19T01:09:04.7268508Z kube-system                                                       2m49s       Normal    Created                   pod/coredns-7db6d8ff4d-5ch8w                        Created container coredns
+2026-05-19T01:09:04.7269514Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      10s         Normal    SuccessfulCreate          replicaset/web-68dd7ff7b6                           Created pod: web-68dd7ff7b6-zpxt6
+2026-05-19T01:09:04.7271091Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      10s         Normal    Scheduled                 pod/web-68dd7ff7b6-cjrh7                            Successfully assigned cka-sim-lint-workloads-scheduling-02-rolling-update-rollback/web-68dd7ff7b6-cjrh7 to cka-sim-worker
+2026-05-19T01:09:04.7273082Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      10s         Normal    Scheduled                 pod/web-68dd7ff7b6-zpxt6                            Successfully assigned cka-sim-lint-workloads-scheduling-02-rolling-update-rollback/web-68dd7ff7b6-zpxt6 to cka-sim-worker
+2026-05-19T01:09:04.7274661Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      10s         Normal    SuccessfulCreate          replicaset/web-68dd7ff7b6                           Created pod: web-68dd7ff7b6-cjrh7
+2026-05-19T01:09:04.7275912Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      10s         Normal    ScalingReplicaSet         deployment/web                                      Scaled up replica set web-68dd7ff7b6 to 2
+2026-05-19T01:09:04.7277042Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      9s          Normal    Pulling                   pod/web-68dd7ff7b6-cjrh7                            Pulling image "nginx:1.25"
+2026-05-19T01:09:04.7278118Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      9s          Normal    Pulling                   pod/web-68dd7ff7b6-zpxt6                            Pulling image "nginx:1.25"
+2026-05-19T01:09:04.7279376Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      7s          Normal    Pulled                    pod/web-68dd7ff7b6-zpxt6                            Successfully pulled image "nginx:1.25" in 2.514s (2.514s including waiting). Image size: 71005258 bytes.
+2026-05-19T01:09:04.7280776Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      7s          Normal    Created                   pod/web-68dd7ff7b6-zpxt6                            Created container app
+2026-05-19T01:09:04.7282073Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      7s          Normal    Pulled                    pod/web-68dd7ff7b6-cjrh7                            Successfully pulled image "nginx:1.25" in 291ms (2.78s including waiting). Image size: 71005258 bytes.
+2026-05-19T01:09:04.7283519Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      7s          Normal    Created                   pod/web-68dd7ff7b6-cjrh7                            Created container app
+2026-05-19T01:09:04.7284684Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      7s          Normal    Started                   pod/web-68dd7ff7b6-cjrh7                            Started container app
+2026-05-19T01:09:04.7285901Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      7s          Normal    Started                   pod/web-68dd7ff7b6-zpxt6                            Started container app
+2026-05-19T01:09:04.7287282Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      6s          Normal    Scheduled                 pod/web-7599578dbf-54fbx                            Successfully assigned cka-sim-lint-workloads-scheduling-02-rolling-update-rollback/web-7599578dbf-54fbx to cka-sim-worker
+2026-05-19T01:09:04.7288801Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      6s          Normal    ScalingReplicaSet         deployment/web                                      Scaled up replica set web-7599578dbf to 1
+2026-05-19T01:09:04.7289917Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      6s          Normal    SuccessfulCreate          replicaset/web-7599578dbf                           Created pod: web-7599578dbf-54fbx
+2026-05-19T01:09:04.7291054Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    SuccessfulCreate          replicaset/web-7599578dbf                           Created pod: web-7599578dbf-6mq2h
+2026-05-19T01:09:04.7292336Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    ScalingReplicaSet         deployment/web                                      Scaled down replica set web-68dd7ff7b6 to 1 from 2
+2026-05-19T01:09:04.7293570Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    ScalingReplicaSet         deployment/web                                      Scaled up replica set web-7599578dbf to 2 from 1
+2026-05-19T01:09:04.7294826Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    SuccessfulDelete          replicaset/web-68dd7ff7b6                           Deleted pod: web-68dd7ff7b6-cjrh7
+2026-05-19T01:09:04.7296012Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    Created                   pod/web-7599578dbf-54fbx                            Created container app
+2026-05-19T01:09:04.7297207Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    Pulled                    pod/web-7599578dbf-54fbx                            Container image "nginx:1.25" already present on machine
+2026-05-19T01:09:04.7298658Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    Scheduled                 pod/web-7599578dbf-6mq2h                            Successfully assigned cka-sim-lint-workloads-scheduling-02-rolling-update-rollback/web-7599578dbf-6mq2h to cka-sim-worker
+2026-05-19T01:09:04.7300033Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      5s          Normal    Started                   pod/web-7599578dbf-54fbx                            Started container app
+2026-05-19T01:09:04.7301129Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      4s          Normal    ScalingReplicaSet         deployment/web                                      Scaled down replica set web-68dd7ff7b6 to 0 from 1
+2026-05-19T01:09:04.7302384Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      4s          Normal    Killing                   pod/web-68dd7ff7b6-zpxt6                            Stopping container app
+2026-05-19T01:09:04.7303566Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      4s          Normal    Created                   pod/web-7599578dbf-6mq2h                            Created container app
+2026-05-19T01:09:04.7304797Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      4s          Normal    SuccessfulDelete          replicaset/web-68dd7ff7b6                           Deleted pod: web-68dd7ff7b6-zpxt6
+2026-05-19T01:09:04.7306149Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      4s          Normal    Started                   pod/web-7599578dbf-6mq2h                            Started container app
+2026-05-19T01:09:04.7307197Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      4s          Normal    Killing                   pod/web-68dd7ff7b6-cjrh7                            Stopping container app
+2026-05-19T01:09:04.7308308Z cka-sim-lint-workloads-scheduling-02-rolling-update-rollback      4s          Normal    Pulled                    pod/web-7599578dbf-6mq2h                            Container image "nginx:1.25" already present on machine
+2026-05-19T01:09:04.7309750Z cka-sim-lint-workloads-scheduling-04-hpa-metrics-server           3s          Normal    Scheduled                 pod/q04-load-84577dc46-m6h45                        Successfully assigned cka-sim-lint-workloads-scheduling-04-hpa-metrics-server/q04-load-84577dc46-m6h45 to cka-sim-worker
+2026-05-19T01:09:04.7311273Z cka-sim-lint-workloads-scheduling-04-hpa-metrics-server           3s          Normal    ScalingReplicaSet         deployment/q04-load                                 Scaled up replica set q04-load-84577dc46 to 1
+2026-05-19T01:09:04.7312400Z cka-sim-lint-workloads-scheduling-04-hpa-metrics-server           3s          Normal    SuccessfulCreate          replicaset/q04-load-84577dc46                       Created pod: q04-load-84577dc46-m6h45
+2026-05-19T01:09:04.7313894Z cka-sim-lint-workloads-scheduling-04-hpa-metrics-server           2s          Normal    Started                   pod/q04-load-84577dc46-m6h45                        Started container app
+2026-05-19T01:09:04.7314986Z cka-sim-lint-workloads-scheduling-04-hpa-metrics-server           2s          Normal    Pulled                    pod/q04-load-84577dc46-m6h45                        Container image "nginx:1.27" already present on machine
+2026-05-19T01:09:04.7316060Z cka-sim-lint-workloads-scheduling-04-hpa-metrics-server           2s          Normal    Created                   pod/q04-load-84577dc46-m6h45                        Created container app
+2026-05-19T01:09:04.7317122Z cka-sim-lint-workloads-scheduling-07-native-sidecar               1s          Normal    ScalingReplicaSet         deployment/q07-app                                  Scaled up replica set q07-app-787f486974 to 1
+2026-05-19T01:09:04.7318341Z cka-sim-lint-workloads-scheduling-07-native-sidecar               1s          Normal    SuccessfulCreate          replicaset/q07-app-787f486974                       Created pod: q07-app-787f486974-9r4xx
+2026-05-19T01:09:04.7319695Z cka-sim-lint-workloads-scheduling-07-native-sidecar               1s          Normal    Scheduled                 pod/q07-app-787f486974-9r4xx                        Successfully assigned cka-sim-lint-workloads-scheduling-07-native-sidecar/q07-app-787f486974-9r4xx to cka-sim-worker
+2026-05-19T01:09:04.7321678Z cka-sim-lint-workloads-scheduling-08-nodeselector-affinity-tain   0s          Warning   FailedScheduling          pod/q08-gpu-sim-fbd45b975-zm75b                     0/2 nodes are available: 1 node(s) had untolerated taint {gpu: true}, 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
+2026-05-19T01:09:04.7323558Z cka-sim-lint-workloads-scheduling-08-nodeselector-affinity-tain   0s          Normal    SuccessfulCreate          replicaset/q08-gpu-sim-fbd45b975                    Created pod: q08-gpu-sim-fbd45b975-zm75b
+2026-05-19T01:09:04.7324782Z cka-sim-lint-workloads-scheduling-08-nodeselector-affinity-tain   0s          Normal    ScalingReplicaSet         deployment/q08-gpu-sim                              Scaled up replica set q08-gpu-sim-fbd45b975 to 2
+2026-05-19T01:09:04.7326019Z cka-sim-lint-workloads-scheduling-08-nodeselector-affinity-tain   0s          Normal    SuccessfulCreate          replicaset/q08-gpu-sim-fbd45b975                    Created pod: q08-gpu-sim-fbd45b975-5ms5v
+2026-05-19T01:09:04.7327800Z cka-sim-lint-workloads-scheduling-08-nodeselector-affinity-tain   0s          Warning   FailedScheduling          pod/q08-gpu-sim-fbd45b975-5ms5v                     0/2 nodes are available: 1 node(s) had untolerated taint {gpu: true}, 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }. preemption: 0/2 nodes are available: 2 Preemption is not helpful for scheduling.
+2026-05-19T01:09:04.7401695Z Post job cleanup.
+2026-05-19T01:09:04.8379102Z [command]/usr/bin/git version
+2026-05-19T01:09:04.8415762Z git version 2.54.0
+2026-05-19T01:09:04.8460476Z Temporarily overriding HOME='/home/runner/work/_temp/140a2538-0ce6-4cea-9973-d687fc082d45' before making global git config changes
+2026-05-19T01:09:04.8461957Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-19T01:09:04.8467050Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/CKA-Certified-Kubernetes-Administrator/CKA-Certified-Kubernetes-Administrator
+2026-05-19T01:09:04.8505383Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-19T01:09:04.8539933Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-19T01:09:04.8753327Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-19T01:09:04.8778231Z http.https://github.com/.extraheader
+2026-05-19T01:09:04.8794579Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-05-19T01:09:04.8830148Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-19T01:09:04.9028414Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-19T01:09:04.9058970Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-19T01:09:04.9349663Z Cleaning up orphan processes
+2026-05-19T01:09:05.0490142Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
