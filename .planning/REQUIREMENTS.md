@@ -75,34 +75,34 @@ Carried forward from v1.0 / v1.0.1 — not in v1.0.2 scope.
 
 ## Traceability
 
-Populated by `gsd-roadmapper` after milestone start. Each requirement maps to exactly one phase.
+Each requirement maps to exactly one phase. Sub-phase BUG-* requirements for Phases 19/20 are generated from FORENSIC-v102.md via `/gsd-phase --insert` after Phase 18 ships.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BASELINE-01 | TBD | Pending |
-| BASELINE-02 | TBD | Pending |
-| BASELINE-03 | TBD | Pending |
-| BASELINE-04 | TBD | Pending |
-| AUDIT-01 | TBD | Pending |
-| AUDIT-02 | TBD | Pending |
-| AUDIT-03 | TBD | Pending |
-| AUDIT-04 | TBD | Pending |
-| REMEDIATE-01 | TBD | Pending |
-| REMEDIATE-02 | TBD | Pending |
-| REMEDIATE-03 | TBD | Pending |
-| BLG-01 | TBD | Pending |
-| BLG-02 | TBD | Pending |
-| BLG-03 | TBD | Pending |
-| BLG-04 | TBD | Pending |
-| BLG-05 | TBD | Pending |
-| BLG-06 | TBD | Pending |
-| DOC-01 | TBD | Pending |
+| BASELINE-01 | Phase 16 | Pending |
+| BASELINE-02 | Phase 16 | Pending |
+| BASELINE-03 | Phase 16 | Pending |
+| BASELINE-04 | Phase 16 | Pending |
+| DOC-01 | Phase 16 | Pending |
+| BLG-01 | Phase 17 | Pending |
+| BLG-02 | Phase 17 | Pending |
+| BLG-03 | Phase 17 | Pending |
+| BLG-04 | Phase 17 | Pending |
+| BLG-05 | Phase 17 | Pending |
+| BLG-06 | Phase 17 | Pending |
+| AUDIT-01 | Phase 18 | Pending |
+| AUDIT-02 | Phase 18 | Pending |
+| AUDIT-03 | Phase 18 | Pending |
+| AUDIT-04 | Phase 18 | Pending |
+| REMEDIATE-01 | Phase 19 | Pending |
+| REMEDIATE-02 | Phase 20 | Pending |
+| REMEDIATE-03 | Phase 21 | Pending |
 
 **Coverage:**
 - v1.0.2 requirements: 18 total
-- Mapped to phases: 0 (filled by roadmapper)
-- Unmapped: 18 (will be 0 after roadmap)
+- Mapped to phases: 18 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-19*
-*Last updated: 2026-05-19 — initial draft, pre-roadmap*
+*Last updated: 2026-05-19 — roadmap landed; traceability filled by gsd-roadmapper*
