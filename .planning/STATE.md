@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0.1
 milestone_name: Full Audit Remediation
-status: "shipped (tech_debt — GHA first-run pending)"
-last_updated: "2026-05-18T16:37:00.000Z"
-last_activity: 2026-05-18 -- v1.0.1 followups: 9 live UATs green, 4 fixtures regen'd, BUG-M10 closed
+status: "shipped (close-out complete; v1.0.2 backlog populated)"
+last_updated: "2026-05-19T04:20:00.000Z"
+last_activity: 2026-05-19 -- Phase 15 GHA first run executed (18 of 34 symptom-diff failures, all deferred to v1.0.2)
 progress:
   total_phases: 6
   completed_phases: 6
@@ -17,11 +17,11 @@ progress:
 
 ## Current Position
 
-Milestone: v1.0.1 — SHIPPED 2026-05-18 (tech_debt — most followups closed)
-Phase: —  (all 6 phases archived)
+Milestone: v1.0.1 — SHIPPED 2026-05-18, close-out complete 2026-05-19.
+Phase: —  (all 6 phases archived; Phase 15 transitions human_needed → Complete)
 Plan: —
-Status: Phase 15 GHA `symptom-diff` first run in flight (push 2a8580f→cc8d230 to main at 16:35 UTC). Otherwise tech_debt cleared.
-Last activity: 2026-05-18T16:37 -- v1.0.1 followups: 9 live UATs green, 4 fixtures regen'd, BUG-M10 closed
+Status: All v1.0.1-followup tech_debt closed. Ready for `/gsd-new-milestone v2.0`.
+Last activity: 2026-05-19T04:20 -- Phase 15 GHA first run executed; 18 deferred patterns recorded.
 
 ### v1.0.1 Close-Out (2026-05-18)
 
@@ -43,7 +43,7 @@ These are not blockers to v2.0 planning; they are validation tasks for already-s
    - P10: 12/12 sub-checks. P11: 7/7 sub-checks. P13: 7/7 sub-checks (after BUG-M10 fix).
    - UAT artifacts: `.planning/phases/{10,11,13}-*/{10,11,13}-UAT.md` (commit cc8d230).
    - Driver hygiene: all 3 drivers source `lib/baseline.sh` and wire `prep_baseline` between setup and grade (mirrors `lib/cmd/drill.sh:309-318`).
-2. **GHA `symptom-diff` job first run** — Phase 15: 🟡 IN FLIGHT (push 2a8580f→cc8d230 to main at 2026-05-18T16:35 UTC). Workflow registered, awaiting first scheduler pickup.
+2. **GHA `symptom-diff` job first run** — Phase 15: ✅ EXECUTED (2026-05-19, GHA run 26070172071, head_sha af493ce). Workflow ran end-to-end against kind+Calico. Surface: 18 of 34 questions reported failures across 4 distinct patterns. Full classification in `.planning/phases/15-live-cluster-symptom-diff-ci/15-VERIFICATION.md`. Log archived at `ci-logs/symptom-diff.log` on `gsd/v1.0-milestone` branch. All 18 deferred to v1.0.2 (see Pending Todos).
 3. **4 fixture regens** — ✅ ALL GREEN (2026-05-18, commit 71e97e4):
    - `cka-sim/tests/grading-honesty/services-networking__06-netpol-endport.sh` (0/6→0/4 missing-sentinel branch, 6/6→4/4)
    - `cka-sim/tests/grading-honesty/workloads-scheduling__04-hpa-metrics-server.sh` (0/5→0/7, 5/5→7/7)
@@ -145,6 +145,17 @@ These are intentionally deferred, not blockers for advancing.
 - WR-01 deferred: full vendoring of CSI + metrics-server manifests under `cka-sim/vendor/` with recorded SHA256 (non-correctness enhancement)
 - IN-04 deferred: `cka_sim::grade::assert_custom` helper + 6-grader retrofit (library API addition, not a correctness bug)
 - v1.0.2 candidate: 2 unit-suite reds unrelated to v1.0.1 — `storage__02-storageclass-dynamic` (ref 0/1 instead of 1/1) and `workloads-scheduling__05-daemonset` (ref 3/4 instead of 4/4). Surfaced during v1.0.1 fixture-regen audit; not Phase 10/11/13 collateral. Investigate whether grader regression or fixture drift.
+
+### v1.0.2 Backlog (from Phase 15 first-run + side findings)
+
+Surfaced 2026-05-19 by GHA run 26070172071 against kind+Calico. None block v1.0.1 ship.
+
+1. **Symptom-diff Pattern A (12 of 18 failures)** — unsubstituted `${CKA_SIM_LAB_NS}` placeholder in expected-symptom.yaml files. Lint harness uses `cka-sim-lint-<pack>-<slug>` namespaces but the YAMLs contain literal `${CKA_SIM_LAB_NS}`. Fix: harness should expand the placeholder before comparison, OR YAMLs should be rewritten to use the lint namespace pattern. Affected: cluster-architecture/{03,04,05,06,07}, services-networking/05, troubleshooting/{04,05,06}, workloads-scheduling/05, plus 2 more.
+2. **Symptom-diff Pattern B (3 of 18)** — `setup.sh` failed against the lint sandbox for cluster-architecture/02-etcd-backup-restore, storage/04-csi-volumesnapshot, workloads-scheduling/06-static-pod. These need either an `unsupported-on-kind` exclusion list or kind-specific setup variants.
+3. **Symptom-diff Pattern C (3 of 18)** — Phase 10 collateral expected-symptom drift: storage/01-pvc-binding (BUG-H01 reshape — symptom moved from PVC-Pending to Pod-not-scheduling) and cluster-architecture/08-priorityclass (BUG-H04 — kubectl jsonpath returns `<missing>` for unset bool, not `'false'`). Same class as the 4 unit-fixture regens completed this session. Bundle into a "Phase 15 expected-symptom regen" task.
+4. **Symptom-diff Pattern D (3 of 18)** — Deployment-Available timeout: troubleshooting/02-netpol-dns-egress, workloads-scheduling/01-deployment-requests, workloads-scheduling/07-native-sidecar all show `deploy/<x>.status.conditions[Available]=False` instead of `True`. Calico-on-kind stabilization is slower than the lab cluster the YAMLs were authored against. Calico BIRD readiness warnings in the diagnostics dump confirm this. Fix: extend lint timeout, add converge-then-check pre-step, or relax Available expectation.
+5. **CI bash-tests job red on the unit suite reds from Task #8 above** — pre-existing, surfaced cleanly now that the workflow runs end-to-end.
+6. **CI shellcheck job red** — first run of `validate-local` on Linux surfaced lint warnings on the cka-sim corpus. Investigate scope, decide whether to fix or relax the lint config.
 
 ---
 
