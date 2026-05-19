@@ -54,9 +54,21 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 - GHA `symptom-diff` job first run on merge PR (CI-01 end-to-end proof)
 - Regen 2 fixtures: `services-networking__06-netpol-endport` and `workloads-scheduling__04-hpa-metrics-server` (Phase 13 strengthened-grader totals)
 
+## Current Milestone: v1.0.2 Question Correctness Audit + Backlog Cleanup
+
+**Goal:** Every question in every pack reaches its intended end state when the ref-solution runs, and every Phase 15 GHA failure pattern is closed.
+
+**Target features:**
+- Desired-state baseline mechanism — new audit-only test artifact capturing cluster state after ref-solution; per-question YAML diffed during forensic audit (alongside existing setup-state expected-symptom.yaml and candidate-state lib/baseline.sh)
+- Forensic re-audit (blind) — all 38 domain-pack questions + 2 mock packs against v1.35 blueprint AND desired-state baseline; output FORENSIC-v102.md bug ledger
+- Severity-grouped remediation (HIGH edits → HIGH rework → MED grader-strengthening → LOW framing/lib) — phase count + grouping defined after forensic ledger lands
+- v1.0.2 backlog cleanup — Phase 15 GHA first-run findings: symptom-diff Patterns A/B/C/D (18 failures), 2 unit reds (storage Q02, W&S Q05), CI shellcheck reds
+
+**Verification model:** Unit + lint + GHA `validate.yml` (kind+Calico) during phases. Live drill UATs batched at milestone close — same pattern as v1.0.1. No local kubectl required.
+
 ### Active (v2.0 — not yet planned)
 
-Use `/gsd-new-milestone` to scope. Candidate ideas based on v1.0 outcomes:
+Carried forward from v1.0:
 
 - Domain coverage gap closure — any audit-escape questions from 07.1 that need file-baseline support (etcd snapshot, audit-policy YAML, node-level files)
 - Real-cluster CI — github-hosted runner that spins up a kind/k3s cluster and runs grading-honesty UAT
@@ -133,4 +145,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-18 — v1.0.1 milestone shipped (tech_debt — live UAT pending); see `milestones/v1.0.1-MILESTONE-AUDIT.md`*
+*Last updated: 2026-05-19 — v1.0.2 milestone opened: Question Correctness Audit + Backlog Cleanup*

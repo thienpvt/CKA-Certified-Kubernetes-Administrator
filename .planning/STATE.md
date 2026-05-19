@@ -1,27 +1,26 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0.1
-milestone_name: Full Audit Remediation
-status: "shipped (close-out complete; v1.0.2 backlog populated)"
-last_updated: "2026-05-19T04:20:00.000Z"
-last_activity: 2026-05-19 -- Phase 15 GHA first run executed (18 of 34 symptom-diff failures, all deferred to v1.0.2)
+milestone: v1.0.2
+milestone_name: Question Correctness Audit + Backlog Cleanup
+status: planning
+last_updated: "2026-05-19T13:48:05.367Z"
+last_activity: 2026-05-19
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 25
-  completed_plans: 25
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # State
 
 ## Current Position
 
-Milestone: v1.0.1 — SHIPPED 2026-05-18, close-out complete 2026-05-19.
-Phase: —  (all 6 phases archived; Phase 15 transitions human_needed → Complete)
+Phase: Not started (defining requirements)
 Plan: —
-Status: All v1.0.1-followup tech_debt closed. Ready for `/gsd-new-milestone v2.0`.
-Last activity: 2026-05-19T04:20 -- Phase 15 GHA first run executed; 18 deferred patterns recorded.
+Status: Defining requirements
+Last activity: 2026-05-19 — Milestone v1.0.2 started
 
 ### v1.0.1 Close-Out (2026-05-18)
 
