@@ -9,18 +9,9 @@
       "generation": null,
       "resourceVersion": "200",
       "labels": {}
-    },
-    {
-      "kind": "StorageClass",
-      "name": "fast-ssd",
-      "namespace": null,
-      "generation": null,
-      "resourceVersion": "300",
-      "labels": {}
     }
   ],
   "resource_list": [
-    "persistentvolumeclaim/app-cache",
-    "storageclass/fast-ssd"
+    "persistentvolumeclaim/app-cache"
   ]
 }
