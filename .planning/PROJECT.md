@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simulator that runs against a learner's own 1-control-plane + 2-worker kubeadm cluster. Ships two timed 17-question mock exams (blueprint-alpha and blueprint-bravo), five domain packs (Storage, Workloads & Scheduling, Services & Networking, Cluster Architecture, Troubleshooting) with 38 total questions, a trap-aware grading framework that distinguishes setup state from candidate work, and CLI subcommands (`drill`, `exam`, `score`, `list`, `bootstrap`, `doctor`). Built for one CKA candidate preparing for the real v1.35 exam; verified end-to-end on a live 1+2 GCP Ubuntu cluster.
+A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simulator that runs against a learner's own 1-control-plane + 2-worker kubeadm cluster. Ships two timed 17-question mock exams (blueprint-alpha and blueprint-bravo), five domain packs (Storage, Workloads & Scheduling, Services & Networking, Cluster Architecture, Troubleshooting) with 34 total questions, a trap-aware grading framework that distinguishes setup state from candidate work, and CLI subcommands (`drill`, `exam`, `score`, `list`, `bootstrap`, `doctor`). Built for one CKA candidate preparing for the real v1.35 exam; verified end-to-end on a live 1+2 GCP Ubuntu cluster.
 
 ## Core Value
 
@@ -13,7 +13,7 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 **Shipped v1.0.1 (2026-05-18, tech_debt):** Full audit remediation — all 15 question bugs (6 HIGH + 9 MED) addressed in code + 2 systemic CI gates added (trap-coverage lint, live-cluster symptom-diff CI). 18/18 requirements code-complete; live-cluster drill UATs (9), GHA first-run, and 2 fixture regens deferred to v1.0.1-followups.
 
 **Shipped v1.0 (2026-05-17):** Full CKA exam simulator operational on live cluster.
-- 38 questions across 5 domain packs (Storage 10%, W&S 15%, S&N 20%, CA 25%, Troubleshooting 30%)
+- 34 questions across 5 domain packs (Storage 10%, W&S 15%, S&N 20%, CA 25%, Troubleshooting 30%)
 - 2 mock exam blueprints (alpha, bravo) — 17 questions / 130 minutes each
 - Bash-only runtime (~1000 LOC core + 19000 LOC tests/fixtures/docs)
 - Trap framework: 47 catalog entries, 8 root-cause detectors
@@ -28,7 +28,7 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 
 - ✓ Cluster bootstrap script — `cka-sim bootstrap` configures existing 1+2 cluster, SSH topology, doctor check — v1.0
 - ✓ Domain coverage map — every v1.35 Study Progress Tracker checkbox mapped to ≥1 question — v1.0
-- ✓ Five domain packs (Storage, W&S, S&N, CA, Troubleshooting) — 38 questions total — v1.0
+- ✓ Five domain packs (Storage, W&S, S&N, CA, Troubleshooting) — 34 questions total — v1.0
 - ✓ Per-question runtime triplet (`setup.sh` / `grade.sh` / `reset.sh`) — bash-only, idempotent — v1.0
 - ✓ Trap-aware grader — 47 catalog entries with named `Trap N: <description>` diagnostics — v1.0
 - ✓ Two mock-exam packs — blueprint-alpha + blueprint-bravo, 17 questions / 130 min each — v1.0
@@ -115,7 +115,7 @@ Carried forward from v1.0:
 |----------|-----------|---------|
 | Rebuild from Study Progress Tracker rather than retrofit 31 exercises | Existing exercises had content drift; cleaner to author fresh | ✓ Good — 38 fresh questions ship with v1.0 |
 | Configure existing cluster only (no Terraform/kubeadm bootstrap) | Manual one-time GCP step; not core value | ✓ Good — bootstrap.sh handles SSH/doctor only |
-| Per-question `setup.sh` + `grade.sh` + `reset.sh`, all bash | Matches real exam shell; isolation enables replay | ✓ Good — pattern held across 38 questions |
+| Per-question `setup.sh` + `grade.sh` + `reset.sh`, all bash | Matches real exam shell; isolation enables replay | ✓ Good — pattern held across 34 questions |
 | Grader emits named "trap" diagnostics, not just pass/fail | Trap-aware feedback differentiator | ✓ Good — 47 catalog entries deliver named diagnostics |
 | Build both `cka-sim drill` AND `cka-sim exam` | Drill for targeted learning, exam for realistic stress | ✓ Good — both shipped, both verified |
 | Build both domain packs AND mock-exam packs | Domain packs for drilling, mock packs for full exams | ✓ Good — 5 domain packs + 2 mock packs |

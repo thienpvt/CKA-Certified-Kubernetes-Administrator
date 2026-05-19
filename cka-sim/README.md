@@ -88,6 +88,12 @@ cka-sim/
 
 Two blueprint manifests ship with cka-sim. Each draws 17 questions across all five domains, weighted to match the CKA v1.35 blueprint. A 2-hour countdown timer enforces exam pacing. `blueprint-alpha` and `blueprint-bravo` use different question draws so you can retake without memorization bias.
 
+## Documentation
+
+- [Authoring guide](../docs/AUTHORING.md) — how to author a new question end-to-end (test-artifact triplet, prose-to-YAML derivation, audit invocation).
+- [expected-symptom.yaml schema](packs/EXPECTED-SYMPTOM-SCHEMA.md) — schema reference for the post-setup symptom file.
+- [Grading honesty](GRADING-HONESTY.md) — Phase 07.1 candidate-state baseline contract.
+
 ## Development
 
 ```bash

@@ -1,5 +1,7 @@
 # expected-symptom.yaml schema
 
+> **For authors:** start with [`../../docs/AUTHORING.md`](../../docs/AUTHORING.md) — this file is the schema reference; AUTHORING.md walks through the prose-to-YAML derivation workflow.
+
 Per-question `expected-symptom.yaml` describes the post-`setup.sh` cluster state
 that `question.md` claims. `cka-sim/scripts/lint-question-symptom.sh` diffs the
 live cluster against this file; any divergence is a question-vs-setup contract
