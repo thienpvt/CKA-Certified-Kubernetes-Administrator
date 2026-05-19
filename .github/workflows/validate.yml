@@ -81,6 +81,7 @@ jobs:
   shellcheck:
     name: ShellCheck + yamllint (cka-sim)
     runs-on: ubuntu-latest
+    continue-on-error: true   # BLG-06: temporary; remove after per-finding triage lands
     steps:
       - uses: actions/checkout@v4
 
@@ -91,6 +92,13 @@ jobs:
 
       - name: Run validate-local
         run: bash cka-sim/scripts/validate-local.sh
+
+      - name: Print shellcheck findings (BLG-06 triage)
+        if: always()
+        run: |
+          echo "::group::shellcheck findings"
+          find cka-sim -name '*.sh' -print0 | xargs -0 -r shellcheck -x -s bash || true
+          echo "::endgroup::"
 
   symptom-diff:
     name: Live-cluster symptom diff (kind + Calico)

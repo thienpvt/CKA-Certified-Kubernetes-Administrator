@@ -24,14 +24,20 @@ while IFS= read -r f; do
   fi
 done < <(find "$CKA_SIM_ROOT" -name '*.yaml' -o -name '*.yml')
 
-# Pass 2: shellcheck
-info "pass 2: shellcheck — cka-sim/**/*.sh"
-while IFS= read -r f; do
-  if ! shellcheck -x -s bash "$f" 2>/dev/null; then
-    err "shellcheck FAIL: $f"
-    errors=$(( errors + 1 ))
-  fi
-done < <(find "$CKA_SIM_ROOT" -name '*.sh')
+# Pass 2: shellcheck — opt out via CKA_SIM_SKIP_SHELLCHECK=1 for hosts without shellcheck installed.
+if [[ -n "${CKA_SIM_SKIP_SHELLCHECK:-}" ]]; then
+  warn "pass 2: shellcheck SKIPPED (CKA_SIM_SKIP_SHELLCHECK is set)"
+elif ! command -v shellcheck >/dev/null 2>&1; then
+  warn "pass 2: shellcheck SKIPPED (binary not in PATH; install via apt/brew/choco to enable)"
+else
+  info "pass 2: shellcheck — cka-sim/**/*.sh"
+  while IFS= read -r f; do
+    if ! shellcheck -x -s bash "$f" 2>/dev/null; then
+      err "shellcheck FAIL: $f"
+      errors=$(( errors + 1 ))
+    fi
+  done < <(find "$CKA_SIM_ROOT" -name '*.sh')
+fi
 
 printf '\n' >&2
 if (( errors > 0 )); then
