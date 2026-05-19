@@ -24,7 +24,7 @@ case "$cmd" in
     shift 2>/dev/null || true
     exec "$CKA_SIM_ROOT/lib/cmd/help.sh" "$@"
     ;;
-  bootstrap|doctor|list|version|drill|exam|score)
+  bootstrap|doctor|list|version|drill|exam|score|audit)
     shift
     cmd_script="$CKA_SIM_ROOT/lib/cmd/$cmd.sh"
     [[ -f "$cmd_script" ]] || die "internal: missing $cmd_script"

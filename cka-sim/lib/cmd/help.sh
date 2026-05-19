@@ -15,6 +15,7 @@ Commands:
   drill       Practice a single question (not yet implemented — phase 3)
   exam        Take a timed mock exam (not yet implemented — phase 7)
   score       View a past session report (not yet implemented — phase 7)
+  audit       Question-intent baseline diff (forensic; live-cluster required)
   version     Print version + repo checksum
   help        Show this message
 
