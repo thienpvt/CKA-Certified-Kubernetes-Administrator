@@ -4,8 +4,8 @@
 
 - ✅ **v1.0 CKA Exam Simulator MVP** — Phases 1-8 + 07.1 (shipped 2026-05-17)
 - ✅ **v1.0.1 Full Audit Remediation** — Phases 10-15 (shipped 2026-05-18, tech_debt; live UAT closed 2026-05-19)
-- 🚧 **v1.0.2 Question Correctness Audit + Backlog Cleanup** — Phases 16-21 (planning)
-- 📋 **v2.0** — Not yet planned (`/gsd-new-milestone` to start)
+- ✅ **v1.0.2 Question Correctness Audit + Backlog Cleanup** — Phases 16-21 (shipped 2026-05-20, tech_debt; GHA bash-tests environmental reds routed to v1.0.3 BLG-07)
+- 📋 **v1.0.3** — Not yet planned (BLG-06 per-finding triage + BLG-07 GHA bash-tests delta — `/gsd-new-milestone` to start)
 
 ## Phases
 
@@ -53,9 +53,13 @@ Full archive: [milestones/v1.0.1-ROADMAP.md](milestones/v1.0.1-ROADMAP.md)
 - [ ] **Phase 20: MED-Severity Remediation (Placeholder)** — Close every MED finding via grader strengthening, framing reconciliation, and library corrections. Sub-phases inserted post-Phase 18.
 - [ ] **Phase 21: Post-Fix Intent Re-Verification + Milestone Sign-Off** — Re-run `cka-sim audit` over every remediated question, sign off FORENSIC-v102.md as fully closed, batch live drill UATs.
 
-### 📋 v2.0 (Not yet planned)
+### 📋 v1.0.3 (Not yet planned)
 
-Use `/gsd-new-milestone` to scope and plan the next milestone.
+Two outstanding tech-debt items routed from v1.0.2 close-out:
+- **BLG-06** — Per-finding shellcheck/yamllint triage. `continue-on-error: true` scaffolded in P17 awaits per-finding fixes per Plan 17-05's documented flow.
+- **BLG-07** — GHA bash-tests environmental reds. 9 unit-test cases fail on `ubuntu-latest` runners but pass on Docker Ubuntu 22.04 + 24.04 + Windows MSYS. Surfaced after Phase 17 fixed `tests/run.sh` exec-bit. Symptom: `expected 1 got 0` on `cka_sim::baseline::is_candidate_modified` unchanged-baseline branch. Investigate runner-specific environmental delta (jq version, locale, `set -u` interaction).
+
+Use `/gsd-new-milestone` to scope and plan.
 
 ## Phase Details
 
