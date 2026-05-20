@@ -88,7 +88,9 @@ case "$verb" in
       # Compose: . then jq_expr; default empty string when null.
       # `|| true` protects the stub's `set -euo pipefail` from aborting when jq exits non-zero
       # on a malformed/unsupported jsonpath — an empty stdout is the desired "field not found" signal.
-      { jq -r "$jq_expr // \"\"" "$fixture_path" 2>/dev/null | tr '\n' ' ' | sed 's/[[:space:]]*$//'; } || true
+      # BUG-M11 fix: parenthesize via `as $v` so `//` binds correctly for
+      # nested keys (otherwise jq emits an array `[...]` instead of the scalar).
+      { jq -r "($jq_expr) as \$v | \$v // \"\"" "$fixture_path" 2>/dev/null | tr '\n' ' ' | sed 's/[[:space:]]*$//'; } || true
       printf '\n'
     elif (( local_use_name_only == 1 )); then
       # `-o name` returns one resource per line, like "<kind>/<name>"
