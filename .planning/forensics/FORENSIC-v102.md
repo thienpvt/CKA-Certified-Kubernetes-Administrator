@@ -94,12 +94,12 @@ This harness fix is **not** a forensic finding — it's a Phase 18 in-flight fix
 
 ## Closure Status
 
-| ID | Status | Closed-by |
-|----|--------|-----------|
-| BUG-H07 | ✓ closed | Phase 19.1 (locale-safe grep — `grep -F $'\t'` in static-pod-manifest setup.sh) |
-| BUG-H08 | ✓ closed | Phase 19.2 (audit-policy case-file expanded to 4 grader assertions) |
-| BUG-M11 | ✓ closed | Phase 20.1 (jq `as $v` binding fix in symptom-diff.sh) |
-| BUG-M12 | ✓ closed | Phase 20.2 (expected-report.md regenerated LF-only + .gitattributes rule) |
+| ID | Status | Closed-by | Live UAT |
+|----|--------|-----------|----------|
+| BUG-H07 | ✓ closed | Phase 19.1 — `0424b64` (locale-safe grep — `grep -F $'\t'` in static-pod-manifest setup.sh) | `e2f7546` (uat-phase18-21.sh H07.1..7.4 PASS) |
+| BUG-H08 | ✓ closed | Phase 19.2 — `0424b64` (audit-policy case-file expanded to 4 grader assertions) | `e2f7546` (uat-phase18-21.sh H08.1..8.2 PASS) |
+| BUG-M11 | ✓ closed | Phase 20.1 — `0424b64` (jq `as $v` binding fix in symptom-diff.sh) | `e2f7546` (uat-phase18-21.sh M11.1 PASS) |
+| BUG-M12 | ✓ closed | Phase 20.2 — `0424b64` (expected-report.md regenerated LF-only + .gitattributes rule) | `e2f7546` (uat-phase18-21.sh M12.1..12.2 PASS) |
 
 **All 4 findings closed in Phases 19.1, 19.2, 20.1, 20.2.**
 
@@ -113,3 +113,21 @@ Post-remediation full re-audit on local kind+Calico (2026-05-20):
 ```
 
 Raw output: `.planning/forensics/FORENSIC-v102-final.md`. All 31 audited questions PASS clean intent-vs-actual diff.
+
+## Live Lab UAT (2026-05-20)
+
+Live drill UAT on the v1.0.1 GCP lab cluster (1 control-plane + 2 workers, Calico, enforcing CNI) at HEAD `e2f7546`. Driver: `cka-sim/scripts/uat-phase18-21.sh` — mirrors v1.0.1's `uat-phase10/11/13.sh` shape.
+
+```
+Results: 9 passed, 0 failed, 0 skipped (of 9)
+```
+
+Per-bug evidence:
+- **BUG-H07** — H07.1 grep -F shape present, H07.2 setup.sh exits 0 under LC_ALL=C, H07.3 empty=0/N, H07.4 ref=max/max + 0 traps.
+- **BUG-H08** — H08.1 empty=0/4, H08.2 ref=4/4 + 0 traps.
+- **BUG-M11** — M11.1 `cka-sim audit cluster-architecture/04-pss-enforce` returns PASS (3/3 expectations met) on real cluster.
+- **BUG-M12** — M12.1 `report_golden` unit case passes, M12.2 `expected-report.md` is LF-only.
+
+UAT artifact: `cka-sim/current-tests/step5-results.txt`. Step 1, 2, 4 evidence: `cka-sim/current-tests/step{1,2,4}-results.txt`.
+
+**Audit re-run on real cluster (Step 2, 33/34 PASS):** 1 audit error remaining (`workloads-scheduling/06-static-pod` setup.sh failed on lab cluster ns=cka-sim-audit-...) — investigated as part of v1.0.3 scope, not a v1.0.2 ledger entry.

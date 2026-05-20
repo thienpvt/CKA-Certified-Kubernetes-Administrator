@@ -2,25 +2,25 @@
 gsd_state_version: 1.0
 milestone: v1.0.2
 milestone_name: Question Correctness Audit + Backlog Cleanup
-status: executing
-last_updated: "2026-05-19T16:06:51.151Z"
-last_activity: 2026-05-19 -- Phase 17 planning complete
+status: shipped
+last_updated: "2026-05-20T15:50:00.000Z"
+last_activity: 2026-05-20 -- v1.0.2 live UAT closed (uat-phase18-21.sh 9/9)
 progress:
-  total_phases: 2
-  completed_phases: 1
+  total_phases: 6
+  completed_phases: 6
   total_plans: 8
-  completed_plans: 3
-  percent: 38
+  completed_plans: 8
+  percent: 100
 ---
 
 # State
 
 ## Current Position
 
-Phase: 16 — COMPLETE
+Phase: 21 — SHIPPED (live UAT closed)
 Plan: —
-Status: Ready to execute
-Last activity: 2026-05-19 -- Phase 17 planning complete
+Status: v1.0.2 milestone complete (tech_debt) — ready for v1.0.3
+Last activity: 2026-05-20 -- v1.0.2 live UAT closed (uat-phase18-21.sh 9/9 PASS on lab cluster)
 
 ### v1.0.2 Roadmap Snapshot
 
@@ -34,6 +34,36 @@ Last activity: 2026-05-19 -- Phase 17 planning complete
 Dependency chain: 16 ‖ 17 → 18 → 19 (+ 19.x sub-phases) → 20 (+ 20.x sub-phases) → 21.
 
 Coverage: 18/18 v1.0.2 requirements mapped (no orphans, no duplicates). Sub-phase BUG-* requirements are intentionally NOT pre-baked — they are generated from `FORENSIC-v102.md` via `/gsd-phase --insert` after Phase 18 ships, mirroring how v1.0.1's P10-P14 plans were derived from `forensics/report-20260517-091657-full-audit.md`.
+
+### v1.0.2 Close-Out (2026-05-20 ship; live UAT closed 2026-05-20)
+
+All 6 phases (16-21) plus 4 inserted sub-phases (19.1, 19.2, 20.1, 20.2) shipped with `tech_debt` audit status. 18/18 requirements code-complete; all 4 forensic findings closed with live-cluster UAT evidence. Per-phase commit ranges in `.planning/milestones/v1.0.2-MILESTONE-AUDIT.md` and ledger detail in `.planning/forensics/FORENSIC-v102.md`.
+
+- Phase 16: Question-Intent Baseline Harness — BASELINE-01..04 + DOC-01 — commits `d19f550..c12a0ee`
+- Phase 17: v1.0.2 Backlog Cleanup — BLG-01..05 — commits `3ccb35a..e14baf7` (BLG-06 routed to v1.0.3)
+- Phase 18: Forensic Re-Audit (Blind) — AUDIT-01..04 — commit `c56749a`
+- Phase 19.1/19.2/20.1/20.2: HIGH+MED Remediation — BUG-H07/H08/M11/M12 — commit `0424b64`
+- Phase 21: Sign-Off — commit `3574ce1` (milestone shipped tech_debt)
+
+**Live Lab UAT (2026-05-20):** Lab cluster v1.0.1 (1 CP + 2 workers, Calico, enforcing CNI) at HEAD `e2f7546`. Driver `cka-sim/scripts/uat-phase18-21.sh` mirrors v1.0.1's `uat-phase10/11/13.sh` shape.
+
+- Result: **9 passed, 0 failed, 0 skipped (of 9)** — every BUG-* sub-check green
+- BUG-H07: H07.1 grep -F shape present, H07.2 setup.sh exits 0 under LC_ALL=C, H07.3 empty=0/N, H07.4 ref=max/max + 0 traps
+- BUG-H08: H08.1 empty=0/4, H08.2 ref=4/4 + 0 traps
+- BUG-M11: M11.1 `cka-sim audit cluster-architecture/04-pss-enforce` returns PASS (3/3) on real cluster
+- BUG-M12: M12.1 report_golden unit case passes, M12.2 expected-report.md is LF-only
+
+**Audit re-run on real cluster (Step 2):** 33/34 PASS, 0 FAIL, 1 error, 0 skipped — `BLG-02 unsupported-on-kind` flag removed from the 3 affected questions; only `workloads-scheduling/06-static-pod` setup.sh fails on the lab cluster (separate from the 4 forensic findings; routed to v1.0.3 scope).
+
+UAT artifacts: `cka-sim/current-tests/step{1,2,4,5}-results.txt`. FORENSIC-v102.md Closure Status table updated with `closed-by` + `Live UAT` columns (commits `0424b64` for code, `e2f7546` for UAT).
+
+### v1.0.2-followups (Tech Debt — routed to v1.0.3)
+
+Carried forward from v1.0.2 close-out:
+
+1. **BLG-06** — Per-finding shellcheck/yamllint triage. `continue-on-error: true` scaffolded in P17 (commit `a77712a`); per-finding fixes deferred per Plan 17-05's documented flow.
+2. **BLG-07** — GHA bash-tests environmental reds. 9 unit-test cases fail on `ubuntu-latest` runners but pass on Docker Ubuntu 22.04 + 24.04 + Windows MSYS. Surfaced after Phase 17 fixed `tests/run.sh` exec bit. Symptom: `expected 1 got 0` on `cka_sim::baseline::is_candidate_modified` unchanged-baseline branch. Investigate runner-specific environmental delta (jq version, locale, `set -u` interaction).
+3. **Audit error: `workloads-scheduling/06-static-pod`** — setup.sh failed on the lab cluster during Step 2 audit re-run (ns=cka-sim-audit-...). Not a kind-skip — real-cluster setup-drift. Suggested triage during v1.0.3.
 
 ### v1.0.1 Close-Out (2026-05-18 ship; UAT closed 2026-05-19)
 
