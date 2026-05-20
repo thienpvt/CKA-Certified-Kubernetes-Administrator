@@ -18,18 +18,18 @@
 
 | # | Trap ID | Count | Description |
 |---|---------|-------|-------------|
-| 1 | mock-trap-b | 9 | mock-trap-b |
-| 2 | mock-trap-a | 8 | mock-trap-a |
-| 3 | mock-trap-c | 3 | mock-trap-c |
-| 4 | mock-trap-e | 3 | mock-trap-e |
+| 1 | mock-trap-b | 9 | mock-trap-b |
+| 2 | mock-trap-a | 8 | mock-trap-a |
+| 3 | mock-trap-c | 3 | mock-trap-c |
+| 4 | mock-trap-e | 3 | mock-trap-e |
 | 5 | mock-trap-d | 1 | mock-trap-d |
 
 ## Suggested Next Drills
 
-Your weakest domains: troubleshooting, cluster-architecture, services-networking. Drill these next:
+Your weakest domains: troubleshooting, cluster-architecture, services-networking. Drill these next:
 
-- `cka-sim drill troubleshooting`
-- `cka-sim drill cluster-architecture`
+- `cka-sim drill troubleshooting`
+- `cka-sim drill cluster-architecture`
 - `cka-sim drill services-networking`
 
 ## Question-by-Question Detail

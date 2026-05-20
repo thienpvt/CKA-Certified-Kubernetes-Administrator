@@ -37,7 +37,7 @@ spec:
           memory: 128Mi
 EOF
 
-grep -P '\t' "$sandbox/manifest-broken.yaml" >/dev/null
+grep -F $'\t' "$sandbox/manifest-broken.yaml" >/dev/null
 
 cat > "$sandbox/manifest-tagtypo.yaml" <<'EOF'
 apiVersion: v1

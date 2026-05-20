@@ -49,7 +49,7 @@ export CKA_SIM_LAB_NS="cka-sim-cluster-architecture-05"
 out=$(bash "$qdir/grade.sh" 2>&1)
 
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_setup_score="SCORE: 0/1"
+expected_setup_score="SCORE: 0/4"
 
 if [[ "$score_line" == "$expected_setup_score" ]]; then
   ok "empty submission $test_id: $expected_setup_score [audit-escape: setup-state demoted to weight=0]"
@@ -60,7 +60,9 @@ else
   exit 1
 fi
 
-# ----- ref-solution test (corrected policy with valid level/omitStages) -----
+# ----- ref-solution test (corrected policy with all 4 grader-asserted rules) -----
+# Phase 13 BUG-M05 grader has 4 weight=1 assertions:
+#   secrets@Metadata, configmaps@Request, events@None, omitStages contains RequestReceived
 cat > "$sandbox/policy.yaml" <<'EOF'
 apiVersion: audit.k8s.io/v1
 kind: Policy
@@ -71,6 +73,14 @@ rules:
     resources:
       - group: ""
         resources: ["secrets"]
+  - level: Request
+    resources:
+      - group: ""
+        resources: ["configmaps"]
+  - level: None
+    resources:
+      - group: ""
+        resources: ["events"]
 EOF
 
 export CKA_SIM_TEST_CURRENT="grading-honesty/${test_id}/post-ref-solution"
@@ -78,7 +88,7 @@ export CKA_SIM_BASELINE_PATH="$CKA_SIM_TEST_FIXTURES_DIR/grading-honesty/${test_
 
 out=$(bash "$qdir/grade.sh" 2>&1)
 score_line=$(echo "$out" | grep -E '^SCORE:' | tail -1)
-expected_ref_score="SCORE: 1/1"
+expected_ref_score="SCORE: 4/4"
 
 if [[ "$score_line" == "$expected_ref_score" ]]; then
   ok "ref-solution $test_id: $expected_ref_score"

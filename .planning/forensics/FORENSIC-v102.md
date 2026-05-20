@@ -7,7 +7,8 @@ total_findings: 4
 high_count: 2
 med_count: 2
 low_count: 0
-status: open
+status: closed
+closure_date: 2026-05-20
 raw_report: ./FORENSIC-v102-raw.md
 ---
 
@@ -95,9 +96,20 @@ This harness fix is **not** a forensic finding — it's a Phase 18 in-flight fix
 
 | ID | Status | Closed-by |
 |----|--------|-----------|
-| BUG-H07 | open | Phase 19.1 |
-| BUG-H08 | open | Phase 19.2 |
-| BUG-M11 | open | Phase 20.1 |
-| BUG-M12 | open | Phase 20.2 |
+| BUG-H07 | ✓ closed | Phase 19.1 (locale-safe grep — `grep -F $'\t'` in static-pod-manifest setup.sh) |
+| BUG-H08 | ✓ closed | Phase 19.2 (audit-policy case-file expanded to 4 grader assertions) |
+| BUG-M11 | ✓ closed | Phase 20.1 (jq `as $v` binding fix in symptom-diff.sh) |
+| BUG-M12 | ✓ closed | Phase 20.2 (expected-report.md regenerated LF-only + .gitattributes rule) |
 
-This ledger updated by Phase 21 milestone close-out with `closed-by` commit references.
+**All 4 findings closed in Phases 19.1, 19.2, 20.1, 20.2.**
+
+## Final Audit Verification (Phase 21)
+
+Post-remediation full re-audit on local kind+Calico (2026-05-20):
+
+```
+─── audit summary ───
+31/31 PASS, 0 FAIL, 0 errors, 3 skipped
+```
+
+Raw output: `.planning/forensics/FORENSIC-v102-final.md`. All 31 audited questions PASS clean intent-vs-actual diff.

@@ -17,3 +17,7 @@
 # cka-sim test harness — extension-less bin scripts and JSON fixtures
 cka-sim/tests/bin/* text eol=lf
 cka-sim/tests/fixtures/**/*.json text eol=lf
+
+# Golden-file fixtures used by diff-based tests must be LF-only on disk so
+# they round-trip identically across Windows and Linux. BUG-M12 / Phase 20.2.
+cka-sim/tests/fixtures/**/*.md text eol=lf

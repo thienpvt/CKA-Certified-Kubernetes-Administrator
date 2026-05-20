@@ -229,7 +229,11 @@ PY
     local json_path="$tmp_dir/${kind}_${name//\//_}.json"
     [[ -s "$json_path" ]] || continue   # missing-resource error already emitted
     jq_query="$(_jsonpath_to_jq "$jp")"
-    actual="$(jq -r "$jq_query // \"<missing>\"" "$json_path" 2>/dev/null || echo "<jq-error>")"
+    # BUG-M11 fix: parenthesize the jsonpath via `as $v | $v // "<missing>"`
+    # so jq's `//` operator scopes correctly. The bare `expr // "<missing>"`
+    # form binds the alternative across the entire pipeline and returns an
+    # array (e.g. `["restricted"]`) for nested-key paths instead of the scalar.
+    actual="$(jq -r "($jq_query) as \$v | \$v // \"<missing>\"" "$json_path" 2>/dev/null || echo "<jq-error>")"
     # jq may emit 'null' for missing fields; normalise to <missing>.
     [[ "$actual" == "null" ]] && actual="<missing>"
     local line_num
