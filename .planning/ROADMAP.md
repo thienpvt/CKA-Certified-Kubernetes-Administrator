@@ -106,7 +106,25 @@ Use `/gsd-new-milestone` to scope and plan the next milestone.
   2. Each 19.x sub-phase mirrors v1.0.1's P10/P11 shape — HIGH single-question edits and HIGH grader/question rework — with per-bug evidence captured in the sub-phase SUMMARY.md.
   3. Ref-solutions for every affected question still score max/max under reworked graders.
   4. Empty-submission scores remain 0/100 for every affected question (no Phase 07.1 grading-honesty leak introduced by the rework).
-**Plans**: TBD (sub-phases 19.x inserted post-Phase 18)
+**Plans**: 19.1, 19.2 (inserted from FORENSIC-v102.md 2026-05-20)
+
+### Phase 19.1: BUG-H07 Close — locale-safe grep in static-pod-manifest setup
+**Goal**: Replace `grep -P '\t'` in `cka-sim/packs/troubleshooting/05-static-pod-manifest/setup.sh` with a locale-independent shape so setup.sh succeeds on Linux GHA runners with non-UTF-8 locales (the failure surfaced as the only ERROR in Phase 18's audit).
+**Depends on**: Phase 18 (FORENSIC-v102.md identifies BUG-H07)
+**Requirements**: BUG-H07
+**Success Criteria**:
+  1. `bash cka-sim/packs/troubleshooting/05-static-pod-manifest/setup.sh` exits 0 on a GHA Ubuntu runner without explicit `LC_ALL` set.
+  2. `cka-sim audit troubleshooting/05-static-pod-manifest` returns PASS on kind+Calico.
+  3. Empty submission for the question still scores 0/N (no grading-honesty regression).
+
+### Phase 19.2: BUG-H08 Close — audit-policy grader vs fixture drift
+**Goal**: Reconcile `cka-sim/packs/cluster-architecture/05-audit-policy/grade.sh` with the case-file's authoritative `expected_empty_score=0/1`. Either reduce grader to 1 assertion OR update the unit-test case to match the grader's 4 assertions. Same fixture-vs-grader-drift class as v1.0.1's BLG-05.
+**Depends on**: Phase 18
+**Requirements**: BUG-H08
+**Success Criteria**:
+  1. `bash cka-sim/scripts/test.sh` returns 0 on Linux with `cluster-architecture__05-audit-policy` PASSING.
+  2. Ref-solution still scores max/max.
+  3. Empty submission scores 0/N (where N is whatever total the reconciliation lands on).
 
 ### Phase 20: MED-Severity Remediation (Placeholder)
 **Goal**: Every MED-severity finding from FORENSIC-v102.md is closed via grader strengthening, framing reconciliation, or library-level corrections. **Placeholder phase** — concrete plans inserted via `/gsd-phase --insert` post-Phase 18.
@@ -117,7 +135,24 @@ Use `/gsd-new-milestone` to scope and plan the next milestone.
   2. Each 20.x sub-phase mirrors v1.0.1's P13/P14 shape — grader strengthening with precise-value assertions, framing reconciliation between question.md and setup output, and library typos.
   3. Strengthened graders still score ref-solutions max/max.
   4. No HIGH-severity bug regressions introduced — Phase 19 invariants (max/max ref-solution, 0/100 empty) preserved across the MED remediation set.
-**Plans**: TBD (sub-phases 20.x inserted post-Phase 18)
+**Plans**: 20.1, 20.2 (inserted from FORENSIC-v102.md 2026-05-20)
+
+### Phase 20.1: BUG-M11 Close — harness label extraction edge case
+**Goal**: Investigate why `cka-sim/lib/symptom-diff.sh`'s `_jsonpath_to_jq` for `metadata.labels.X` paths returns a JSON-array string `[\n  "restricted"\n]` instead of a scalar `restricted` for cluster-architecture/04-pss-enforce. Fix in the harness; verify with the existing unit cases.
+**Depends on**: Phase 18, Phase 19
+**Requirements**: BUG-M11
+**Success Criteria**:
+  1. `cka-sim audit cluster-architecture/04-pss-enforce` returns PASS on kind+Calico.
+  2. `bash cka-sim/scripts/test.sh` continues to return 0 (no regression to existing 88 cases).
+  3. Existing label-bearing audits (other PASS questions with metadata.labels claims) remain PASS.
+
+### Phase 20.2: BUG-M12 Close — exam-mode report_golden re-baseline
+**Goal**: Re-baseline `cka-sim/tests/fixtures/exam/expected-report.md` against current exam-mode rendering. Investigate the diff (numeric formatting, table widths, locale, etc.); either update the fixture if the new output is correct, or fix the renderer if the fixture was authoritative.
+**Depends on**: Phase 19
+**Requirements**: BUG-M12
+**Success Criteria**:
+  1. `bash cka-sim/scripts/test.sh` returns 0 on Linux with `report_golden` PASSING.
+  2. Per-domain score table format remains stable across local + Linux CI runs.
 
 ### Phase 21: Post-Fix Intent Re-Verification + Milestone Sign-Off
 **Goal**: Every remediated question's `intent.yaml` is re-verified against its post-fix `setup.sh` via `cka-sim audit`, the FORENSIC-v102.md ledger is signed off as fully closed, and the v1.0.2 milestone audit captures the final per-requirement status.
@@ -155,7 +190,11 @@ Use `/gsd-new-milestone` to scope and plan the next milestone.
 | 15. Live-Cluster Symptom-Diff CI                   | v1.0.1    | 7/7   | Complete    | 2026-05-17  |
 | 16. Question-Intent Baseline Harness               | v1.0.2    | 0/TBD | Not started | -           |
 | 17. v1.0.2 Backlog Cleanup                         | v1.0.2    | 0/TBD | Not started | -           |
-| 18. Forensic Re-Audit (Blind)                      | v1.0.2    | 0/TBD | Not started | -           |
-| 19. HIGH-Severity Remediation (Placeholder)        | v1.0.2    | 0/TBD | Not started | -           |
-| 20. MED-Severity Remediation (Placeholder)         | v1.0.2    | 0/TBD | Not started | -           |
+| 18. Forensic Re-Audit (Blind)                      | v1.0.2    | 2/2   | Complete    | 2026-05-20  |
+| 19. HIGH-Severity Remediation (Placeholder)        | v1.0.2    | 0/2   | Not started | -           |
+| 19.1. BUG-H07 locale-safe grep                     | v1.0.2    | 0/TBD | Not started | -           |
+| 19.2. BUG-H08 audit-policy grader vs fixture       | v1.0.2    | 0/TBD | Not started | -           |
+| 20. MED-Severity Remediation (Placeholder)         | v1.0.2    | 0/2   | Not started | -           |
+| 20.1. BUG-M11 harness label extraction             | v1.0.2    | 0/TBD | Not started | -           |
+| 20.2. BUG-M12 report_golden re-baseline            | v1.0.2    | 0/TBD | Not started | -           |
 | 21. Post-Fix Intent Re-Verification + Sign-Off     | v1.0.2    | 0/TBD | Not started | -           |

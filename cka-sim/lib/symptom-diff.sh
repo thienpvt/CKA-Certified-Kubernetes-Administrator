@@ -164,6 +164,11 @@ PY
     return 1
   }
 
+  # Strip carriage returns introduced on Windows MSYS hosts where python
+  # emits \r\n line endings — `read -r` does not split on \r, so trailing \r
+  # would leak into namespace/name fields and break kubectl lookups.
+  parsed="${parsed//$'\r'/}"
+
   # Pattern D (BLG-04): Calico-on-kind Deployment Available convergence.
   # For each E event claiming a Deployment's status.conditions[Available].status=True,
   # invoke kubectl wait with a 90s timeout BEFORE the JSON-capture pass so the
