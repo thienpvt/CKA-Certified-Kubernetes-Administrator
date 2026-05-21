@@ -1,0 +1,42 @@
+# .shellcheckrc — Plan 23-01 (BLG-06) repo-global shellcheck disables.
+# Each disable carries a one-line rationale. See
+# .planning/phases/23-gha-environmental-forensics-lint-triage/23-01-FINDINGS.md
+# for the per-finding audit trail (195 dispositions).
+
+# rationale: pack/test scripts source $CKA_SIM_ROOT/lib/*.sh dynamically;
+# shellcheck cannot follow $CKA_SIM_ROOT-prefixed paths. Existing per-line
+# `# shellcheck source=... disable=SC1091` directives in lib/log.sh,
+# tests/lib/assert.sh, and a few cases stay; this disable covers the bulk.
+disable=SC1091
+
+# rationale: same family as SC1091 — non-constant source paths
+# (source "$case_file" in tests/run.sh, source "$flags" in
+# packs/troubleshooting/06-broken-kubelet/grade.sh). Static analysis
+# cannot validate; runtime behaviour is exercised by tests/.
+disable=SC1090
+
+# rationale: variables flagged are either (a) exported state consumed by
+# sourced grade.sh / setup.sh helpers (CKA_SIM_GRADE_PASSES,
+# CKA_SIM_GRADE_TRAPS, CKA_SIM_PACK_META, CKA_SIM_EXAM_*), (b) ANSI colour
+# constants in lib/colors.sh consumed by every script that sources it, or
+# (c) loop-counter `i` used for the side-effect of N iterations.
+disable=SC2034
+
+# rationale: single-quoted strings are deliberate literal patterns:
+# `'${CKA_SIM_LAB_NS}'` for render-verbatim verification, literal grep
+# patterns like `'bash "$qdir/setup.sh"'`, and printf format strings
+# carrying literal UTF-8 escape sequences (`\xe2\x9c\x93`). Forcing
+# double-quotes would change semantics.
+disable=SC2016
+
+# rationale: $? capture after a multi-line block ending with a pipeline
+# whose rc is examined separately from structural assertions; rewriting
+# as `if ! cmd; then` would change scoping and break later log-format
+# assertions in uat-phase{3,4}.sh.
+disable=SC2181
+
+# rationale: `local x=$(cmd)` is a pervasive corpus idiom; the masked
+# rc is intentional in cases where best-effort capture with an empty
+# fallback is the documented behaviour (CONTEXT.md disposition rule
+# ordering names this explicitly).
+disable=SC2155
