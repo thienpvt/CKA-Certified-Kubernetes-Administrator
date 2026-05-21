@@ -141,7 +141,7 @@ else
     lint_rc=1
   fi
   # Assert output contains the expected citation
-  if ! echo "$lint_out" | grep -q "expected 'Bound', got 'Pending'"; then
+  if ! echo "$lint_out" | grep -q "expected 'Pending', got 'Bound'"; then
     # The test may print PASS without the citation if it passed via the grep check
     if ! echo "$lint_out" | grep -q "PASS"; then
       echo "    FAIL: neither citation nor PASS found in output"

@@ -1,8 +1,12 @@
 #!/bin/bash
 # cka-sim/tests/cases/symptom-diff-regression.sh — Phase 15 plan 07.
 # Synthetic regression: mutate storage/01 expected-symptom.yaml so the
-# PVC claim is "Bound" instead of the real "Pending"; run the lint;
+# PVC claim is "Pending" instead of the real "Bound"; run the lint;
 # assert exit 1 + the expected citation pattern; restore the file.
+#
+# Note (v1.0.3): mutation direction flipped from Bound→Pending to Pending→Bound
+# after Phase 10 BUG-H01 reshape made the actual post-setup state Bound. Mutating
+# the YAML to claim Pending forces lint to detect actual=Bound vs expected=Pending.
 #
 # This case is source'd by cka-sim/tests/run.sh in a subshell.
 # Cluster-info gated: skips with rc=0 when no live cluster is reachable.
@@ -24,13 +28,15 @@ if ! kubectl cluster-info >/dev/null 2>&1; then
   exit 0
 fi
 
-# Mutate: change "status.phase: Pending" -> "status.phase: Bound" for the PVC.
+# Mutate: change "status.phase: Bound" -> "status.phase: Pending" for the PVC.
+# Only the FIRST occurrence (the PVC entry) — leave the PV entry alone so the
+# citation focuses on the PVC line.
 if command -v gsed >/dev/null 2>&1; then
-  gsed -i 's/status\.phase: Pending/status.phase: Bound/' "$target"
+  gsed -i '0,/status\.phase: Bound/s//status.phase: Pending/' "$target"
 else
-  sed -i'.bak' 's/status\.phase: Pending/status.phase: Bound/' "$target" && rm -f "${target}.bak"
+  sed -i'.bak' '0,/status\.phase: Bound/s//status.phase: Pending/' "$target" && rm -f "${target}.bak"
 fi
-if ! grep -q 'status.phase: Bound' "$target"; then
+if ! grep -q 'status.phase: Pending' "$target"; then
   echo "[symptom-diff regression] FAIL: mutation not applied to $target" >&2
   exit 1
 fi
@@ -50,8 +56,8 @@ if [[ "$rc" -eq 0 ]]; then
   exit 1
 fi
 
-if ! echo "$out" | grep -q "expected 'Bound', got 'Pending'"; then
-  echo "[symptom-diff regression] FAIL: expected citation \"expected 'Bound', got 'Pending'\" not found" >&2
+if ! echo "$out" | grep -q "expected 'Pending', got 'Bound'"; then
+  echo "[symptom-diff regression] FAIL: expected citation \"expected 'Pending', got 'Bound'\" not found" >&2
   echo "$out" >&2
   exit 1
 fi
