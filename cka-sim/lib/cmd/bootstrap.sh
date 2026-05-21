@@ -96,6 +96,7 @@ export CONTAINER_RUNTIME_ENDPOINT=unix:///run/containerd/containerd.sock
 BASHRC_EOF
 )
 cka_sim::fileblock::write "$BASHRC" "$SENTINEL_BEGIN" "$SENTINEL_END" "$bashrc_content"
+# shellcheck disable=SC2088  # rationale: literal user-facing text, not a path expansion
 ok "~/.bashrc env block installed (source ~/.bashrc to activate this shell)"
 
 # ---------- Step 5: SSH key ----------
@@ -137,6 +138,7 @@ ssh_block=${ssh_block%$'\n'}
 
 cka_sim::fileblock::write "$SSH_CONFIG" "$SENTINEL_BEGIN" "$SENTINEL_END" "$ssh_block"
 chmod 600 "$SSH_CONFIG"
+# shellcheck disable=SC2088  # rationale: literal user-facing text, not a path expansion
 ok "~/.ssh/config Host stanzas installed for: ${worker_names[*]}"
 
 # ---------- Step 7: Distribute pubkey ----------

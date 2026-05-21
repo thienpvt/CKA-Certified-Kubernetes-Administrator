@@ -131,6 +131,7 @@ cka_sim::symptom_diff::run_one() {
   fi
 
   # Run setup.sh in a subshell with the per-question ns exported.
+  # shellcheck disable=SC2030  # rationale: deliberate subshell-scoped export
   if ! (
     export CKA_SIM_LAB_NS="$ns"
     export CKA_SIM_ROOT
@@ -139,6 +140,7 @@ cka_sim::symptom_diff::run_one() {
     err "$pack/$q_name: setup.sh failed against ns=$ns"
     _emit_row ERROR "" "$pack/$q_name" "" "" "setup.sh failed (ns=$ns)" ""
     # Attempt reset even on setup failure, to avoid leaks.
+    # shellcheck disable=SC2030,SC2031  # rationale: deliberate subshell-scoped export
     ( export CKA_SIM_LAB_NS="$ns"; export CKA_SIM_ROOT; bash "$q_dir/reset.sh" ) >/dev/null 2>&1 || true
     return 1
   fi
@@ -174,6 +176,7 @@ PY
   )" || {
     err "$pack/$q_name: failed to parse $yaml_file"
     _emit_row ERROR "" "$pack/$q_name" "" "" "yaml parse failed" ""
+    # shellcheck disable=SC2030,SC2031  # rationale: deliberate subshell-scoped export
     ( export CKA_SIM_LAB_NS="$ns"; export CKA_SIM_ROOT; bash "$q_dir/reset.sh" ) >/dev/null 2>&1 || true
     return 1
   }
@@ -286,6 +289,7 @@ PY
   done <<<"$parsed"
 
   # Reset always runs; tolerate failures with a warn.
+  # shellcheck disable=SC2031  # rationale: deliberate subshell-scoped export
   if ! ( export CKA_SIM_LAB_NS="$ns"; export CKA_SIM_ROOT; bash "$q_dir/reset.sh" ) >/dev/null 2>&1; then
     warn "$pack/$q_name: reset.sh exited non-zero (ns may need manual cleanup)"
   fi

@@ -93,6 +93,7 @@ else
     fix_present_rc=1
   fi
   if ! grep -nE "grep[[:space:]]+-F[[:space:]]+\\\$'\\\\t'" "$QDIR/setup.sh" >/dev/null 2>&1; then
+    # shellcheck disable=SC2028  # rationale: literal escape sequences in echo are user-facing text showing the exact grep pattern
     echo "    setup.sh missing 'grep -F \$'\\\\t'' (the locale-safe shape)"
     fix_present_rc=1
   fi

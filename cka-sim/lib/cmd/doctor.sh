@@ -95,6 +95,7 @@ fi
 # ---------- Check 8: bashrc sentinel block ----------
 
 if cka_sim::preflight::check_bashrc_block; then
+  # shellcheck disable=SC2088  # rationale: literal user-facing text, not a path expansion
   _pass "~/.bashrc sentinel block present (env exports configured)"
   if [[ "${ETCDCTL_API:-}" == "3" ]]; then
     _pass "ETCDCTL_API=3 active in current shell"
@@ -102,6 +103,7 @@ if cka_sim::preflight::check_bashrc_block; then
     warn "ETCDCTL_API not set in current shell — run 'source ~/.bashrc' or open a new shell"
   fi
 else
+  # shellcheck disable=SC2088  # rationale: literal user-facing text, not a path expansion
   _fail "~/.bashrc sentinel block missing — run 'cka-sim bootstrap' to install ETCDCTL_API + CONTAINER_RUNTIME_ENDPOINT exports"
 fi
 

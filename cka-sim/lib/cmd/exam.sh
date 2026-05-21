@@ -155,6 +155,7 @@ cka_sim::exam::on_exit() {
   CKA_SIM_TIMER_PID=""
   rm -f "${CKA_SIM_TIMER_GATE:-}" 2>/dev/null || true
   # Restore terminal echo/mode in case setup_question left it off mid-error.
+  # shellcheck disable=SC2015  # rationale: A && B || true — guarded best-effort, ambiguity cannot arise (B's rc is suppressed)
   [[ -n "${CKA_SIM_EXAM_STTY_SAVED:-}" ]] && stty "$CKA_SIM_EXAM_STTY_SAVED" 2>/dev/null || true
   cka_sim::state::save 2>/dev/null || true
   local i qdir
@@ -162,6 +163,7 @@ cka_sim::exam::on_exit() {
     [[ -z "$i" ]] && continue
     qdir="${CKA_SIM_EXAM_QDIRS[$i]:-}"
     cka_sim::exam::export_lab_ns "$i"
+    # shellcheck disable=SC2015  # rationale: A && B || true — guarded best-effort, ambiguity cannot arise
     [[ -n "$qdir" && -x "$qdir/reset.sh" ]] && bash "$qdir/reset.sh" 2>/dev/null || true
   done
   exit "$rc"
@@ -301,6 +303,7 @@ cka_sim::exam::question_loop() {
     cka_sim::exam::check_time_remaining || break
 
     local setup_ok=0
+    # shellcheck disable=SC2015  # rationale: A && B || true — guarded best-effort, setup_ok flag is the documented signal
     cka_sim::exam::setup_question "$CKA_SIM_EXAM_CUR_IDX" && setup_ok=1 || true
     if (( ! setup_ok )); then
       # Setup interrupted/failed — question already flagged; advance to next

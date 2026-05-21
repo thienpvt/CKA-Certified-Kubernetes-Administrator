@@ -89,6 +89,7 @@ exam_out=$(printf '%s' "$input" | timeout 600 bash "$CKA_SIM" exam blueprint-alp
 # Find session timestamp
 session_ts=$(echo "$exam_out" | grep -oE 'Session: [0-9T]+Z' | grep -oE '[0-9T]+Z' | head -1 || true)
 if [[ -z "$session_ts" ]]; then
+  # shellcheck disable=SC2012  # rationale: ls -t over session JSONs is deterministic enough for UAT; find -printf+sort would add complexity
   session_ts=$(ls -t ~/.cka-sim/sessions/*.json 2>/dev/null | head -1 | xargs basename 2>/dev/null | sed 's/.json//' || true)
 fi
 

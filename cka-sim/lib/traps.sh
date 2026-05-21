@@ -50,6 +50,7 @@ cka_sim::trap::is_valid_id() {
 #   arrays above. Idempotent — calling twice overwrites the same slots.
 #   On parse failure (bad id, missing required field, unreadable file)
 #   invokes `die` from log.sh.
+# shellcheck disable=SC2120  # rationale: function accepts ${1:-} for future per-catalog override
 cka_sim::trap::_load_catalog() {
   local path="${1:-$CKA_SIM_ROOT/traps/catalog.yaml}"
   [[ -r "$path" ]] || die "catalog parse failed: cannot read '$path'"
@@ -137,6 +138,7 @@ cka_sim::trap::_load_catalog() {
 cka_sim::trap::id_exists() {
   local id="${1:-}"
   [[ -n "$id" ]] || return 1
+  # shellcheck disable=SC2119  # rationale: caller-of-SC2120 site, no args is intentional (uses default catalog path)
   (( CKA_SIM_TRAP_CATALOG_LOADED == 1 )) || cka_sim::trap::_load_catalog
   [[ -n "${CKA_SIM_TRAP_NAME[$id]+x}" ]]
 }

@@ -155,6 +155,7 @@ else
     [[ "$v" == "false" ]] || { pass_ape=0; break; }
   done
   # Also require one value per container (no missing fields).
+  # shellcheck disable=SC2086  # rationale: deliberate word-splitting of $ape_vals (multi-line jq output) for wc -w count
   ape_count=$(printf '%s\n' $ape_vals | wc -w | tr -d ' ')
   [[ -n "$container_count" && "$ape_count" == "${#container_count}" ]] || pass_ape=0
 fi
