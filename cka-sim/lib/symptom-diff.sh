@@ -89,10 +89,12 @@ cka_sim::symptom_diff::compute_ns() {
 }
 
 # --- Structured-row emitter (writes to fd 3 if open) ----------------------
-# Quietly drops if fd 3 is not open. Lint mode does not redirect fd 3 so
-# rows go nowhere; audit mode redirects fd 3 to a tmp file for table render.
+# Returns 0 and emits nothing if fd 3 is not open (probed via /dev/fd/3);
+# otherwise writes one TSV row to fd 3. Audit mode redirects fd 3 to a tmp
+# file; lint mode does not redirect fd 3, so the probe short-circuits.
 _emit_row() {
-  { printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$@"; } >&3 2>/dev/null || true
+  [[ -e /dev/fd/3 ]] || return 0
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$@" >&3
 }
 
 # --- Per-question diff core -----------------------------------------------
