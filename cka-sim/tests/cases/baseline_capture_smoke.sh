@@ -44,4 +44,16 @@ cka_sim::baseline::is_candidate_modified deployment web -n test-ns
 rc=$?
 expect_eq "$rc" "1" "unchanged: returns 1 (gen=3 rv=100 same as baseline)" || case_failed=1
 
+# ---------- BLG-07 (v1.0.3): empty current state -> returns 1 (unchanged, defensive) ----------
+# Locks the empty-current-rv guard added in cka-sim/lib/baseline.sh:264-275.
+# Without this guard, [[ "" != "$baseline_rv" ]] is true → returns 0 (modified) on
+# GHA ubuntu-latest where jq output formatting differs from Windows MSYS / local kind.
+# The fixture has no .metadata.generation and no .metadata.resourceVersion, so the
+# stub's jsonpath translator returns empty for both fields — exercising the new guard.
+export CKA_SIM_BASELINE_PATH="$CKA_SIM_TEST_FIXTURES_DIR/grading-honesty/baseline-stub/baseline.json"
+export CKA_SIM_TEST_CURRENT="grading-honesty/baseline-stub/deployment-web-unreadable"
+cka_sim::baseline::is_candidate_modified deployment web -n test-ns
+rc=$?
+expect_eq "$rc" "1" "BLG-07: empty current state -> returns 1 (defensive default)" || case_failed=1
+
 exit "$case_failed"
