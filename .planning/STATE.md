@@ -2,42 +2,59 @@
 gsd_state_version: 1.0
 milestone: v1.0.3
 milestone_name: Tech Debt + Drill UX Fixes
-status: planning
-last_updated: "2026-05-21T00:15:00.000Z"
-last_activity: 2026-05-21
+status: shipped
+last_updated: "2026-05-21T02:40:10.000Z"
+last_activity: 2026-05-21 -- v1.0.3 milestone audit recorded; lab UAT + GHA confirmation routed OOB
 progress:
   total_phases: 3
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 3
+  total_plans: 7
+  completed_plans: 7
+  percent: 100
 ---
 
 # State
 
 ## Current Position
 
-Phase: Not started (roadmap drafted)
-Plan: —
-Status: Roadmap drafted — 3 phases (22-24), 5/5 v1.0.3 requirements mapped
-Last activity: 2026-05-21 — v1.0.3 roadmap created (Phases 22, 23, 24)
+Phase: v1.0.3 shipped (3 phases complete)
+Plan: 7/7 complete
+Status: v1.0.3 shipped tech_debt — milestone audit recorded; lab UAT driver authored (OOB execution pending)
+Last activity: 2026-05-21 — v1.0.3 milestone close-out (Phase 24 sign-off)
 
-### v1.0.3 Roadmap Snapshot
+### v1.0.3 Roadmap Snapshot (archived — milestone shipped)
 
-- Phase 22: Surgical Tech-Debt Fixes — DRILL-NS-01, AUDIT-W&S06, LINT-01 (3 reqs) — parallel-eligible with Phase 23
-- Phase 23: GHA Environmental Forensics + Lint Triage — BLG-06, BLG-07 (2 reqs) — parallel-eligible with Phase 22
-- Phase 24: v1.0.3 Sign-Off + Lab UAT Batch — sign-off phase (no new REQ-IDs; UAT-verifies Phase 22 + Phase 23)
+- Phase 22: Surgical Tech-Debt Fixes — DRILL-NS-01, AUDIT-W&S06, LINT-01 (3 reqs) — Complete
+- Phase 23: GHA Environmental Forensics + Lint Triage — BLG-06, BLG-07 (2 reqs) — Complete
+- Phase 24: v1.0.3 Sign-Off + Lab UAT Batch — sign-off phase (no new REQ-IDs; UAT-verifies Phase 22 + Phase 23) — Complete
 
-Dependency chain: 22 ‖ 23 → 24.
+Dependency chain: 22 ‖ 23 → 24. All phases shipped.
 
-Coverage: 5/5 v1.0.3 requirements mapped (no orphans, no duplicates).
-- DRILL-NS-01 → Phase 22 (drill-mode envsubst render — single-point harness fix at `cka-sim/lib/cmd/drill.sh:321`, mirrors exam-mode quick task `260517-hvo`)
-- AUDIT-W&S06 → Phase 22 (workloads-scheduling/06-static-pod lab-cluster setup drift — fix or `unsupported-on-lab-cluster` exclusion shape)
-- LINT-01 → Phase 22 (`cka-sim/lib/symptom-diff.sh:94` `Bad file descriptor` swallowed-error path masking Phase 15's quality gate)
-- BLG-06 → Phase 23 (per-finding shellcheck/yamllint triage; lift `continue-on-error: true` off `validate-local`)
-- BLG-07 → Phase 23 (9 GHA `ubuntu-latest` bash-test reds — `is_candidate_modified` unchanged-baseline branch + 4 cascading `traps_*` cases via ownership-gate code path)
+Coverage: 5/5 v1.0.3 requirements addressed (no orphans, no duplicates).
+- DRILL-NS-01 → Phase 22 — satisfied (commit 75ed497)
+- AUDIT-W&S06 → Phase 22 — satisfied (commit 7c87e1a)
+- LINT-01 → Phase 22 — satisfied (commit d1b244e)
+- BLG-06 → Phase 23 — addressed (commit 0a9e08f; GHA OOB pending)
+- BLG-07 → Phase 23 — addressed (commit 3e7cff4; GHA OOB pending)
 
-Phase 22 and Phase 23 are parallel-eligible by design — surgical fixes touch question/library code in disjoint files (drill renderer, one question's setup.sh, `lib/symptom-diff.sh`); investigation phase touches the GHA workflow + bash-test infrastructure. Phase 24 closes the milestone with lab-cluster UAT mirroring v1.0.1's `uat-phase{10,11,13}.sh` and v1.0.2's `uat-phase18-21.sh` driver shapes.
+### v1.0.3 Close-Out (2026-05-21 ship; live UAT pending OOB)
+
+All 3 phases (22, 23, 24) shipped with `tech_debt` audit status. 5/5 v1.0.3 requirements code-complete; static gates green; lab UAT batch + GHA confirmation operator-driven OOB.
+
+- Phase 22: Surgical Tech-Debt Fixes — DRILL-NS-01, LINT-01, AUDIT-W&S06 — commits `79dcdbe..91a258c`
+- Phase 23: GHA Environmental Forensics + Lint Triage — BLG-06, BLG-07 — commits `802f27c..607f538`
+- Phase 24: v1.0.3 Sign-Off + Lab UAT Batch — uat-v103.sh + milestone audit doc — commits `e319d5c..` (extends through this commit)
+
+**OOB evidence pending:** operator runs `cka-sim/scripts/uat-v103.sh` on v1.0.1 lab cluster, captures result in `cka-sim/current-tests/step6-results.txt`, pushes milestone-close commit to feature branch, observes GHA `validate.yml` (validate-local + bash-tests) exit 0, records run ID + commit SHA in step6-results.txt. This is the same shape v1.0.2 step5-results.txt used.
+
+Per-REQ commit citations:
+- DRILL-NS-01 → `75ed497` (Plan 22-01)
+- LINT-01 → `d1b244e` (Plan 22-02)
+- AUDIT-W&S06 → `7c87e1a` (Plan 22-03)
+- BLG-06 → `0a9e08f` (Plan 23-01)
+- BLG-07 → `3e7cff4` (Plan 23-02)
+
+Detail in `.planning/milestones/v1.0.3-MILESTONE-AUDIT.md`.
 
 ### v1.0.2 Close-Out (2026-05-20 ship; live UAT closed 2026-05-20)
 
@@ -218,10 +235,10 @@ Surfaced 2026-05-19 by GHA run 26070172071 against kind+Calico. None block v1.0.
 
 ## Operator Next Steps
 
-- Begin v1.0.3 phase planning. Phases 22 and 23 are parallel-eligible — pick whichever offers the cleaner first-cut milestone branch:
-  - `/gsd-plan-phase 22` — three surgical single-point fixes (DRILL-NS-01 envsubst render mirroring `260517-hvo`; AUDIT-W&S06 W&S06 lab-cluster fix or `unsupported-on-lab-cluster` exclusion; LINT-01 line-94 fd 3 swallowed-error fix).
-  - `/gsd-plan-phase 23` — per-finding shellcheck/yamllint triage + GHA `ubuntu-latest` 9-case red root-cause; lift `continue-on-error: true` once corpus is clean.
-- After both ship: `/gsd-plan-phase 24` runs the lab-cluster UAT batch + records `v1.0.3-MILESTONE-AUDIT.md`.
+- Run `cka-sim/scripts/uat-v103.sh` on the v1.0.1 lab cluster and capture output to `cka-sim/current-tests/step6-results.txt`.
+- Push the milestone-close commit to a feature branch; observe GHA `validate.yml` (validate-local + bash-tests jobs) exit 0; record run ID in step6-results.txt.
+- Once both confirm green: amend `v1.0.3-MILESTONE-AUDIT.md` to flip BLG-06 + BLG-07 from `addressed` to `satisfied` and update STATE.md frontmatter `status: shipped` (or keep `tech_debt` per audit verdict).
+- Run `/gsd-complete-milestone v1.0.3` to archive Phases 22-24 and tag the release.
 
 ## Quick Tasks Completed
 
