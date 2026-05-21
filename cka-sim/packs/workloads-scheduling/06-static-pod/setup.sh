@@ -3,6 +3,7 @@
 # cka-sim-lint: allow-node-literal  # drill is hostname-bound to the kubeadm CP node; dynamic discovery retrofit tracked in deferred-items
 # SSH preflight only. The question is about node-01 static pods, so setup does
 # NOT mutate /etc/kubernetes/manifests — that is the candidate's job.
+# AUDIT-W&S06 decision: SKIP — expected-symptom.yaml only checks ns-Active + pod-absent-in-default (vacuous post-setup, zero audit signal); grading criterion targets /etc/kubernetes/manifests on node-01 which is outside the namespace-isolated symptom-diff model. Task 2 wires the unsupported-in-audit-mode gate.
 set -euo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set by drill runner}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set (drill runner exports it)}"
