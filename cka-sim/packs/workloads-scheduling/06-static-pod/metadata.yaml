@@ -4,6 +4,8 @@ estimatedMinutes: 8
 verified_against: "1.35"
 # Skipped by kind-based audit/lint harness (BLG-02): requires /etc/kubernetes/manifests/ on the CP node.
 unsupported-on-kind: true
+# Skipped by audit/lint harness (AUDIT-W&S06): static-pod questions live outside any namespace; audit-harness symptom-diff model cannot simulate /etc/kubernetes/manifests mutations.
+unsupported-in-audit-mode: true
 traps:
   - static-pod-applied-via-kubectl-apply
 references:

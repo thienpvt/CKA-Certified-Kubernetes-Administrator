@@ -77,6 +77,18 @@ cka_sim::symptom_diff::is_unsupported_on_kind() {
   grep -qE '^unsupported-on-kind:[[:space:]]*true[[:space:]]*(#.*)?$' "$meta"
 }
 
+# --- AUDIT-W&S06: audit-mode-only harness skip flag -----------------------
+# Returns 0 (true; skip) if metadata.yaml declares unsupported-in-audit-mode=true. Args: q_dir.
+# Orthogonal to is_unsupported_on_kind: a question may be flagged audit-skip
+# while remaining valid for kind-based lint runs (and vice versa). Both
+# predicates are consulted independently by audit.sh and lint-question-symptom.sh.
+cka_sim::symptom_diff::is_unsupported_in_audit_mode() {
+  local q_dir="$1"
+  local meta="$q_dir/metadata.yaml"
+  [[ -f "$meta" ]] || return 1
+  grep -qE '^unsupported-in-audit-mode:[[:space:]]*true[[:space:]]*(#.*)?$' "$meta"
+}
+
 # --- Per-question lab namespace builder (RFC 1123, <=63 chars) ------------
 # $1 = prefix (e.g. "lint" or "audit"), $2 = pack, $3 = q_name
 cka_sim::symptom_diff::compute_ns() {

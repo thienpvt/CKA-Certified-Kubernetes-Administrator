@@ -250,6 +250,13 @@ cka_sim::audit::main() {
       continue
     fi
 
+    if cka_sim::symptom_diff::is_unsupported_in_audit_mode "$q_dir"; then
+      info "$pack/$q_name: skipped (unsupported-in-audit-mode)"
+      _AUDIT_SKIPPED=$(( _AUDIT_SKIPPED + 1 ))
+      _AUDIT_REPORT_BUFFER+="ⓘ $pack/$q_name: SKIPPED (unsupported-in-audit-mode)"$'\n---\n'
+      continue
+    fi
+
     tsv_tmp="$(mktemp)"
     rc=0
     # Redirect fd 3 to capture structured rows; swallow stderr (lint-style err

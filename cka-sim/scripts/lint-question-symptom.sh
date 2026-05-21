@@ -57,6 +57,10 @@ while IFS= read -r yaml_file; do
     warn "$pack/$q_name: skipped (unsupported-on-kind)"
     continue
   fi
+  if cka_sim::symptom_diff::is_unsupported_in_audit_mode "$q_dir"; then
+    warn "$pack/$q_name: skipped (unsupported-in-audit-mode)"
+    continue
+  fi
   checked=$(( checked + 1 ))
   info "==> $pack/$q_name"
   if ! cka_sim::symptom_diff::run_one "$yaml_file" "$q_dir" "$pack" "$q_name" "lint"; then
