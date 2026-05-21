@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0.3
 milestone_name: Tech Debt + Drill UX Fixes
 status: shipped
-last_updated: "2026-05-21T02:40:10.000Z"
-last_activity: 2026-05-21 -- v1.0.3 milestone audit recorded; lab UAT + GHA confirmation routed OOB
+last_updated: "2026-05-21T12:46:36.000Z"
+last_activity: 2026-05-21 -- v1.0.3 lab UAT closed (uat-v103.sh 3/0/2) + GHA validate.yml green
 progress:
   total_phases: 3
   completed_phases: 3
@@ -19,8 +19,8 @@ progress:
 
 Phase: v1.0.3 shipped (3 phases complete)
 Plan: 7/7 complete
-Status: v1.0.3 shipped tech_debt — milestone audit recorded; lab UAT driver authored (OOB execution pending)
-Last activity: 2026-05-21 — v1.0.3 milestone close-out (Phase 24 sign-off)
+Status: v1.0.3 SHIPPED — milestone audit recorded; lab UAT closed; GHA validate.yml green
+Last activity: 2026-05-21 — v1.0.3 milestone close-out + lab UAT confirmation
 
 ### v1.0.3 Roadmap Snapshot (archived — milestone shipped)
 
@@ -30,29 +30,31 @@ Last activity: 2026-05-21 — v1.0.3 milestone close-out (Phase 24 sign-off)
 
 Dependency chain: 22 ‖ 23 → 24. All phases shipped.
 
-Coverage: 5/5 v1.0.3 requirements addressed (no orphans, no duplicates).
-- DRILL-NS-01 → Phase 22 — satisfied (commit 75ed497)
-- AUDIT-W&S06 → Phase 22 — satisfied (commit 7c87e1a)
-- LINT-01 → Phase 22 — satisfied (commit d1b244e)
-- BLG-06 → Phase 23 — addressed (commit 0a9e08f; GHA OOB pending)
-- BLG-07 → Phase 23 — addressed (commit 3e7cff4; GHA OOB pending)
+Coverage: 5/5 v1.0.3 requirements satisfied (no orphans, no duplicates).
+- DRILL-NS-01 → Phase 22 — satisfied (commit 75ed497, lab UAT ✓)
+- AUDIT-W&S06 → Phase 22 — satisfied (commit 7c87e1a, lab UAT ✓)
+- LINT-01 → Phase 22 + Phase 24 follow-up — satisfied (commits d1b244e + 15e652d, lab UAT ✓)
+- BLG-06 → Phase 23 — satisfied (commit 0a9e08f, GHA validate.yml ✓)
+- BLG-07 → Phase 23 — satisfied (commit 3e7cff4, GHA bash-tests ✓)
 
-### v1.0.3 Close-Out (2026-05-21 ship; live UAT pending OOB)
+### v1.0.3 Close-Out (2026-05-21 ship; live UAT closed 2026-05-21)
 
-All 3 phases (22, 23, 24) shipped with `tech_debt` audit status. 5/5 v1.0.3 requirements code-complete; static gates green; lab UAT batch + GHA confirmation operator-driven OOB.
+All 3 phases (22, 23, 24) shipped. 5/5 v1.0.3 requirements satisfied; static gates green; lab UAT batch confirmed on v1.0.1 GCP lab cluster; GHA `validate.yml` (validate-local + bash-tests) exits 0 on the milestone-close push.
 
 - Phase 22: Surgical Tech-Debt Fixes — DRILL-NS-01, LINT-01, AUDIT-W&S06 — commits `79dcdbe..91a258c`
 - Phase 23: GHA Environmental Forensics + Lint Triage — BLG-06, BLG-07 — commits `802f27c..607f538`
-- Phase 24: v1.0.3 Sign-Off + Lab UAT Batch — uat-v103.sh + milestone audit doc — commits `e319d5c..` (extends through this commit)
+- Phase 24: v1.0.3 Sign-Off + Lab UAT Batch — uat-v103.sh + milestone audit doc — commits `e319d5c..15e652d`
 
-**OOB evidence pending:** operator runs `cka-sim/scripts/uat-v103.sh` on v1.0.1 lab cluster, captures result in `cka-sim/current-tests/step6-results.txt`, pushes milestone-close commit to feature branch, observes GHA `validate.yml` (validate-local + bash-tests) exit 0, records run ID + commit SHA in step6-results.txt. This is the same shape v1.0.2 step5-results.txt used.
+**Lab UAT (2026-05-21):** `cka-sim/scripts/uat-v103.sh` ran on v1.0.1 lab cluster; result `3 passed / 0 failed / 2 skipped (of 5)` (BLG-06/BLG-07 are GHA-deferred sub-checks by design). LINT-01 required a follow-up fix (commit `15e652d`) to reverse mutation direction post-Phase 10 BUG-H01 reshape; second UAT run green. Evidence: `cka-sim/current-tests/step6-results.txt`.
+
+**GHA confirmation (2026-05-21):** `validate.yml` `validate-local` job (no `continue-on-error`) and `bash-tests` job both exit 0 on the v1.0.3 milestone-close push.
 
 Per-REQ commit citations:
-- DRILL-NS-01 → `75ed497` (Plan 22-01)
-- LINT-01 → `d1b244e` (Plan 22-02)
-- AUDIT-W&S06 → `7c87e1a` (Plan 22-03)
-- BLG-06 → `0a9e08f` (Plan 23-01)
-- BLG-07 → `3e7cff4` (Plan 23-02)
+- DRILL-NS-01 → `75ed497` (Plan 22-01) — lab UAT ✓
+- LINT-01 → `d1b244e` (Plan 22-02) + `15e652d` (Phase 24 follow-up) — lab UAT ✓
+- AUDIT-W&S06 → `7c87e1a` (Plan 22-03) — lab UAT ✓
+- BLG-06 → `0a9e08f` (Plan 23-01) — GHA validate-local ✓
+- BLG-07 → `3e7cff4` (Plan 23-02) — GHA bash-tests ✓
 
 Detail in `.planning/milestones/v1.0.3-MILESTONE-AUDIT.md`.
 
