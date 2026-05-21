@@ -91,7 +91,10 @@ fi
 
 # ---------- Test 3: drill.sh source carries the idiom ----------
 # Source-shape lock: catches regression to plain `cat "$CKA_SIM_QUESTION_DIR/question.md"`.
-if grep -qF 'question_content//${CKA_SIM_LAB_NS}/' "$CKA_SIM_ROOT/lib/cmd/drill.sh"; then
+# The literal source bytes use backslash-escaped braces (`\$\{...\}`) — that is
+# the bash parameter-expansion syntax for matching the literal `${VAR}` token.
+# Same shape exam.sh:196 ships.
+if grep -qF 'question_content//\$\{CKA_SIM_LAB_NS\}/' "$CKA_SIM_ROOT/lib/cmd/drill.sh"; then
   printf '%s  \xe2\x9c\x93 Test 3: drill.sh carries the parameter-expansion idiom%s\n' \
     "${GREEN:-}" "${NC:-}" >&2
 else

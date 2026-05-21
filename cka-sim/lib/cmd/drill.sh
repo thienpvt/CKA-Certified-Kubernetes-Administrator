@@ -318,7 +318,14 @@ main() {
   fi
 
   info "step 3/4: prompt"
-  cat "$CKA_SIM_QUESTION_DIR/question.md"
+  # Substitute the per-question lab namespace inline so candidates see the
+  # concrete value (e.g. cka-sim-storage-01) instead of the literal
+  # ${CKA_SIM_LAB_NS} placeholder. Pure-bash expansion mirroring
+  # exam.sh:191-196 — no envsubst dependency, only the one token we own
+  # is replaced.
+  local question_content
+  question_content=$(<"$CKA_SIM_QUESTION_DIR/question.md")
+  printf '%s\n' "${question_content//\$\{CKA_SIM_LAB_NS\}/$CKA_SIM_LAB_NS}"
   info "Lab ns: $CKA_SIM_LAB_NS"
 
   local action
