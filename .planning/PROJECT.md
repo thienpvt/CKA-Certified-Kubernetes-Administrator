@@ -10,7 +10,9 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 
 ## Current State
 
-**Shipped v1.0.1 (2026-05-18, tech_debt):** Full audit remediation — all 15 question bugs (6 HIGH + 9 MED) addressed in code + 2 systemic CI gates added (trap-coverage lint, live-cluster symptom-diff CI). 18/18 requirements code-complete; live-cluster drill UATs (9), GHA first-run, and 2 fixture regens deferred to v1.0.1-followups.
+**Shipped v1.0.2 (2026-05-20, tech_debt; live UAT closed 2026-05-20):** Question correctness audit + backlog cleanup. 6 phases (16-21) plus 4 inserted sub-phases (19.1, 19.2, 20.1, 20.2). All 4 forensic findings (BUG-H07/H08/M11/M12) closed in code (`0424b64`) + verified on lab cluster via `uat-phase18-21.sh` (9/9 PASS, commit `e2f7546`). FORENSIC-v102.md ledger locked with `closed-by` references. Audit re-run on real cluster: 33/34 PASS (1 setup-drift in workloads-scheduling/06-static-pod routed to v1.0.3).
+
+**Shipped v1.0.1 (2026-05-18, tech_debt; live UAT closed 2026-05-19):** Full audit remediation — all 15 question bugs (6 HIGH + 9 MED) addressed in code + 2 systemic CI gates added (trap-coverage lint, live-cluster symptom-diff CI). 18/18 requirements code-complete.
 
 **Shipped v1.0 (2026-05-17):** Full CKA exam simulator operational on live cluster.
 - 34 questions across 5 domain packs (Storage 10%, W&S 15%, S&N 20%, CA 25%, Troubleshooting 30%)
@@ -54,17 +56,22 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 - GHA `symptom-diff` job first run on merge PR (CI-01 end-to-end proof)
 - Regen 2 fixtures: `services-networking__06-netpol-endport` and `workloads-scheduling__04-hpa-metrics-server` (Phase 13 strengthened-grader totals)
 
-## Current Milestone: v1.0.2 Question Correctness Audit + Backlog Cleanup
+## Current Milestone: v1.0.3 Tech Debt + Drill UX Fixes
 
-**Goal:** Every question in every pack reaches its intended end state when the ref-solution runs, and every Phase 15 GHA failure pattern is closed.
+**Goal:** Close v1.0.2 carry-overs (BLG-06 lint triage, BLG-07 GHA bash-tests env reds), fix the drill-mode namespace-display UX bug (candidates see literal `${CKA_SIM_LAB_NS}` instead of resolved namespace), close the workloads-scheduling/06-static-pod lab-cluster setup drift surfaced during v1.0.2 closure UAT, and fix the silent symptom-diff lint regression that masks Phase 15's quality gate.
 
 **Target features:**
-- Desired-state baseline mechanism — new audit-only test artifact capturing cluster state after ref-solution; per-question YAML diffed during forensic audit (alongside existing setup-state expected-symptom.yaml and candidate-state lib/baseline.sh)
-- Forensic re-audit (blind) — all 38 domain-pack questions + 2 mock packs against v1.35 blueprint AND desired-state baseline; output FORENSIC-v102.md bug ledger
-- Severity-grouped remediation (HIGH edits → HIGH rework → MED grader-strengthening → LOW framing/lib) — phase count + grouping defined after forensic ledger lands
-- v1.0.2 backlog cleanup — Phase 15 GHA first-run findings: symptom-diff Patterns A/B/C/D (18 failures), 2 unit reds (storage Q02, W&S Q05), CI shellcheck reds
+- DRILL-NS-01 — drill mode renders question.md with `${CKA_SIM_LAB_NS}` resolved to the actual namespace (mirrors exam-mode quick task 260517-hvo)
+- BLG-06 — per-finding shellcheck/yamllint triage (carry-over, scaffolded with `continue-on-error: true` in P17)
+- BLG-07 — GHA bash-tests environmental reds: 9 unit-test cases fail on `ubuntu-latest` runners but pass on Docker Ubuntu 22/24 + MSYS (cascades through 4 `traps_*` cases via `is_candidate_modified` ownership gate)
+- AUDIT-W&S06 — workloads-scheduling/06-static-pod setup.sh fails on lab cluster during audit (real-cluster setup-drift, not kind-skip)
+- LINT-01 — symptom-diff regression test masked by `Bad file descriptor` on `lib/symptom-diff.sh:94`; lint silently exits 0 on mutated YAML, breaking Phase 15's quality gate
 
-**Verification model:** Unit + lint + GHA `validate.yml` (kind+Calico) during phases. Live drill UATs batched at milestone close — same pattern as v1.0.1. No local kubectl required.
+**Verification model:** Unit + lint + GHA `validate.yml` (kind+Calico) during phases. Live drill UATs batched at milestone close — same pattern as v1.0.1/v1.0.2.
+
+## Previous Milestone: v1.0.2 Question Correctness Audit + Backlog Cleanup (Shipped)
+
+**Shipped:** 2026-05-20 (tech_debt; live UAT closed 2026-05-20).
 
 ### Active (v2.0 — not yet planned)
 
@@ -145,4 +152,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-19 — v1.0.2 milestone opened: Question Correctness Audit + Backlog Cleanup*
+*Last updated: 2026-05-21 — v1.0.3 milestone opened: Tech Debt + Drill UX Fixes*
