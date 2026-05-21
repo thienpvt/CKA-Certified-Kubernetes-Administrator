@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.0.3
 milestone_name: Tech Debt + Drill UX Fixes
-status: shipped
-last_updated: "2026-05-21T12:46:36.000Z"
-last_activity: 2026-05-21 -- v1.0.3 lab UAT closed (uat-v103.sh 3/0/2) + GHA validate.yml green
+status: Awaiting next milestone
+last_updated: "2026-05-21T12:48:52.550Z"
+last_activity: 2026-05-21 — Milestone v1.0.3 completed and archived
 progress:
-  total_phases: 3
+  total_phases: 13
   completed_phases: 3
   total_plans: 7
   completed_plans: 7
@@ -17,10 +17,10 @@ progress:
 
 ## Current Position
 
-Phase: v1.0.3 shipped (3 phases complete)
-Plan: 7/7 complete
-Status: v1.0.3 SHIPPED — milestone audit recorded; lab UAT closed; GHA validate.yml green
-Last activity: 2026-05-21 — v1.0.3 milestone close-out + lab UAT confirmation
+Phase: Milestone v1.0.3 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-05-21 — Milestone v1.0.3 completed and archived
 
 ### v1.0.3 Roadmap Snapshot (archived — milestone shipped)
 
@@ -31,6 +31,7 @@ Last activity: 2026-05-21 — v1.0.3 milestone close-out + lab UAT confirmation
 Dependency chain: 22 ‖ 23 → 24. All phases shipped.
 
 Coverage: 5/5 v1.0.3 requirements satisfied (no orphans, no duplicates).
+
 - DRILL-NS-01 → Phase 22 — satisfied (commit 75ed497, lab UAT ✓)
 - AUDIT-W&S06 → Phase 22 — satisfied (commit 7c87e1a, lab UAT ✓)
 - LINT-01 → Phase 22 + Phase 24 follow-up — satisfied (commits d1b244e + 15e652d, lab UAT ✓)
@@ -50,6 +51,7 @@ All 3 phases (22, 23, 24) shipped. 5/5 v1.0.3 requirements satisfied; static gat
 **GHA confirmation (2026-05-21):** `validate.yml` `validate-local` job (no `continue-on-error`) and `bash-tests` job both exit 0 on the v1.0.3 milestone-close push.
 
 Per-REQ commit citations:
+
 - DRILL-NS-01 → `75ed497` (Plan 22-01) — lab UAT ✓
 - LINT-01 → `d1b244e` (Plan 22-02) + `15e652d` (Phase 24 follow-up) — lab UAT ✓
 - AUDIT-W&S06 → `7c87e1a` (Plan 22-03) — lab UAT ✓
@@ -237,10 +239,7 @@ Surfaced 2026-05-19 by GHA run 26070172071 against kind+Calico. None block v1.0.
 
 ## Operator Next Steps
 
-- Run `cka-sim/scripts/uat-v103.sh` on the v1.0.1 lab cluster and capture output to `cka-sim/current-tests/step6-results.txt`.
-- Push the milestone-close commit to a feature branch; observe GHA `validate.yml` (validate-local + bash-tests jobs) exit 0; record run ID in step6-results.txt.
-- Once both confirm green: amend `v1.0.3-MILESTONE-AUDIT.md` to flip BLG-06 + BLG-07 from `addressed` to `satisfied` and update STATE.md frontmatter `status: shipped` (or keep `tech_debt` per audit verdict).
-- Run `/gsd-complete-milestone v1.0.3` to archive Phases 22-24 and tag the release.
+- Start the next milestone with /gsd-new-milestone
 
 ## Quick Tasks Completed
 

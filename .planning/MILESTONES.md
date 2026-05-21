@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.0.3 Tech Debt + Drill UX Fixes (Shipped: 2026-05-21)
+
+**Phases completed:** 3 phases, 7 plans, 2 tasks
+
+**Key accomplishments:**
+
+- 1. [Rule 1 - Bug] Corrected Test 3 grep pattern to match the canonical source-bytes shape
+- fd-3-safe _emit_row in cka-sim/lib/symptom-diff.sh — probes `/dev/fd/3` before redirecting so lint mode no longer leaks 'Bad file descriptor' to stderr, restoring the symptom-diff regression-test signal
+- Declared workloads-scheduling/06-static-pod audit-incompatible via a new `unsupported-in-audit-mode: true` flag mirroring Phase 17 BLG-02's kind-skip shape — audit harness emits SKIPPED instead of the silent ERROR that masked Step 2's signal.
+- 1. [Rule 1 - Bug] doctor.sh:106 SC2088 finding missed in Task 1 extraction
+- DRILL-NS-01
+- Complete.
+
+---
+
 ## v1.0 CKA Exam Simulator MVP (Shipped: 2026-05-16)
 
 **Phases completed:** 9 phases, 88 plans, 51 tasks
