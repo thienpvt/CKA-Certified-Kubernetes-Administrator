@@ -4,8 +4,8 @@
 
 - ✅ **v1.0 CKA Exam Simulator MVP** — Phases 1-8 + 07.1 (shipped 2026-05-17)
 - ✅ **v1.0.1 Full Audit Remediation** — Phases 10-15 (shipped 2026-05-18, tech_debt; live UAT closed 2026-05-19)
-- ✅ **v1.0.2 Question Correctness Audit + Backlog Cleanup** — Phases 16-21 (shipped 2026-05-20, tech_debt; GHA bash-tests environmental reds routed to v1.0.3 BLG-07)
-- 📋 **v1.0.3** — Not yet planned (BLG-06 per-finding triage + BLG-07 GHA bash-tests delta — `/gsd-new-milestone` to start)
+- ✅ **v1.0.2 Question Correctness Audit + Backlog Cleanup** — Phases 16-21 + 19.1/19.2/20.1/20.2 (shipped 2026-05-20, tech_debt; live UAT closed 2026-05-20; GHA bash-tests env reds + BLG-06 lint triage routed to v1.0.3)
+- 🚧 **v1.0.3 Tech Debt + Drill UX Fixes** — Phases 22-24 (in progress)
 
 ## Phases
 
@@ -42,24 +42,33 @@ Full archive: [milestones/v1.0.1-ROADMAP.md](milestones/v1.0.1-ROADMAP.md)
 
 </details>
 
-### 🚧 v1.0.2 Question Correctness Audit + Backlog Cleanup (In Progress)
+<details>
+<summary>✅ v1.0.2 Question Correctness Audit + Backlog Cleanup (Phases 16-21 + 19.1/19.2/20.1/20.2) — SHIPPED 2026-05-20 (tech_debt; live UAT closed 2026-05-20)</summary>
 
-**Milestone Goal:** Every question in every pack reaches its prose-claimed end state when `setup.sh` runs (audited via the new question-intent baseline), every Phase 15 GHA failure pattern is closed at the root, and the FORENSIC-v102.md ledger is signed off as fully closed.
+Question correctness audit + backlog cleanup. 6 phases (16-21) plus 4 inserted sub-phases (19.1, 19.2, 20.1, 20.2). All 4 forensic findings (BUG-H07/H08/M11/M12) closed in code (`0424b64`) + verified on lab cluster via `uat-phase18-21.sh` (9/9 PASS, commit `e2f7546`). FORENSIC-v102.md ledger locked with `closed-by` references. Audit re-run on real cluster: 33/34 PASS (1 setup-drift in workloads-scheduling/06-static-pod routed to v1.0.3 as AUDIT-W&S06). BLG-06 per-finding triage and BLG-07 GHA bash-tests env reds routed to v1.0.3.
 
-- [ ] **Phase 16: Question-Intent Baseline Harness** — Ship `cka-sim audit` + per-question `intent.yaml` for all 38 domain questions and 34 mock framings; document the third audit-only artifact in `docs/AUTHORING.md`.
-- [ ] **Phase 17: v1.0.2 Backlog Cleanup** — Close every Phase 15 GHA first-run failure pattern (A/B/C/D), the 2 unit-suite reds, and the CI shellcheck red. Parallel-eligible with Phase 16.
-- [ ] **Phase 18: Forensic Re-Audit (Blind)** — Run `cka-sim audit` over all 38 domain-pack + 34 mock framings; publish `FORENSIC-v102.md` ledger that drives remediation phase shape.
-- [ ] **Phase 19: HIGH-Severity Remediation (Placeholder)** — Close every HIGH finding from FORENSIC-v102.md. Concrete sub-phases (19.1, 19.2, ...) inserted via `/gsd-phase --insert` after Phase 18 ships.
-- [ ] **Phase 20: MED-Severity Remediation (Placeholder)** — Close every MED finding via grader strengthening, framing reconciliation, and library corrections. Sub-phases inserted post-Phase 18.
-- [ ] **Phase 21: Post-Fix Intent Re-Verification + Milestone Sign-Off** — Re-run `cka-sim audit` over every remediated question, sign off FORENSIC-v102.md as fully closed, batch live drill UATs.
+- [x] Phase 16: Question-Intent Baseline Harness (TBD plans) — BASELINE-01..04 + DOC-01 — commits `d19f550..c12a0ee`
+- [x] Phase 17: v1.0.2 Backlog Cleanup (TBD plans) — BLG-01..05 — commits `3ccb35a..e14baf7` (BLG-06 routed to v1.0.3)
+- [x] Phase 18: Forensic Re-Audit (Blind) (2/2 plans) — AUDIT-01..04 — commit `c56749a`
+- [x] Phase 19: HIGH-Severity Remediation (Placeholder) (2/2 sub-phases)
+- [x] Phase 19.1: BUG-H07 Close — locale-safe grep — commit `0424b64`
+- [x] Phase 19.2: BUG-H08 Close — audit-policy grader vs fixture — commit `0424b64`
+- [x] Phase 20: MED-Severity Remediation (Placeholder) (2/2 sub-phases)
+- [x] Phase 20.1: BUG-M11 Close — harness label extraction — commit `0424b64`
+- [x] Phase 20.2: BUG-M12 Close — report_golden re-baseline — commit `0424b64`
+- [x] Phase 21: Post-Fix Intent Re-Verification + Sign-Off (TBD plans) — commit `3574ce1`
 
-### 📋 v1.0.3 (Not yet planned)
+Full archive: [milestones/v1.0.2-MILESTONE-AUDIT.md](milestones/v1.0.2-MILESTONE-AUDIT.md)
 
-Two outstanding tech-debt items routed from v1.0.2 close-out:
-- **BLG-06** — Per-finding shellcheck/yamllint triage. `continue-on-error: true` scaffolded in P17 awaits per-finding fixes per Plan 17-05's documented flow.
-- **BLG-07** — GHA bash-tests environmental reds. 9 unit-test cases fail on `ubuntu-latest` runners but pass on Docker Ubuntu 22.04 + 24.04 + Windows MSYS. Surfaced after Phase 17 fixed `tests/run.sh` exec-bit. Symptom: `expected 1 got 0` on `cka_sim::baseline::is_candidate_modified` unchanged-baseline branch. Investigate runner-specific environmental delta (jq version, locale, `set -u` interaction).
+</details>
 
-Use `/gsd-new-milestone` to scope and plan.
+### 🚧 v1.0.3 Tech Debt + Drill UX Fixes (In Progress)
+
+**Milestone Goal:** Close v1.0.2 carry-overs (BLG-06 per-finding shellcheck/yamllint triage, BLG-07 GHA bash-tests environmental reds) at the root, fix the drill-mode namespace-display UX bug (candidates currently see literal `${CKA_SIM_LAB_NS}` instead of the resolved namespace), close the workloads-scheduling/06-static-pod lab-cluster setup drift surfaced during v1.0.2 closure UAT, and fix the silent symptom-diff lint regression that masks Phase 15's quality gate. Pure tech-debt milestone — no new features, no new question authoring.
+
+- [ ] **Phase 22: Surgical Tech-Debt Fixes** — Three independent, single-point fixes (DRILL-NS-01 envsubst render, AUDIT-W&S06 lab-cluster setup drift, LINT-01 symptom-diff fd 3 swallowed-error). Parallel-eligible with Phase 23.
+- [ ] **Phase 23: GHA Environmental Forensics + Lint Triage** — Per-finding shellcheck/yamllint triage (BLG-06) + 9 GHA `ubuntu-latest` bash-test reds root-caused (BLG-07). `continue-on-error: true` lifted off `validate-local`. Parallel-eligible with Phase 22.
+- [ ] **Phase 24: v1.0.3 Sign-Off + Lab UAT Batch** — Every v1.0.3 fix re-verified on the v1.0.1 lab cluster; `v1.0.3-MILESTONE-AUDIT.md` records final per-requirement status. Mirrors v1.0.1/v1.0.2 close-out shape.
 
 ## Phase Details
 
@@ -169,11 +178,47 @@ Use `/gsd-new-milestone` to scope and plan.
   4. `.planning/milestones/v1.0.2-MILESTONE-AUDIT.md` records final status per requirement (satisfied / addressed / deferred), with phase-by-phase commit ranges comparable to v1.0.1's audit.
 **Plans**: TBD
 
+### Phase 22: Surgical Tech-Debt Fixes
+**Goal**: Three independent, single-point bug fixes land — drill-mode renders namespace-substituted prompts, workloads-scheduling/06-static-pod setup either succeeds on the lab cluster or is documented as unsupported, and the symptom-diff regression test fails as designed when its expected-symptom.yaml is mutated.
+**Depends on**: v1.0.2 shipped
+**Parallel-eligible with**: Phase 23 (independent code paths — surgical fixes touch the drill renderer, one question's setup.sh, and `lib/symptom-diff.sh`; the investigation phase touches the GHA workflow + bash-test infrastructure)
+**Requirements**: DRILL-NS-01, AUDIT-W&S06, LINT-01
+**Success Criteria** (what must be TRUE):
+  1. `cka-sim drill <pack> <n>` renders `question.md` with every `${CKA_SIM_LAB_NS}` literal substituted to the resolved namespace (e.g. `cka-sim-storage-01`) before display; a smoke-test across the 20+ affected questions shows zero literal `${CKA_SIM_LAB_NS}` strings in candidate-visible prompts. Mirrors exam-mode quick task `260517-hvo` shape, single-point fix at `cka-sim/lib/cmd/drill.sh:321`.
+  2. `cka-sim audit workloads-scheduling/06-static-pod` completes deterministically on the v1.0.1 lab cluster — either with a PASS verdict via fixed `setup.sh`, or with a deterministic skip honored by the audit harness via the same `unsupported-on-<env>` exclusion shape Phase 17 added for kind. The 33/34 PASS + 1 ERROR baseline from v1.0.2 closure UAT advances to either 34/34 PASS or 33/34 PASS + 1 SKIP.
+  3. `cka-sim/tests/cases/symptom-diff-regression.sh` exits non-zero (regression test catches the deliberate mutation) when `lint-question-symptom.sh` is fed a mutated `expected-symptom.yaml`; the `Bad file descriptor` swallowed-error path at `cka-sim/lib/symptom-diff.sh:94` no longer masks lint detection. Phase 15's quality gate is restored to actually catching drift.
+  4. `bash cka-sim/scripts/test.sh` returns 0 across Linux + Windows MSYS for the affected unit cases (drill render path, audit-skip honor for W&S06, symptom-diff regression test); no new reds introduced by the three fixes.
+**Plans**: TBD
+
+### Phase 23: GHA Environmental Forensics + Lint Triage
+**Goal**: Both v1.0.2 carry-overs are closed at the root — every shellcheck/yamllint finding is triaged (fix in code / relax with documented rationale / out of scope), `continue-on-error: true` is lifted off the GHA `validate-local` job, and the 9 unit-test cases red on `ubuntu-latest` are root-caused and made green across the full environment matrix.
+**Depends on**: v1.0.2 shipped
+**Parallel-eligible with**: Phase 22 (independent code paths — investigation phase touches the GHA workflow + bash-test infrastructure; surgical fixes touch question/library code in different files)
+**Requirements**: BLG-06, BLG-07
+**Success Criteria** (what must be TRUE):
+  1. `.github/workflows/validate.yml` `validate-local` job runs without `continue-on-error: true`; every shellcheck/yamllint finding has a recorded disposition (fix in code / relax in lint config with documented rationale / out of scope) captured in the phase SUMMARY.md, mirroring Plan 17-05's documented flow.
+  2. The 9 unit-test cases red on `ubuntu-latest` (the `cka_sim::baseline::is_candidate_modified` unchanged-baseline branch reporting `expected 1 got 0` plus the 4 `traps_*` cases — `default-sa-used`, `hostpath-pv-without-nodeaffinity`, `missing-dns-egress`, `ownership_gate` — that cascade through the ownership-gate code path) pass on the GHA Ubuntu runner; the runner-specific delta (jq version, locale, `set -u` interaction) is documented in the phase SUMMARY.md.
+  3. `bash cka-sim/scripts/test.sh` returns 0 on GHA `ubuntu-latest`, Docker Ubuntu 22.04, Docker Ubuntu 24.04, Windows MSYS, and local kind — environmental parity verified across all five environments.
+  4. GHA `validate-local` and `bash-tests` jobs both exit 0 on the v1.0.3 milestone-close push without `continue-on-error: true` masking real reds.
+**Plans**: TBD
+
+### Phase 24: v1.0.3 Sign-Off + Lab UAT Batch
+**Goal**: Every v1.0.3 fix is re-verified on the v1.0.1 lab cluster via a milestone UAT driver, and `v1.0.3-MILESTONE-AUDIT.md` records final per-requirement status with phase-by-phase commit ranges. Mirrors v1.0.1/v1.0.2 close-out shape — a final phase that re-verifies on the lab cluster + records the milestone audit.
+**Depends on**: Phase 22, Phase 23
+**Parallel-eligible with**: nothing (final phase — closes the milestone)
+**Requirements**: (sign-off phase — closes work from Phase 22 + Phase 23 via UAT verification; no new code requirements declared at this phase)
+**Success Criteria** (what must be TRUE):
+  1. A `cka-sim/scripts/uat-v103.sh` (or per-phase `uat-phase22.sh` + `uat-phase23.sh`) driver runs on the v1.0.1 lab cluster (1 control-plane + 2 workers, Calico, enforcing CNI) and reports zero failures across one sub-check per fix (DRILL-NS-01 namespace render, AUDIT-W&S06 lab-cluster outcome, LINT-01 mutation-catch, BLG-06 lint-clean, BLG-07 9/9 cases green).
+  2. `cka-sim audit` re-run on the lab cluster reports either 34/34 PASS or 33/34 PASS + 1 deterministic SKIP for workloads-scheduling/06-static-pod via the AUDIT-W&S06 exclusion shape — improvement over v1.0.2's 33/34 PASS + 1 ERROR baseline.
+  3. `.planning/milestones/v1.0.3-MILESTONE-AUDIT.md` records final status per requirement (satisfied / addressed / deferred) with phase-by-phase commit ranges, comparable in shape to `v1.0.2-MILESTONE-AUDIT.md`.
+  4. STATE.md is updated to reflect milestone close (phase progress 100%, status `tech_debt` or `satisfied`); any verification gaps remaining post-UAT are documented as new tech debt for v1.0.4 rather than blocking ship.
+**Plans**: TBD
+
 ## Progress
 
-**Execution Order:** Integer phases run in numeric order: 16 → 17 → 18 → 19 → 20 → 21. Phases 16 and 17 are parallel-eligible (independent dependency chains). Decimal sub-phases inserted into 19 and 20 post-Phase 18 execute as 19.1 → 19.2 → ... → 20.1 → 20.2 → ... before Phase 21.
+**Execution Order:** Integer phases run in numeric order: 16 → 17 → 18 → 19 → 20 → 21 (v1.0.2, shipped) → 22 → 23 → 24 (v1.0.3). Within v1.0.3, Phases 22 and 23 are parallel-eligible (independent dependency chains — surgical fixes vs GHA forensics); Phase 24 depends on both.
 
-**Verification model:** Unit (`cka-sim/scripts/test.sh`) + lint (`lint-packs.sh`, `lint-traps.sh`, `lint-coverage.sh`, `lint-trap-coverage.sh`, `lint-question-symptom.sh`) + GHA `validate.yml` (kind+Calico) during phases. Live drill UATs batched at milestone close (same pattern as v1.0.1). No local kubectl required.
+**Verification model:** Unit (`cka-sim/scripts/test.sh`) + lint (`lint-packs.sh`, `lint-traps.sh`, `lint-coverage.sh`, `lint-trap-coverage.sh`, `lint-question-symptom.sh`) + GHA `validate.yml` (kind+Calico) during phases. Live drill UATs batched at milestone close (same pattern as v1.0.1 / v1.0.2). No local kubectl required during phase execution.
 
 | Phase                                              | Milestone | Plans | Status      | Completed   |
 | -------------------------------------------------- | --------- | ----- | ----------- | ----------- |
@@ -192,13 +237,16 @@ Use `/gsd-new-milestone` to scope and plan.
 | 13. Grader-Strengthening                           | v1.0.1    | 3/3   | Complete    | 2026-05-17  |
 | 14. Question Framing + Library Fixes               | v1.0.1    | 4/4   | Complete    | 2026-05-17  |
 | 15. Live-Cluster Symptom-Diff CI                   | v1.0.1    | 7/7   | Complete    | 2026-05-17  |
-| 16. Question-Intent Baseline Harness               | v1.0.2    | 0/TBD | Not started | -           |
-| 17. v1.0.2 Backlog Cleanup                         | v1.0.2    | 0/TBD | Not started | -           |
+| 16. Question-Intent Baseline Harness               | v1.0.2    | TBD   | Complete    | 2026-05-20  |
+| 17. v1.0.2 Backlog Cleanup                         | v1.0.2    | TBD   | Complete    | 2026-05-20  |
 | 18. Forensic Re-Audit (Blind)                      | v1.0.2    | 2/2   | Complete    | 2026-05-20  |
-| 19. HIGH-Severity Remediation (Placeholder)        | v1.0.2    | 0/2   | Not started | -           |
-| 19.1. BUG-H07 locale-safe grep                     | v1.0.2    | 0/TBD | Not started | -           |
-| 19.2. BUG-H08 audit-policy grader vs fixture       | v1.0.2    | 0/TBD | Not started | -           |
-| 20. MED-Severity Remediation (Placeholder)         | v1.0.2    | 0/2   | Not started | -           |
-| 20.1. BUG-M11 harness label extraction             | v1.0.2    | 0/TBD | Not started | -           |
-| 20.2. BUG-M12 report_golden re-baseline            | v1.0.2    | 0/TBD | Not started | -           |
-| 21. Post-Fix Intent Re-Verification + Sign-Off     | v1.0.2    | 0/TBD | Not started | -           |
+| 19. HIGH-Severity Remediation (Placeholder)        | v1.0.2    | 2/2   | Complete    | 2026-05-20  |
+| 19.1. BUG-H07 locale-safe grep                     | v1.0.2    | TBD   | Complete    | 2026-05-20  |
+| 19.2. BUG-H08 audit-policy grader vs fixture       | v1.0.2    | TBD   | Complete    | 2026-05-20  |
+| 20. MED-Severity Remediation (Placeholder)         | v1.0.2    | 2/2   | Complete    | 2026-05-20  |
+| 20.1. BUG-M11 harness label extraction             | v1.0.2    | TBD   | Complete    | 2026-05-20  |
+| 20.2. BUG-M12 report_golden re-baseline            | v1.0.2    | TBD   | Complete    | 2026-05-20  |
+| 21. Post-Fix Intent Re-Verification + Sign-Off     | v1.0.2    | TBD   | Complete    | 2026-05-20  |
+| 22. Surgical Tech-Debt Fixes                       | v1.0.3    | 0/TBD | Not started | -           |
+| 23. GHA Environmental Forensics + Lint Triage      | v1.0.3    | 0/TBD | Not started | -           |
+| 24. v1.0.3 Sign-Off + Lab UAT Batch                | v1.0.3    | 0/TBD | Not started | -           |

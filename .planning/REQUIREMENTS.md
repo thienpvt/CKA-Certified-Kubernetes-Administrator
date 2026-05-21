@@ -34,21 +34,24 @@ Five fix-bug requirements. No new features. Each maps to a forensic finding from
 
 ## Traceability
 
-Empty until roadmap creation. Each requirement maps to exactly one phase.
+Each requirement maps to exactly one phase. Phase numbering continues from v1.0.2's last phase (21); v1.0.3 starts at Phase 22.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DRILL-NS-01 | TBD | Pending |
-| BLG-06 | TBD | Pending |
-| BLG-07 | TBD | Pending |
-| AUDIT-W&S06 | TBD | Pending |
-| LINT-01 | TBD | Pending |
+| DRILL-NS-01 | Phase 22 | Pending |
+| AUDIT-W&S06 | Phase 22 | Pending |
+| LINT-01 | Phase 22 | Pending |
+| BLG-06 | Phase 23 | Pending |
+| BLG-07 | Phase 23 | Pending |
 
 **Coverage:**
 - v1.0.3 requirements: 5 total
-- Mapped to phases: 0
-- Unmapped: 5 ⚠️ (filled by roadmap)
+- Mapped to phases: 5 ✓
+- Unmapped: 0 ✓
+
+**Phase 24 (v1.0.3 Sign-Off + Lab UAT Batch)** has no REQ-IDs assigned — it is a milestone close-out phase that re-verifies Phase 22 + Phase 23 work on the lab cluster and records the milestone audit. This mirrors v1.0.1's Phase 15 / v1.0.2's Phase 21 sign-off shape.
 
 ---
 *Requirements defined: 2026-05-21*
-*Last updated: 2026-05-21 after initial definition*
+*Traceability filled: 2026-05-21 after roadmap creation*
+*Last updated: 2026-05-21 after roadmap traceability fill*

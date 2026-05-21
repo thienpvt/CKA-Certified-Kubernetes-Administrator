@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.0.3
 milestone_name: Tech Debt + Drill UX Fixes
 status: planning
-last_updated: "2026-05-21T00:06:42.037Z"
+last_updated: "2026-05-21T00:15:00.000Z"
 last_activity: 2026-05-21
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,23 +17,27 @@ progress:
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Not started (roadmap drafted)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-21 — Milestone v1.0.3 started
+Status: Roadmap drafted — 3 phases (22-24), 5/5 v1.0.3 requirements mapped
+Last activity: 2026-05-21 — v1.0.3 roadmap created (Phases 22, 23, 24)
 
-### v1.0.2 Roadmap Snapshot
+### v1.0.3 Roadmap Snapshot
 
-- Phase 16: Question-Intent Baseline Harness — BASELINE-01..04 + DOC-01 (5 reqs)
-- Phase 17: v1.0.2 Backlog Cleanup — BLG-01..06 (6 reqs) — parallel-eligible with Phase 16
-- Phase 18: Forensic Re-Audit (Blind) — AUDIT-01..04 (4 reqs)
-- Phase 19: HIGH-Severity Remediation (Placeholder) — REMEDIATE-01 (1 req; sub-phases inserted post-Phase 18)
-- Phase 20: MED-Severity Remediation (Placeholder) — REMEDIATE-02 (1 req; sub-phases inserted post-Phase 18)
-- Phase 21: Post-Fix Intent Re-Verification + Sign-Off — REMEDIATE-03 (1 req)
+- Phase 22: Surgical Tech-Debt Fixes — DRILL-NS-01, AUDIT-W&S06, LINT-01 (3 reqs) — parallel-eligible with Phase 23
+- Phase 23: GHA Environmental Forensics + Lint Triage — BLG-06, BLG-07 (2 reqs) — parallel-eligible with Phase 22
+- Phase 24: v1.0.3 Sign-Off + Lab UAT Batch — sign-off phase (no new REQ-IDs; UAT-verifies Phase 22 + Phase 23)
 
-Dependency chain: 16 ‖ 17 → 18 → 19 (+ 19.x sub-phases) → 20 (+ 20.x sub-phases) → 21.
+Dependency chain: 22 ‖ 23 → 24.
 
-Coverage: 18/18 v1.0.2 requirements mapped (no orphans, no duplicates). Sub-phase BUG-* requirements are intentionally NOT pre-baked — they are generated from `FORENSIC-v102.md` via `/gsd-phase --insert` after Phase 18 ships, mirroring how v1.0.1's P10-P14 plans were derived from `forensics/report-20260517-091657-full-audit.md`.
+Coverage: 5/5 v1.0.3 requirements mapped (no orphans, no duplicates).
+- DRILL-NS-01 → Phase 22 (drill-mode envsubst render — single-point harness fix at `cka-sim/lib/cmd/drill.sh:321`, mirrors exam-mode quick task `260517-hvo`)
+- AUDIT-W&S06 → Phase 22 (workloads-scheduling/06-static-pod lab-cluster setup drift — fix or `unsupported-on-lab-cluster` exclusion shape)
+- LINT-01 → Phase 22 (`cka-sim/lib/symptom-diff.sh:94` `Bad file descriptor` swallowed-error path masking Phase 15's quality gate)
+- BLG-06 → Phase 23 (per-finding shellcheck/yamllint triage; lift `continue-on-error: true` off `validate-local`)
+- BLG-07 → Phase 23 (9 GHA `ubuntu-latest` bash-test reds — `is_candidate_modified` unchanged-baseline branch + 4 cascading `traps_*` cases via ownership-gate code path)
+
+Phase 22 and Phase 23 are parallel-eligible by design — surgical fixes touch question/library code in disjoint files (drill renderer, one question's setup.sh, `lib/symptom-diff.sh`); investigation phase touches the GHA workflow + bash-test infrastructure. Phase 24 closes the milestone with lab-cluster UAT mirroring v1.0.1's `uat-phase{10,11,13}.sh` and v1.0.2's `uat-phase18-21.sh` driver shapes.
 
 ### v1.0.2 Close-Out (2026-05-20 ship; live UAT closed 2026-05-20)
 
@@ -53,17 +57,22 @@ All 6 phases (16-21) plus 4 inserted sub-phases (19.1, 19.2, 20.1, 20.2) shipped
 - BUG-M11: M11.1 `cka-sim audit cluster-architecture/04-pss-enforce` returns PASS (3/3) on real cluster
 - BUG-M12: M12.1 report_golden unit case passes, M12.2 expected-report.md is LF-only
 
-**Audit re-run on real cluster (Step 2):** 33/34 PASS, 0 FAIL, 1 error, 0 skipped — `BLG-02 unsupported-on-kind` flag removed from the 3 affected questions; only `workloads-scheduling/06-static-pod` setup.sh fails on the lab cluster (separate from the 4 forensic findings; routed to v1.0.3 scope).
+**Audit re-run on real cluster (Step 2):** 33/34 PASS, 0 FAIL, 1 error, 0 skipped — `BLG-02 unsupported-on-kind` flag removed from the 3 affected questions; only `workloads-scheduling/06-static-pod` setup.sh fails on the lab cluster (separate from the 4 forensic findings; routed to v1.0.3 scope as AUDIT-W&S06).
 
 UAT artifacts: `cka-sim/current-tests/step{1,2,4,5}-results.txt`. FORENSIC-v102.md Closure Status table updated with `closed-by` + `Live UAT` columns (commits `0424b64` for code, `e2f7546` for UAT).
 
 ### v1.0.2-followups (Tech Debt — routed to v1.0.3)
 
-Carried forward from v1.0.2 close-out:
+Carried forward from v1.0.2 close-out. All 3 items now scoped as REQs DRILL-NS-01/AUDIT-W&S06/LINT-01/BLG-06/BLG-07 across Phases 22-23:
 
-1. **BLG-06** — Per-finding shellcheck/yamllint triage. `continue-on-error: true` scaffolded in P17 (commit `a77712a`); per-finding fixes deferred per Plan 17-05's documented flow.
-2. **BLG-07** — GHA bash-tests environmental reds. 9 unit-test cases fail on `ubuntu-latest` runners but pass on Docker Ubuntu 22.04 + 24.04 + Windows MSYS. Surfaced after Phase 17 fixed `tests/run.sh` exec bit. Symptom: `expected 1 got 0` on `cka_sim::baseline::is_candidate_modified` unchanged-baseline branch. Investigate runner-specific environmental delta (jq version, locale, `set -u` interaction).
-3. **Audit error: `workloads-scheduling/06-static-pod`** — setup.sh failed on the lab cluster during Step 2 audit re-run (ns=cka-sim-audit-...). Not a kind-skip — real-cluster setup-drift. Suggested triage during v1.0.3.
+1. **BLG-06** — Per-finding shellcheck/yamllint triage. `continue-on-error: true` scaffolded in P17 (commit `a77712a`); per-finding fixes deferred per Plan 17-05's documented flow. → Phase 23.
+2. **BLG-07** — GHA bash-tests environmental reds. 9 unit-test cases fail on `ubuntu-latest` runners but pass on Docker Ubuntu 22.04 + 24.04 + Windows MSYS. Surfaced after Phase 17 fixed `tests/run.sh` exec bit. Symptom: `expected 1 got 0` on `cka_sim::baseline::is_candidate_modified` unchanged-baseline branch. Investigate runner-specific environmental delta (jq version, locale, `set -u` interaction). → Phase 23.
+3. **Audit error: `workloads-scheduling/06-static-pod`** — setup.sh failed on the lab cluster during Step 2 audit re-run (ns=cka-sim-audit-...). Not a kind-skip — real-cluster setup-drift. → Phase 22 as AUDIT-W&S06.
+
+Two additional v1.0.3 requirements not in the v1.0.2-followups list (surfaced separately):
+
+4. **DRILL-NS-01** — drill-mode `${CKA_SIM_LAB_NS}` literal display bug. Mirrors exam-mode quick task `260517-hvo` (commit on `cka-sim/lib/cmd/exam.sh`). → Phase 22.
+5. **LINT-01** — symptom-diff regression test silently passes when comparison fails; `Bad file descriptor` on `cka-sim/lib/symptom-diff.sh:94` masks lint detection; Phase 15's quality gate silently broken. → Phase 22.
 
 ### v1.0.1 Close-Out (2026-05-18 ship; UAT closed 2026-05-19)
 
@@ -151,6 +160,7 @@ These are intentionally deferred, not blockers for advancing.
 
 ### Roadmap Evolution
 
+- 2026-05-21 — Milestone v1.0.3 roadmap drafted: 3 phases (22-24), 5/5 v1.0.3 requirements mapped. Phase 22 (Surgical Tech-Debt Fixes) and Phase 23 (GHA Environmental Forensics + Lint Triage) are parallel-eligible by design — surgical fixes touch disjoint code paths (drill renderer, one question's setup.sh, `lib/symptom-diff.sh`); investigation phase touches GHA workflow + bash-test infrastructure. Phase 24 closes the milestone via lab-cluster UAT batch + `v1.0.3-MILESTONE-AUDIT.md`, mirroring v1.0.1's Phase 15 / v1.0.2's Phase 21 sign-off shape. No placeholder phases like v1.0.2's 19/20 — there's no forensic ledger gating sub-phase shape this milestone.
 - 2026-05-19 — Milestone v1.0.2 roadmap drafted: 6 phases (16-21), 18/18 requirements mapped. Phases 16+17 parallel-eligible (greenfield audit harness vs. pre-traced backlog cleanup). Phases 19+20 are placeholders by design — sub-phases generated from FORENSIC-v102.md ledger via `/gsd-phase --insert` after Phase 18 ships, mirroring how v1.0.1 P10-P14 derived from the forensic report. Phase 21 closes the milestone with intent re-audit + live UAT batch.
 - 2026-05-17 — Milestone v1.0.1 opened. Forensic audit (`forensics/report-20260517-091657-full-audit.md`) surfaced 6 HIGH + 9 MED question bugs + 1 library typo. Roadmap defined 6 phases (10-15) covering 18 requirements with 100% coverage.
 - Phase 07.1 inserted after Phase 7: Grading honesty rebuild — empty submissions must score 0/100 (Phase 7 UAT Test 12) (URGENT)
@@ -158,6 +168,9 @@ These are intentionally deferred, not blockers for advancing.
 
 ### Decisions
 
+- 2026-05-21 — v1.0.3 phase shape: 3 phases (22-24) reflecting the 5-requirement tech-debt surface. Phase 22 groups all three independent surgical fixes (DRILL-NS-01 + AUDIT-W&S06 + LINT-01) — each is a single-point change in disjoint files, so they batch cleanly into one phase. Phase 23 isolates the two investigation-heavy items (BLG-06 per-finding lint walk, BLG-07 runner-environment forensics) where the work shape is "iterate per finding" or "compare environments," not "apply known fix." Phase 24 is a milestone close-out + lab UAT batch — the same shape that worked for v1.0.1 (P15 verification) and v1.0.2 (P21 sign-off).
+- 2026-05-21 — Phase 22 and Phase 23 are parallel-eligible. The two phases touch disjoint subsystems: Phase 22 = drill renderer + one question's setup.sh + `lib/symptom-diff.sh` line-94 swallowed-error path; Phase 23 = GHA workflow YAML + bash-test infrastructure on `ubuntu-latest`. No shared files, no shared decisions.
+- 2026-05-21 — No placeholder phases this milestone. Unlike v1.0.2's Phases 19/20 (which were placeholders waiting on FORENSIC-v102.md to drive sub-phase shape), all 5 v1.0.3 requirements are pre-traced from v1.0.2 close-out evidence. Direct phase assignment, no `/gsd-phase --insert` round-trip needed.
 - 2026-05-19 — v1.0.2 phase shape: 6 phases mirroring v1.0.1's count. Backlog cleanup (Phase 17) sequenced parallel to harness build (Phase 16) because the dependency graphs are independent — Phase 17 closes pre-traced GHA findings against existing code, Phase 16 ships greenfield `cka-sim audit` + intent.yaml corpus. Phase 18 (forensic re-audit) requires both: it needs the harness AND a clean lint baseline so audit signal isn't drowned in known-noise patterns.
 - 2026-05-19 — Remediation phases are explicitly placeholders. REMEDIATE-01..03 are written as the requirements to satisfy; concrete BUG-* requirements and decimal sub-phases are generated post-Phase 18 from FORENSIC-v102.md. This pattern matches v1.0.1's actual execution shape (P10-P14 plans were derived from the forensic report, not pre-baked at roadmap time).
 - 2026-05-17 — v1.0.1 phase grouping derived from forensic-report bug shape, not arbitrary template: HIGH single-edits (P10), HIGH design rework (P11), lint-then-trim systemic orphans (P12), grader-strengthening (P13), question framing + lib (P14), durable CI net last (P15).
@@ -205,12 +218,10 @@ Surfaced 2026-05-19 by GHA run 26070172071 against kind+Calico. None block v1.0.
 
 ## Operator Next Steps
 
-- Begin v1.0.2 phase planning. Phases 16 and 17 are parallel-eligible — pick whichever offers the cleaner first-cut milestone branch:
-  - `/gsd-plan-phase 16` — ship `cka-sim audit` + 38+34 intent.yaml files + AUTHORING.md update.
-  - `/gsd-plan-phase 17` — close Phase 15 GHA backlog (BLG-01..06).
-- After both ship: `/gsd-plan-phase 18` runs the blind audit and produces FORENSIC-v102.md.
-- Post-Phase 18: `/gsd-phase --insert` decimal sub-phases under 19 (HIGH) and 20 (MED) from the ledger, each with its own BUG-* requirements.
-- Phase 21 closes the milestone with intent re-verification + live drill UAT batch + v1.0.2-MILESTONE-AUDIT.md.
+- Begin v1.0.3 phase planning. Phases 22 and 23 are parallel-eligible — pick whichever offers the cleaner first-cut milestone branch:
+  - `/gsd-plan-phase 22` — three surgical single-point fixes (DRILL-NS-01 envsubst render mirroring `260517-hvo`; AUDIT-W&S06 W&S06 lab-cluster fix or `unsupported-on-lab-cluster` exclusion; LINT-01 line-94 fd 3 swallowed-error fix).
+  - `/gsd-plan-phase 23` — per-finding shellcheck/yamllint triage + GHA `ubuntu-latest` 9-case red root-cause; lift `continue-on-error: true` once corpus is clean.
+- After both ship: `/gsd-plan-phase 24` runs the lab-cluster UAT batch + records `v1.0.3-MILESTONE-AUDIT.md`.
 
 ## Quick Tasks Completed
 
