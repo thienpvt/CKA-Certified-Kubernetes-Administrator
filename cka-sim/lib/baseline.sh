@@ -251,21 +251,32 @@ cka_sim::baseline::is_candidate_modified() {
       current_gen=$(kubectl get "$kind" "$name" -o jsonpath='{.metadata.generation}' 2>/dev/null)
     fi
 
-    if [[ -n "$current_gen" ]]; then
-      if (( current_gen > baseline_gen )); then
-        return 0  # modified (generation increased)
-      fi
-      return 1  # not modified (generation equal); skip unreliable rv fallback
+    if [[ -z "$current_gen" ]]; then
+      # BLG-07 (v1.0.3): empty current_gen means unreadable current state.
+      # Default to "unchanged" rather than fall through to rv-fallback —
+      # an unreadable state is an environment issue, not evidence of modification.
+      return 1
     fi
-    # current_gen empty (resource gone?) -> fall through to rv check as last resort
+    if (( current_gen > baseline_gen )); then
+      return 0  # modified (generation increased)
+    fi
+    return 1  # not modified (generation equal); skip unreliable rv fallback
   fi
 
-  # RV FALLBACK (reached when baseline_gen is null/empty OR generation comparison was equal)
+  # RV FALLBACK (reached when baseline_gen is null/empty)
   local current_rv
   if [[ -n "$ns" ]]; then
     current_rv=$(kubectl get "$kind" "$name" -n "$ns" -o jsonpath='{.metadata.resourceVersion}' 2>/dev/null)
   else
     current_rv=$(kubectl get "$kind" "$name" -o jsonpath='{.metadata.resourceVersion}' 2>/dev/null)
+  fi
+
+  # BLG-07 (v1.0.3): empty current_rv means unreadable current state.
+  # Default to "unchanged" — same defensive shape as the gen-first path above.
+  # Without this guard, [[ "" != "$baseline_rv" ]] is true → returns 0 (modified)
+  # on every fixture where jq output is empty (jq-version delta on GHA ubuntu-latest).
+  if [[ -z "$current_rv" ]]; then
+    return 1
   fi
 
   if [[ "$current_rv" != "$baseline_rv" ]]; then
