@@ -215,7 +215,9 @@ Full archive: [milestones/v1.0.2-MILESTONE-AUDIT.md](milestones/v1.0.2-MILESTONE
   2. `cka-sim audit` re-run on the lab cluster reports either 34/34 PASS or 33/34 PASS + 1 deterministic SKIP for workloads-scheduling/06-static-pod via the AUDIT-W&S06 exclusion shape — improvement over v1.0.2's 33/34 PASS + 1 ERROR baseline.
   3. `.planning/milestones/v1.0.3-MILESTONE-AUDIT.md` records final status per requirement (satisfied / addressed / deferred) with phase-by-phase commit ranges, comparable in shape to `v1.0.2-MILESTONE-AUDIT.md`.
   4. STATE.md is updated to reflect milestone close (phase progress 100%, status `tech_debt` or `satisfied`); any verification gaps remaining post-UAT are documented as new tech debt for v1.0.4 rather than blocking ship.
-**Plans**: TBD
+**Plans**: 2 plans
+  - 24-01-PLAN.md — author cka-sim/scripts/uat-v103.sh milestone UAT driver
+  - 24-02-PLAN.md — write v1.0.3-MILESTONE-AUDIT.md + STATE.md close-out
 
 ## Progress
 
@@ -252,4 +254,4 @@ Full archive: [milestones/v1.0.2-MILESTONE-AUDIT.md](milestones/v1.0.2-MILESTONE
 | 21. Post-Fix Intent Re-Verification + Sign-Off     | v1.0.2    | TBD   | Complete    | 2026-05-20  |
 | 22. Surgical Tech-Debt Fixes                       | v1.0.3    | 0/3   | Not started | -           |
 | 23. GHA Environmental Forensics + Lint Triage      | v1.0.3    | 0/TBD | Not started | -           |
-| 24. v1.0.3 Sign-Off + Lab UAT Batch                | v1.0.3    | 0/TBD | Not started | -           |
+| 24. v1.0.3 Sign-Off + Lab UAT Batch                | v1.0.3    | 0/2   | Not started | -           |
