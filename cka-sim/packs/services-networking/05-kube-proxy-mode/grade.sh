@@ -15,8 +15,8 @@ source "$CKA_SIM_ROOT/lib/grade.sh"
 source "$CKA_SIM_ROOT/lib/traps.sh"
 
 # --- Assertion 0: candidate overwrote the sandbox file (not still seeded) ---
-seeded=$(cat /tmp/q05-kube-proxy/.setup-seeded-mode 2>/dev/null | tr -d '[:space:]')
-reported=$(cat /tmp/q05-kube-proxy/reported-mode.txt 2>/dev/null | tr -d '[:space:]')
+seeded=$(tr -d '[:space:]' < /tmp/q05-kube-proxy/.setup-seeded-mode 2>/dev/null)
+reported=$(tr -d '[:space:]' < /tmp/q05-kube-proxy/reported-mode.txt 2>/dev/null)
 
 candidate_wrote=0
 CKA_SIM_GRADE_TOTAL=$(( CKA_SIM_GRADE_TOTAL + 1 ))

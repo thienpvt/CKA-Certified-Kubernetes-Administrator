@@ -159,7 +159,7 @@ else
   seed_rc=1
   seed_file="/tmp/q05-kube-proxy/.setup-seeded-mode"
   if [[ -f "$seed_file" ]]; then
-    seeded=$(cat "$seed_file" 2>/dev/null | tr -d '[:space:]')
+    seeded=$(tr -d '[:space:]' < "$seed_file" 2>/dev/null)
     if [[ "$seeded" == "placeholder" ]]; then
       seed_rc=0
       echo -e "    seeded mode: 'placeholder' ${GREEN}OK${NC}"

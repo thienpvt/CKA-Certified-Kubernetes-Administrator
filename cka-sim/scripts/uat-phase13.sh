@@ -94,7 +94,7 @@ else
   CNI_ENFORCES="unknown"
   if (( setup_rc == 0 )); then
     if [[ -f "$SENTINEL" ]]; then
-      val=$(cat "$SENTINEL" 2>/dev/null | tr -d '[:space:]')
+      val=$(tr -d '[:space:]' < "$SENTINEL" 2>/dev/null)
       if [[ "$val" == "true" || "$val" == "false" ]]; then
         sentinel_rc=0
         CNI_ENFORCES="$val"
