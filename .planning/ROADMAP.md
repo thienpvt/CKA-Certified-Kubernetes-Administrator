@@ -1,4 +1,4 @@
-# Roadmap: CKA Certified Kubernetes Administrator
+﻿# Roadmap: CKA Certified Kubernetes Administrator
 
 ## Milestones
 
@@ -188,7 +188,10 @@ Full archive: [milestones/v1.0.2-MILESTONE-AUDIT.md](milestones/v1.0.2-MILESTONE
   2. `cka-sim audit workloads-scheduling/06-static-pod` completes deterministically on the v1.0.1 lab cluster — either with a PASS verdict via fixed `setup.sh`, or with a deterministic skip honored by the audit harness via the same `unsupported-on-<env>` exclusion shape Phase 17 added for kind. The 33/34 PASS + 1 ERROR baseline from v1.0.2 closure UAT advances to either 34/34 PASS or 33/34 PASS + 1 SKIP.
   3. `cka-sim/tests/cases/symptom-diff-regression.sh` exits non-zero (regression test catches the deliberate mutation) when `lint-question-symptom.sh` is fed a mutated `expected-symptom.yaml`; the `Bad file descriptor` swallowed-error path at `cka-sim/lib/symptom-diff.sh:94` no longer masks lint detection. Phase 15's quality gate is restored to actually catching drift.
   4. `bash cka-sim/scripts/test.sh` returns 0 across Linux + Windows MSYS for the affected unit cases (drill render path, audit-skip honor for W&S06, symptom-diff regression test); no new reds introduced by the three fixes.
-**Plans**: TBD
+**Plans**: 3 plans
+  - 22-01-PLAN.md — drill-mode envsubst render (DRILL-NS-01)
+  - 22-02-PLAN.md — symptom-diff _emit_row fd-3 safety (LINT-01)
+  - 22-03-PLAN.md — workloads-scheduling/06-static-pod audit FIX-or-SKIP (AUDIT-W&S06)
 
 ### Phase 23: GHA Environmental Forensics + Lint Triage
 **Goal**: Both v1.0.2 carry-overs are closed at the root — every shellcheck/yamllint finding is triaged (fix in code / relax with documented rationale / out of scope), `continue-on-error: true` is lifted off the GHA `validate-local` job, and the 9 unit-test cases red on `ubuntu-latest` are root-caused and made green across the full environment matrix.
@@ -247,6 +250,6 @@ Full archive: [milestones/v1.0.2-MILESTONE-AUDIT.md](milestones/v1.0.2-MILESTONE
 | 20.1. BUG-M11 harness label extraction             | v1.0.2    | TBD   | Complete    | 2026-05-20  |
 | 20.2. BUG-M12 report_golden re-baseline            | v1.0.2    | TBD   | Complete    | 2026-05-20  |
 | 21. Post-Fix Intent Re-Verification + Sign-Off     | v1.0.2    | TBD   | Complete    | 2026-05-20  |
-| 22. Surgical Tech-Debt Fixes                       | v1.0.3    | 0/TBD | Not started | -           |
+| 22. Surgical Tech-Debt Fixes                       | v1.0.3    | 0/3   | Not started | -           |
 | 23. GHA Environmental Forensics + Lint Triage      | v1.0.3    | 0/TBD | Not started | -           |
 | 24. v1.0.3 Sign-Off + Lab UAT Batch                | v1.0.3    | 0/TBD | Not started | -           |
