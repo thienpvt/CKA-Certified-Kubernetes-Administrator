@@ -81,7 +81,6 @@ jobs:
   shellcheck:
     name: ShellCheck + yamllint (cka-sim)
     runs-on: ubuntu-latest
-    continue-on-error: true   # BLG-06: temporary; remove after per-finding triage lands
     steps:
       - uses: actions/checkout@v4
 
