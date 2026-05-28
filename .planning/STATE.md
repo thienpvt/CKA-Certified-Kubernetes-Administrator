@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: Dump Cooloo9871 Pack
 status: planning
 last_updated: "2026-05-28T09:02:08.218Z"
-last_activity: 2026-05-28 — v1.1 roadmap drafted
+last_activity: 2026-05-28 — v1.1 roadmap approved
 progress:
   total_phases: 4
   completed_phases: 0
@@ -19,10 +19,10 @@ progress:
 
 Phase: 25 — Source Inventory + Pack Scaffold + Command Exercises
 Plan: —
-Status: Roadmap drafted, awaiting approval
-Last activity: 2026-05-28 — Milestone v1.1 roadmap drafted
+Status: Ready to plan Phase 25
+Last activity: 2026-05-28 — Milestone v1.1 roadmap approved
 
-### v1.1 Roadmap Snapshot (draft — awaiting approval)
+### v1.1 Roadmap Snapshot (approved)
 
 - Phase 25: Source Inventory + Pack Scaffold + Command Exercises — SRC-01..03, PACK-01..04, CMD-01..10 (17 reqs) — Pending
 - Phase 26: Core Object Exercise Batch — OBJ-01..10 (10 reqs) — Pending
