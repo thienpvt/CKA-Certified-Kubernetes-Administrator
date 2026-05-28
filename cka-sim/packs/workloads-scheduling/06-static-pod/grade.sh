@@ -2,7 +2,7 @@
 # Phase 07.1 AUDIT-1 — no leak (mirror pod kubelet-created from candidate file) → header + candidate-authored assertion
 # Phase 07.1 D-22 audit-escape: on-worker static-pod check; kubectl-stub fixture model partially applies (mirror pod is namespaced)
 # workloads-scheduling/06-static-pod/grade.sh
-# cka-sim-lint: allow-node-literal  # legacy fixture/ref path keeps node-01 fallback for static-pod audit coverage
+# cka-sim-lint: allow-node-literal  # legacy fixture/ref path keeps worker-1 fallback for static-pod audit coverage
 set -uo pipefail
 : "${CKA_SIM_LAB_NS:?CKA_SIM_LAB_NS must be set}"
 : "${CKA_SIM_ROOT:?CKA_SIM_ROOT must be set}"
@@ -13,10 +13,10 @@ source "$CKA_SIM_ROOT/lib/grade.sh"
 source "$CKA_SIM_ROOT/lib/traps.sh"
 
 # Give the kubelet time to mirror the static pod (poll interval ~20s by default).
-# Support the current worker-1 naming plus the legacy node-01 fixture/ref path.
+# Support the current worker-1 naming plus the legacy worker-1 fixture/ref path.
 mirror_pod="q06-static-nginx-worker-1"
 if ! kubectl get pod "$mirror_pod" -n default -o name >/dev/null 2>&1; then
-  mirror_pod="q06-static-nginx-node-01"
+  mirror_pod="q06-static-nginx-worker-1"
 fi
 kubectl wait --for=condition=Ready "pod/$mirror_pod" -n default --timeout=60s 2>/dev/null || true
 

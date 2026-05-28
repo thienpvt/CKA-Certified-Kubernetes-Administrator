@@ -2,14 +2,14 @@
   "kind": "Pod",
   "apiVersion": "v1",
   "metadata": {
-    "name": "q06-static-nginx-node-01",
+    "name": "q06-static-nginx-worker-1",
     "namespace": "default",
     "annotations": {
       "kubernetes.io/config.source": "file"
     }
   },
   "spec": {
-    "nodeName": "node-01",
+    "nodeName": "worker-1",
     "containers": [
       {"name": "nginx", "image": "nginx:1.27"}
     ]
