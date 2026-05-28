@@ -1,0 +1,11 @@
+question: dump-q25-etcd-snapshot
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: secret
+    name: q25-etcd-snapshot
+    namespace: ${CKA_SIM_LAB_NS}

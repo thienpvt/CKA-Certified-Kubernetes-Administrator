@@ -1,0 +1,1065 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator/cka-sim# bash scripts/test.                              sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cka-sim test
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  step 1: lint trap catalog
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ trap catalog lint
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ trap[pss-error-string-mismatch]: schema OK
+✓ trap[psp-fictional-pod-label-exemption]: schema OK
+✓ trap[kubelet-runtime-flag-in-kubeconfig]: schema OK
+✓ trap[removed-container-runtime-flag]: schema OK
+✓ trap[hostpath-pv-without-nodeaffinity]: schema OK
+✓ trap[as-flag-format-wrong]: schema OK
+✓ trap[default-sa-used]: schema OK
+✓ trap[missing-dns-egress]: schema OK
+✓ trap[pvc-wrong-storageclass]: schema OK
+✓ trap[pv-accessmodes-mismatch]: schema OK
+✓ trap[deployment-missing-requests]: schema OK
+✓ trap[service-selector-empty-endpoints]: schema OK
+✓ trap[imagepullbackoff-wrong-tag]: schema OK
+✓ trap[rbac-viewer-role-mismatch]: schema OK
+✓ trap[csi-snapshot-wrong-driver]: schema OK
+✓ trap[pvc-pending-wffc-unscheduled-consumer]: schema OK
+✓ trap[reclaim-policy-delete-data-loss]: schema OK
+✓ trap[pvc-accessmode-rwx-on-rwo-sc]: schema OK
+✓ trap[hpa-missing-metrics-server]: schema OK
+✓ trap[sidecar-not-native-restartpolicy-always]: schema OK
+✓ trap[daemonset-missing-control-plane-toleration]: schema OK
+✓ trap[reclaim-policy-retain-when-delete-required]: schema OK
+✓ trap[configmap-env-value-literal-hardcoded]: schema OK
+✓ trap[pod-unschedulable-nodeselector-no-matching-node]: schema OK
+✓ trap[rollout-undo-without-prior-revision]: schema OK
+✓ trap[static-pod-applied-via-kubectl-apply]: schema OK
+✓ trap[kube-proxy-mode-mismatch-ipvs-iptables]: schema OK
+✓ trap[netpol-endport-missing-protocol]: schema OK
+✓ trap[coredns-forward-to-invalid-upstream]: schema OK
+✓ trap[ingress-missing-ingressclass]: schema OK
+✓ trap[etcd-snapshot-without-env-set]: schema OK
+✓ trap[etcd-restore-wrong-data-dir]: schema OK
+✓ trap[kubeadm-upgrade-skip-plan]: schema OK
+✓ trap[audit-policy-wrong-stage-verbosity]: schema OK
+✓ trap[crd-missing-scope-field]: schema OK
+✓ trap[cri-endpoint-unix-prefix-missing]: schema OK
+✓ trap[priorityclass-globaldefault-conflict]: schema OK
+✓ trap[netpol-label-key-drift]: schema OK
+✓ trap[netpol-default-deny-missing-allow]: schema OK
+✓ trap[coredns-sandbox-configmap-mount]: schema OK
+✓ trap[dnsconfig-policy-none-no-nameservers]: schema OK
+✓ trap[debug-pod-leaked-not-cleaned]: schema OK
+✓ trap[debug-node-missing-chroot-host]: schema OK
+✓ trap[debug-ephemeral-vs-node-confusion]: schema OK
+✓ trap[static-pod-manifest-bad-yaml]: schema OK
+✓ trap[static-pod-image-tag-typo]: schema OK
+✓ trap[kubelet-flag-file-malformed-quoting]: schema OK
+
+✓ catalog lint passed (47 entries schema OK).
+✓ catalog lint passed
+  step 2: lint packs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ pack lint
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  pass A: GRADE-02 grade.sh idioms
+  pass B: mutating-verb rejection in grade.sh (graders are read-only; apply --dr                              y-run=client allowed)
+  pass C: D-09 runner-owns-cleanup guard (no 'kubectl delete ns' in setup.sh)
+  pass D: D-12(d/e) 6-files-per-question + executable bits
+  pass E: D-12(b/c) metadata.yaml schema + trap-id registration
+  pass F: BUG-3 pre-empt — no hardcoded node-01/node-02 in packs/**/*.sh
+  pass G: FORBIDDEN-COMMAND guard — troubleshooting pack host-safety (D-09/D-11/                              D-12)
+  pass H: blueprint manifest lint
+  pass I: reset.sh /tmp/cka-sim/ cleanup (Phase 07.1 grading-honesty)
+
+✓ pack lint passed (298 check(s)).
+✓ pack lint passed
+  step 3: lint coverage
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ coverage lint
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ cluster-architecture: coverage schema OK
+✓ services-networking: coverage schema OK
+✓ storage: coverage schema OK
+✓ troubleshooting: coverage schema OK
+✓ workloads-scheduling: coverage schema OK
+
+✓ coverage lint passed (5 pack(s), 0 warning(s)).
+✓ coverage lint passed
+  step 4: lint trap coverage
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ trap coverage lint
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+! cluster-architecture/01-rbac-viewer: grade.sh uses dynamic record_trap "$var";                               coverage assumed for all declared traps
+✓ cluster-architecture/01-rbac-viewer: trap coverage assumed (dynamic id)
+✓ cluster-architecture/02-etcd-backup-restore: trap coverage OK
+✓ cluster-architecture/03-kubeadm-upgrade: trap coverage OK
+! cluster-architecture/04-pss-enforce: grade.sh uses dynamic record_trap "$var";                               coverage assumed for all declared traps
+✓ cluster-architecture/04-pss-enforce: trap coverage assumed (dynamic id)
+✓ cluster-architecture/05-audit-policy: trap coverage OK
+✓ cluster-architecture/06-crd-basics: trap coverage OK
+✓ cluster-architecture/07-cri-dockerd-endpoint: trap coverage OK
+✓ cluster-architecture/08-priorityclass: trap coverage OK
+! services-networking/01-networkpolicy-egress: grade.sh uses dynamic record_trap                               "$var"; coverage assumed for all declared traps
+✓ services-networking/01-networkpolicy-egress: trap coverage assumed (dynamic id                              )
+✓ services-networking/02-service-core: trap coverage OK
+✓ services-networking/03-coredns-resolution: trap coverage OK
+✓ services-networking/04-ingress-path-host: trap coverage OK
+✓ services-networking/05-kube-proxy-mode: trap coverage OK
+✓ services-networking/06-netpol-endport: trap coverage OK
+! storage/01-pvc-binding: grade.sh uses dynamic record_trap "$var"; coverage ass                              umed for all declared traps
+✓ storage/01-pvc-binding: trap coverage assumed (dynamic id)
+✓ storage/02-storageclass-dynamic: trap coverage OK
+✓ storage/03-access-modes-reclaim: trap coverage OK
+✓ storage/04-csi-volumesnapshot: trap coverage OK
+! storage/05-wait-for-first-consumer: grade.sh uses dynamic record_trap "$var";                               coverage assumed for all declared traps
+✓ storage/05-wait-for-first-consumer: trap coverage assumed (dynamic id)
+! storage/06-pvc-mount-pod: grade.sh uses dynamic record_trap "$var"; coverage a                              ssumed for all declared traps
+✓ storage/06-pvc-mount-pod: trap coverage assumed (dynamic id)
+! troubleshooting/01-deploy-svc-mismatch: grade.sh uses dynamic record_trap "$va                              r"; coverage assumed for all declared traps
+✓ troubleshooting/01-deploy-svc-mismatch: trap coverage assumed (dynamic id)
+✓ troubleshooting/02-netpol-dns-egress: trap coverage OK
+✓ troubleshooting/03-coredns-resolution: trap coverage OK
+✓ troubleshooting/04-debug-node: trap coverage OK
+✓ troubleshooting/05-static-pod-manifest: trap coverage OK
+✓ troubleshooting/06-broken-kubelet: trap coverage OK
+! workloads-scheduling/01-deployment-requests: grade.sh uses dynamic record_trap                               "$var"; coverage assumed for all declared traps
+✓ workloads-scheduling/01-deployment-requests: trap coverage assumed (dynamic id                              )
+! workloads-scheduling/02-rolling-update-rollback: grade.sh uses dynamic record_                              trap "$var"; coverage assumed for all declared traps
+✓ workloads-scheduling/02-rolling-update-rollback: trap coverage assumed (dynami                              c id)
+! workloads-scheduling/03-configmap-secret-env-volume: grade.sh uses dynamic rec                              ord_trap "$var"; coverage assumed for all declared traps
+✓ workloads-scheduling/03-configmap-secret-env-volume: trap coverage assumed (dy                              namic id)
+✓ workloads-scheduling/04-hpa-metrics-server: trap coverage OK
+! workloads-scheduling/05-daemonset: grade.sh uses dynamic record_trap "$var"; c                              overage assumed for all declared traps
+✓ workloads-scheduling/05-daemonset: trap coverage assumed (dynamic id)
+✓ workloads-scheduling/06-static-pod: trap coverage OK
+✓ workloads-scheduling/07-native-sidecar: trap coverage OK
+✓ workloads-scheduling/08-nodeselector-affinity-taints: trap coverage OK
+
+✓ trap coverage lint passed (34 question(s) checked, 11 dynamic-id warning(s)).
+✓ trap-coverage lint passed
+  step 5: lint deprecated strings
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ deprecated-strings lint
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+✓ deprecated-strings lint passed (1270 file-pattern check(s)).
+✓ deprecated-strings lint passed
+  step 6: run bash unit cases
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cka-sim bash unit tests
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ audit-cmd-help-lists-audit
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: audit-cmd-help-lists-audit
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ audit-cmd-no-cluster-exit2
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: audit-cmd-no-cluster-exit2
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ baseline_capture_smoke
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ back-compat: returns 0 when CKA_SIM_BASELINE_PATH unset
+  ✓ not-in-baseline: returns 0 (candidate-authored)
+  ✓ gen-delta: returns 0 (generation 4 > 3)
+  ✓ rv-fallback: returns 0 (generation null, rv 600 != 500)
+  ✗ unchanged: returns 1 (gen=3 rv=100 same as baseline) — expected 1 got 0
+✗ case failed (rc=1): baseline_capture_smoke
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ baseline_runner_hook
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ drill.sh: sources lib/baseline.sh exactly once
+  ✓ drill.sh: calls cka_sim::baseline::capture
+  ✓ drill.sh: exports CKA_SIM_BASELINE_PATH
+  ✓ drill.sh: setup.sh (L307) before capture (L314)
+  ✓ exam.sh: sources lib/baseline.sh exactly once
+  ✓ exam.sh: calls cka_sim::baseline::capture
+  ✓ exam.sh: exports CKA_SIM_BASELINE_PATH
+  ✓ exam.sh: batch_grade re-exports CKA_SIM_BASELINE_PATH per question
+  ✓ exam.sh: setup_question: setup.sh before capture
+✓ case passed: baseline_runner_hook
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill_load_pack
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ storage: 1 question parsed
+  ✓ storage: id parsed
+  ✓ storage: path parsed
+  ✓ storage: minutes parsed
+  ✓ storage: pack.id parsed
+  ✓ storage: pack.domain parsed
+  ✓ storage: pack.weight parsed
+  ✓ multi: 3 questions parsed
+  ✓ multi: index 0 id
+  ✓ multi: index 1 id
+  ✓ multi: index 2 id
+  ✓ multi: index 2 path
+  ✓ multi: index 1 minutes
+  ✓ multi: pack.id parsed
+  ✓ empty: zero questions parsed
+  ✓ empty: pack.id still parsed
+✓ case passed: drill_load_pack
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill_namespace_construction
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ pack=storage idx=1 (zero-pad single digit)
+  ✓ pack=services-networking idx=2 (long pack name + zero-pad)
+  ✓ pack=troubleshooting idx=17 (no extra padding)
+  ✓ pack=workloads-scheduling idx=10
+  ✓ longest expected ns name = 31 chars (<= 63)
+  ✓ RFC 1123 ok: cka-sim-storage-01
+  ✓ RFC 1123 ok: cka-sim-services-networking-99
+  ✓ RFC 1123 ok: cka-sim-cluster-architecture-01
+  ✓ RFC 1123 ok: cka-sim-workloads-scheduling-10
+  ✓ RFC 1123 ok: cka-sim-troubleshooting-17
+✓ case passed: drill_namespace_construction
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill_orchestration_order
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ orchestration: reset -> setup -> grade -> reset (EXIT-trap)
+  ✓ question file present: metadata.yaml
+  ✓ question file present: question.md
+  ✓ question file present: setup.sh
+  ✓ question file present: grade.sh
+  ✓ question file present: reset.sh
+  ✓ question file present: ref-solution.sh
+  ✓ question script executable: setup.sh
+  ✓ question script executable: grade.sh
+  ✓ question script executable: reset.sh
+  ✓ question script executable: ref-solution.sh
+✓ case passed: drill_orchestration_order
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ drill_question_selection
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ picked=1 -> idx=0
+  ✓ picked=2 -> idx=1
+  ✓ picked=3 -> idx=2
+  ✓ empty picked -> idx in [0,4]: got 0
+  ✓ picked=0 died as expected
+  ✓ picked=99 died as expected
+  ✓ picked=abc died as expected
+  ✓ picked=-1 died as expected
+✓ case passed: drill_question_selection
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_can_i
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ can-i get pods (as=alice, ns=cka-sim-test) = no
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented — expected 1 got 0
+✗ can-i get pods (as=alice, ns=cka-sim-test) = no
+  ✓ fail: TOTAL incremented
+  ✗ fail: PASSED NOT incremented — expected 1 got 0
+  ✗ fail: FAILS appended once — expected 1 got 2
+✗ case failed (rc=1): grade_assert_can_i
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_changed_since_setup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ deployment/web changed since setup
+  ✓ case-A: TOTAL incremented
+  ✓ case-A: PASSED incremented (generation 4 > 3)
+✓ configmap/app-config changed since setup
+  ✓ case-B: TOTAL incremented
+  ✓ case-B: PASSED incremented (rv fallback: 600 != 500)
+✓ deployment/web changed since setup
+  ✓ case-C: TOTAL incremented
+  ✗ case-C: PASSED NOT incremented (unchanged) — expected 0 got 1
+  ✗ case-C: FAILS appended — expected 1 got 0
+✗ deployment/web unchanged since setup (no baseline available)
+  ✓ case-D: TOTAL incremented (back-compat)
+  ✓ case-D: PASSED=0 (no baseline -> fail)
+  ✓ case-D: FAILS appended (no baseline)
+✗ case failed (rc=1): grade_assert_changed_since_setup
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_egress_allowed
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ egress from pod 'web' to 10.0.0.1:80 blocked or unreachable
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented — expected 1 got 0
+✗ egress from pod 'web' to 10.0.0.1:80 blocked or unreachable
+  ✓ fail: TOTAL incremented
+  ✗ fail: PASSED NOT incremented — expected 1 got 0
+  ✗ fail: FAILS appended once — expected 1 got 2
+✗ case failed (rc=1): grade_assert_egress_allowed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_endpoints_nonempty
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ endpoints for service 'web' are empty (no Ready pods backing it)
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented — expected 1 got 0
+✗ endpoints for service 'web' are empty (no Ready pods backing it)
+  ✓ fail: TOTAL incremented
+  ✗ fail: PASSED NOT incremented — expected 1 got 0
+  ✗ fail: FAILS appended once — expected 1 got 2
+✗ case failed (rc=1): grade_assert_endpoints_nonempty
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_field_eq
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ field {.spec.replicas} on Deployment/web = '' (expected '3')
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented — expected 1 got 0
+✗ field {.spec.replicas} on Deployment/web = '' (expected '3')
+  ✓ fail: TOTAL incremented
+  ✗ fail: PASSED NOT incremented — expected 1 got 0
+  ✗ fail: FAILS appended once — expected 1 got 2
+✗ case failed (rc=1): grade_assert_field_eq
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_generation_delta_ge
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ deployment/web generation delta undefined (current generation unavailable)
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented (delta=2 >= 2) — expected 1 got 0
+✗ deployment/web generation delta undefined (current generation unavailable)
+  ✓ fail: TOTAL incremented
+  ✓ fail: PASSED NOT incremented (delta=1 < 2)
+  ✓ fail: FAILS appended
+✗ deployment/nonexistent generation delta undefined (not in baseline)
+  ✓ not-in-baseline: TOTAL incremented
+  ✓ not-in-baseline: PASSED=0 (resource not in baseline)
+  ✓ not-in-baseline: FAILS appended
+✗ case failed (rc=1): grade_assert_generation_delta_ge
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_pod_ready
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ pod 'web' is not Ready (got: '<missing>')
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented — expected 1 got 0
+✗ pod 'web' is not Ready (got: '<missing>')
+  ✓ fail: TOTAL incremented
+  ✗ fail: PASSED NOT incremented — expected 1 got 0
+  ✗ fail: FAILS appended once — expected 1 got 2
+✗ case failed (rc=1): grade_assert_pod_ready
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_pvc_bound
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ PVC 'data' not Bound (phase='<missing>')
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented — expected 1 got 0
+✗ PVC 'data' not Bound (phase='<missing>')
+  ✓ fail: TOTAL incremented
+  ✗ fail: PASSED NOT incremented — expected 1 got 0
+  ✗ fail: FAILS appended once — expected 1 got 2
+✗ case failed (rc=1): grade_assert_pvc_bound
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_resource_candidate_authored
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ pod/newpod does not exist (candidate has not created it)
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED (not in baseline + exists) — expected 1 got 0
+✗ storageclass/fast-ssd pre-existed in baseline (not candidate-authored)
+  ✓ in-baseline: TOTAL incremented
+  ✓ in-baseline: PASSED=0 (resource pre-existed)
+  ✓ in-baseline: FAILS appended
+✗ pod/missingpod does not exist (candidate has not created it)
+  ✓ not-exists: TOTAL incremented
+  ✓ not-exists: PASSED=0 (resource does not exist)
+  ✓ not-exists: FAILS appended
+✗ case failed (rc=1): grade_assert_resource_candidate_authored
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ grade_assert_resource_exists
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ resource Pod/exists not found in ns=cka-sim-test
+  ✓ pass: TOTAL incremented
+  ✗ pass: PASSED incremented — expected 1 got 0
+✗ resource Pod/absent not found in ns=cka-sim-test
+  ✓ fail: TOTAL incremented
+  ✗ fail: PASSED NOT incremented — expected 1 got 0
+  ✗ fail: FAILS appended once — expected 1 got 2
+✗ case failed (rc=1): grade_assert_resource_exists
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_coverage_completeness
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ missing-question fixture: lint fails
+  ✓ missing-question: error mentions manifest mismatch
+  ✓ empty-tracker fixture: lint fails
+  ✓ empty-tracker: error mentions empty list
+✓ case passed: lint_coverage_completeness
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_coverage_schema
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ good fixture: lint-coverage exits 0
+  ✓ good fixture: emits coverage schema OK
+  ✓ orphan fixture: warning non-fatal, exit 0
+  ✓ orphan fixture: warning mentions 'orphan'
+✓ case passed: lint_coverage_schema
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_deprecated_strings
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ lint exits non-zero on fixtures with real hits (rc=3)
+  ✓ lint exits 0 when only carveout-covered references are present
+✓ case passed: lint_deprecated_strings
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_packs_forbidden_command
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ bad-forbidden-systemctl fixture: lint-packs exits non-zero
+✓ bad-forbidden-systemctl: FORBIDDEN-COMMAND error reported
+✓ bad-forbidden-coredns-edit fixture: lint-packs exits non-zero
+✓ bad-forbidden-coredns-edit: FORBIDDEN-COMMAND error reported
+✓ bad-forbidden-varlibkubelet-write fixture: lint-packs exits non-zero
+✓ bad-forbidden-varlibkubelet-write: FORBIDDEN-COMMAND error reported
+✓ bad-forbidden-append-kubelet fixture: lint-packs exits non-zero
+✓ bad-forbidden-append-kubelet: FORBIDDEN-COMMAND error reported
+✓ bad-forbidden-tee-manifest fixture: lint-packs exits non-zero
+✓ bad-forbidden-tee-manifest: FORBIDDEN-COMMAND error reported
+✓ bad-forbidden-cp-manifest fixture: lint-packs exits non-zero
+✓ bad-forbidden-cp-manifest: FORBIDDEN-COMMAND error reported
+✓ good fixture: lint-packs exits 0
+✓ good fixture: no FORBIDDEN-COMMAND violation reported
+✓ case passed: lint_packs_forbidden_command
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_packs_grade02
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ good fixture: lint-packs exits 0
+✓ bad-grep fixture: lint-packs exits non-zero
+✓ bad-getall fixture: lint-packs exits non-zero
+✓ case passed: lint_packs_grade02
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_packs_metadata
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ bad-metadata fixture: lint-packs exits non-zero
+✓ bad-metadata: estimatedMinutes error reported
+✓ bad-metadata: verified_against error reported
+✓ bad-metadata: unknown trap-id error reported
+✓ case passed: lint_packs_metadata
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_packs_mutating_verb
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ bad-mutating fixture: lint-packs exits non-zero
+✓ bad-mutating: MUTATING-VERB error reported
+✓ case passed: lint_packs_mutating_verb
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_packs_setup_guard
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ bad-deletens fixture: lint-packs exits non-zero
+✓ bad-deletens: D-09 error reported
+✓ case passed: lint_packs_setup_guard
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ lint_trap_coverage
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ clean fixture: lint-trap-coverage exits 0
+  ✓ clean fixture: emits OK line
+  ✓ orphan fixture: lint-trap-coverage exits 1
+  ✓ orphan fixture: citation includes file:line
+  ✓ orphan fixture: error message names the orphan id
+  ✓ dynamic-id fixture: lint-trap-coverage exits 0
+  ✓ dynamic-id fixture: question slug appears in output
+  ✓ dynamic-id fixture: warn message mentions dynamic
+✓ case passed: lint_trap_coverage
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ setup_helpers_ensure_lab_ns
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ namespace name embedded
+  ✓ pack label set
+  ✓ question-id label set
+  ✓ kind is Namespace
+✓ case passed: setup_helpers_ensure_lab_ns
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ setup_helpers_read_node_worker
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ read_node_worker echoes the worker node name
+  ✓ read_node_worker exits 1 when no worker is discoverable
+  ✓ read_node_worker surfaces specific error message
+✓ case passed: setup_helpers_read_node_worker
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ setup_helpers_seed_deployment
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ minimal: kind is Deployment
+  ✓ minimal: name embedded
+  ✓ minimal: namespace embedded
+  ✓ minimal: default replicas=1
+  ✓ minimal: image embedded
+  ✓ minimal: serviceAccountName absent
+  ✓ minimal: resources block absent
+  ✓ with-sa: serviceAccountName embedded
+  ✓ with-sa: cpu request embedded
+  ✓ with-sa: memory request embedded
+  ✓ with-replicas: replicas=3
+✓ case passed: setup_helpers_seed_deployment
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ setup_helpers_seed_netpol_skeleton
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ kind is NetworkPolicy
+  ✓ name embedded
+  ✓ namespace embedded
+  ✓ podSelector label embedded
+  ✓ policyTypes block present
+  ✓ Ingress policyType present
+  ✓ Egress policyType present
+  ✓ DNS egress targets kube-system ns
+  ✓ UDP protocol present
+  ✓ TCP protocol present
+  ✓ port: 53 appears twice (UDP + TCP)
+✓ case passed: setup_helpers_seed_netpol_skeleton
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ setup_helpers_seed_pv_hostpath
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ without-affinity: kind is PV
+  ✓ without-affinity: name embedded
+  ✓ without-affinity: hostPath.path embedded
+  ✓ without-affinity: capacity embedded
+  ✓ without-affinity: nodeAffinity block absent
+  ✓ with-affinity: nodeAffinity block present
+  ✓ with-affinity: key is hostname
+  ✓ with-affinity: operator is Exists
+✓ case passed: setup_helpers_seed_pv_hostpath
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ setup_helpers_wait_for_ns_active
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ wait_for_ns_active function defined after sourcing lib/setup.sh
+  ✓ wait_for_ns_active exits non-zero when ns arg is missing (set -u catches unbound)
+  ✓ kubectl get called exactly twice (first empty, second Active)
+  ✓ re-apply fired exactly once on empty phase
+✓ case passed: setup_helpers_wait_for_ns_active
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ symptom-diff-deploy-wait
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: symptom-diff-deploy-wait
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ symptom-diff-lib-compute-ns
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: symptom-diff-lib-compute-ns
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ symptom-diff-lib-jsonpath
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: symptom-diff-lib-jsonpath
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ symptom-diff-lib-loadable
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: symptom-diff-lib-loadable
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ symptom-diff-lib-name-substitution
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: symptom-diff-lib-name-substitution
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ symptom-diff-regression
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[symptom-diff regression] FAIL: lint exited 0 with mutated YAML; expected 1
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ live-cluster symptom diff
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ==> storage/01-pvc-binding
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/symptom-diff.sh: line 94: 3: Bad file descriptor
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/symptom-diff.sh: line 94: 3: Bad file descriptor
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/symptom-diff.sh: line 94: 3: Bad file descriptor
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/symptom-diff.sh: line 94: 3: Bad file descriptor
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/symptom-diff.sh: line 94: 3: Bad file descriptor
+✓ symptom diff: 1 question(s) passed
+✗ case failed (rc=1): symptom-diff-regression
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ symptom-diff-unsupported-on-kind
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ case passed: symptom-diff-unsupported-on-kind
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_as-flag-format-wrong
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ hit: colon-containing --as value in wrong shape fires trap
+  ✓ miss: canonical system:serviceaccount form does not fire
+  ✓ benign: plain username does not fire
+✓ case passed: traps_as-flag-format-wrong
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_default-sa-used
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ hit: pod with no SA fires trap
+  ✗ miss: pod with dedicated SA does not fire — expected empty, got default-sa-used
+  ✗ benign: unrelated pod with non-default SA does not fire — expected empty, got default-sa-used
+✗ case failed (rc=1): traps_default-sa-used
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_hostpath-pv-without-nodeaffinity
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✗ hit: hostPath PV without nodeAffinity fires trap — expected hostpath-pv-without-nodeaffinity got ''
+  ✓ miss: hostPath PV with nodeAffinity does not fire
+  ✓ benign: CSI PV (no hostPath) does not fire
+✗ case failed (rc=1): traps_hostpath-pv-without-nodeaffinity
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_kubelet-runtime-flag-in-kubeconfig
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ hit: container-runtime flag in kubelet.conf fires trap
+  ✓ miss: edits correct kubeadm-flags.env (not kubelet.conf) does not fire
+  ✓ benign: reads kubelet.conf with no runtime flag does not fire
+✓ case passed: traps_kubelet-runtime-flag-in-kubeconfig
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_missing-dns-egress
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✗ hit: egress policy without UDP/53 fires trap — expected missing-dns-egress got ''
+  ✓ miss: egress policy with UDP/53 does not fire
+  ✓ benign: ingress-only policy does not fire
+✗ case failed (rc=1): traps_missing-dns-egress
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_ownership_gate
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✗ Case A (Q3 regression): setup-owned unchanged pod -> no trap fired — expected empty, got default-sa-used
+  ✓ Case B: candidate-modified pod with default SA -> fires
+  ✓ Case C: candidate-authored pod (not in baseline) -> fires
+  ✓ Case D: no baseline (back-compat) -> fires freely
+✗ case failed (rc=1): traps_ownership_gate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_psp-fictional-pod-label-exemption
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ hit: fictional exemption label fires trap
+  ✓ miss: normal labels do not fire
+  ✓ benign: pod without exemption label does not fire
+✓ case passed: traps_psp-fictional-pod-label-exemption
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_pss-error-string-mismatch
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ hit: legacy PSP wording fires trap
+  ✓ miss: correct PSS wording does not fire
+  ✓ benign: unrelated text does not fire
+✓ case passed: traps_pss-error-string-mismatch
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ traps_removed-container-runtime-flag
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ hit: --container-runtime=remote fires trap
+  ✓ miss: only --container-runtime-endpoint does not fire
+  ✓ benign: no runtime flag mention does not fire
+✓ case passed: traps_removed-container-runtime-flag
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ blueprint_load
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/exam-blueprint.sh: line 9: /root/CKA-Certified-Kubernetes-Administrator/cka-sim/tests/fixtures/exam/lib/colors.sh: No such file or directory
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/exam-blueprint.sh: line 11: /root/CKA-Certified-Kubernetes-Administrator/cka-sim/tests/fixtures/exam/lib/log.sh: No such file or directory
+✓ Test 1: load parsed 17 questions
+✓ Test 2: META[id] = mock-alpha
+✓ Test 2b: META[durationMinutes] = 120
+✓ Test 3: weighting parsed correctly
+✓ Test 4: estimated_minutes_sum=123 (reasonable)
+✓ Test 5: all packs are mock-pack-alpha
+✓ case passed: blueprint_load
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ blueprint_validate
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/exam-blueprint.sh: line 9: /root/CKA-Certified-Kubernetes-Administrator/cka-sim/tests/fixtures/exam/lib/colors.sh: No such file or directory
+/root/CKA-Certified-Kubernetes-Administrator/cka-sim/lib/exam-blueprint.sh: line 11: /root/CKA-Certified-Kubernetes-Administrator/cka-sim/tests/fixtures/exam/lib/log.sh: No such file or directory
+✓ Test 1: good manifest passes validation
+✓ Test 2: bad-count manifest rejected (rc=1)
+✓ Test 3: duplicate manifest rejected (rc=1)
+✓ case passed: blueprint_validate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ report_golden
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Test 1: report output matches golden file
+✓ Test 2: compute_total = 64 (correct)
+✓ Test 3: section 'Per-Domain Breakdown' present
+✓ Test 3: section 'Top 5 Traps Hit' present
+✓ Test 3: section 'Suggested Next Drills' present
+✓ Test 3: section 'Question-by-Question Detail' present
+✓ case passed: report_golden
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ state_atomic_write
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Test 1: init creates valid session JSON
+✓ Test 2: save persists state mutation atomically
+✓ Test 3: repeated saves maintain valid JSON
+✓ case passed: state_atomic_write
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ state_schema
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Test 1: version 2 rejected (rc=1)
+✓ Test 2: missing blueprint field loads gracefully (null)
+✓ Test 3: valid v1 session loads correctly
+✓ case passed: state_schema
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__01-rbac-viewer
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission cluster-architecture__01-rbac-viewer: expected 'SCORE: 0/2', got 'SCORE: 1/2'
+✗ resource rolebinding/viewer-binding not found in ns=cka-sim-cluster-architecture-01
+✗ resource serviceaccount/viewer not found in ns=cka-sim-cluster-architecture-01
+✓ role/pod-viewer changed since setup
+✗ can-i get pods (as=system:serviceaccount:cka-sim-cluster-architecture-01:viewer, ns=cka-sim-cluster-architecture-01) = no
+
+SCORE: 1/2
+✗ case failed (rc=1): cluster-architecture__01-rbac-viewer
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__02-etcd-backup-restore
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission cluster-architecture__02-etcd-backup-restore: SCORE: 0/3 [audit-escape: file-baseline gap]
+✓ ref-solution cluster-architecture__02-etcd-backup-restore: SKIPPED [audit-escape: requires etcdutl + file-baseline support, see 07.1-11-AUDIT-ESCAPE.md]
+✓ case passed: cluster-architecture__02-etcd-backup-restore
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__03-kubeadm-upgrade
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission cluster-architecture__03-kubeadm-upgrade: SCORE: 0/5
+✓ ref-solution cluster-architecture__03-kubeadm-upgrade: SCORE: 5/5
+✓ case passed: cluster-architecture__03-kubeadm-upgrade
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__04-pss-enforce
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission cluster-architecture__04-pss-enforce: expected 'SCORE: 0/5', got 'SCORE: 1/5'
+✗ case failed (rc=1): cluster-architecture__04-pss-enforce
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__05-audit-policy
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission cluster-architecture__05-audit-policy: SCORE: 0/4 [audit-escape: setup-state demoted to weight=0]
+✓ ref-solution cluster-architecture__05-audit-policy: SCORE: 4/4
+✓ case passed: cluster-architecture__05-audit-policy
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__06-crd-basics
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission cluster-architecture__06-crd-basics: SCORE: 0/5
+✗ ref-solution cluster-architecture__06-crd-basics: expected 'SCORE: 5/5', got 'SCORE: 0/5'
+✗ crd/q06widgets.cka-sim.io does not exist (candidate has not created it)
+✗ CRD scope is '<missing>'
+✗ field {.spec.group} on crd/q06widgets.cka-sim.io = '' (expected 'cka-sim.io')
+✗ no Q06Widget resources found
+✗ spec.size is not numeric
+
+SCORE: 0/5
+Trap 1: CustomResourceDefinition omits spec.scope or uses the wrong scope value: CRD manifest has no spec.scope, or sets Cluster when the intended resource should be Namespaced (or vice versa). v1 CRDs require spec.scope; apiserver rejects the manifest on apply. Wrong scope silently changes the access model: a Cluster-scoped CR lives outside namespaces and ignores RBAC RoleBindings, while a Namespaced CR requires a namespace on every query.
+✗ case failed (rc=1): cluster-architecture__06-crd-basics
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__07-cri-dockerd-endpoint
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission cluster-architecture__07-cri-dockerd-endpoint: SCORE: 0/1 [audit-escape: file-exists demoted to weight=0]
+✓ ref-solution cluster-architecture__07-cri-dockerd-endpoint: SCORE: 1/1
+✓ case passed: cluster-architecture__07-cri-dockerd-endpoint
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cluster-architecture__08-priorityclass
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission cluster-architecture__08-priorityclass: SCORE: 0/2
+✗ ref-solution cluster-architecture__08-priorityclass: expected 'SCORE: 2/2', got 'SCORE: 0/2'
+✗ both q08 PriorityClasses must exist [weight=0 setup-state]
+✗ expected exactly one globalDefault PriorityClass, got 0
+✗ default PriorityClass is not one of {q08-critical, q08-batch} (got '')
+
+SCORE: 0/2
+Trap 1: Multiple PriorityClasses declare globalDefault true: Two or more PriorityClass resources have globalDefault: true. Kubernetes admission rejects the second creation at submission time, and if both exist (e.g. applied via separate manifests with Force or during upgrade migration) the scheduler's default-priority resolution becomes non-deterministic — new pods without an explicit priorityClassName may receive an unexpected priority.
+✗ case failed (rc=1): cluster-architecture__08-priorityclass
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ services-networking__01-networkpolicy-egress
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission services-networking__01-networkpolicy-egress: expected 'SCORE: 0/3', got 'SCORE: 1/3'
+✗ case failed (rc=1): services-networking__01-networkpolicy-egress
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ services-networking__02-service-core
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission services-networking__02-service-core: SCORE: 0/1
+✗ ref-solution services-networking__02-service-core: expected 'SCORE: 1/1', got 'SCORE: 0/1'
+✗ case failed (rc=1): services-networking__02-service-core
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ services-networking__03-coredns-resolution
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission services-networking__03-coredns-resolution: expected 'SCORE: 0/3', got 'SCORE: 1/3'
+✗ case failed (rc=1): services-networking__03-coredns-resolution
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ services-networking__04-ingress-path-host
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission services-networking__04-ingress-path-host: SCORE: 0/5
+✗ ref-solution services-networking__04-ingress-path-host: expected 'SCORE: 5/5', got 'SCORE: 0/5'
+✗ case failed (rc=1): services-networking__04-ingress-path-host
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ services-networking__05-kube-proxy-mode
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission services-networking__05-kube-proxy-mode: SCORE: 0/3
+✓ ref-solution services-networking__05-kube-proxy-mode: SCORE: 3/3
+✓ case passed: services-networking__05-kube-proxy-mode
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ services-networking__06-netpol-endport
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission services-networking__06-netpol-endport: expected 'SCORE: 0/4', got 'SCORE: 0/8'
+✗ case failed (rc=1): services-networking__06-netpol-endport
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ storage__01-pvc-binding
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission storage__01-pvc-binding: SCORE: 0/3
+✗ ref-solution storage__01-pvc-binding: expected 'SCORE: 3/3', got 'SCORE: 0/3'
+✗ case failed (rc=1): storage__01-pvc-binding
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ storage__02-storageclass-dynamic
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission storage__02-storageclass-dynamic: SCORE: 0/1
+✗ ref-solution storage__02-storageclass-dynamic: expected 'SCORE: 1/1', got 'SCORE: 0/1'
+✗ case failed (rc=1): storage__02-storageclass-dynamic
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ storage__03-access-modes-reclaim
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission storage__03-access-modes-reclaim: expected 'SCORE: 0/4', got 'SCORE: 1/4'
+✗ case failed (rc=1): storage__03-access-modes-reclaim
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ storage__04-csi-volumesnapshot
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission storage__04-csi-volumesnapshot: SCORE: 0/4
+✗ ref-solution storage__04-csi-volumesnapshot: expected 'SCORE: 4/4', got 'SCORE: 0/4'
+✗ case failed (rc=1): storage__04-csi-volumesnapshot
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ storage__05-wait-for-first-consumer
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission storage__05-wait-for-first-consumer: SCORE: 0/3
+✗ ref-solution storage__05-wait-for-first-consumer: expected 'SCORE: 3/3', got 'SCORE: 0/3'
+✗ case failed (rc=1): storage__05-wait-for-first-consumer
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ storage__06-pvc-mount-pod
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission storage__06-pvc-mount-pod: SCORE: 0/4
+✗ ref-solution storage__06-pvc-mount-pod: expected 'SCORE: 4/4', got 'SCORE: 0/4'
+✗ case failed (rc=1): storage__06-pvc-mount-pod
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ troubleshooting__01-deploy-svc-mismatch
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission troubleshooting__01-deploy-svc-mismatch: SCORE: 0/1
+✗ ref-solution troubleshooting__01-deploy-svc-mismatch: expected 'SCORE: 1/1', got 'SCORE: 0/1'
+✗ case failed (rc=1): troubleshooting__01-deploy-svc-mismatch
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ troubleshooting__02-netpol-dns-egress
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission troubleshooting__02-netpol-dns-egress: expected 'SCORE: 0/3', got 'SCORE: 1/1'
+✗ case failed (rc=1): troubleshooting__02-netpol-dns-egress
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ troubleshooting__03-coredns-resolution
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission troubleshooting__03-coredns-resolution: expected 'SCORE: 0/4', got 'SCORE: 2/4'
+✗ case failed (rc=1): troubleshooting__03-coredns-resolution
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ troubleshooting__04-debug-node
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission troubleshooting__04-debug-node: SCORE: 0/1
+✗ ref-solution troubleshooting__04-debug-node: expected 'SCORE: 1/1', got 'SCORE: 0/1'
+✗ case failed (rc=1): troubleshooting__04-debug-node
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ troubleshooting__05-static-pod-manifest
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission troubleshooting__05-static-pod-manifest: SCORE: 0/3
+✓ ref-solution troubleshooting__05-static-pod-manifest: SCORE: 3/3
+✓ case passed: troubleshooting__05-static-pod-manifest
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ troubleshooting__06-broken-kubelet
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission troubleshooting__06-broken-kubelet: SCORE: 0/2
+✓ ref-solution troubleshooting__06-broken-kubelet: SCORE: 2/2
+✓ case passed: troubleshooting__06-broken-kubelet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__01-deployment-requests
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission workloads-scheduling__01-deployment-requests: expected 'SCORE: 0/4', got 'SCORE: 1/4'
+✗ case failed (rc=1): workloads-scheduling__01-deployment-requests
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__02-rolling-update-rollback
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission workloads-scheduling__02-rolling-update-rollback: SCORE: 0/1
+✗ ref-solution workloads-scheduling__02-rolling-update-rollback: expected 'SCORE: 1/1', got 'SCORE: 0/1'
+✗ case failed (rc=1): workloads-scheduling__02-rolling-update-rollback
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__03-configmap-secret-env-volume
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission workloads-scheduling__03-configmap-secret-env-volume: SCORE: 0/6
+✗ ref-solution workloads-scheduling__03-configmap-secret-env-volume: expected 'SCORE: 6/6', got 'SCORE: 0/6'
+✗ case failed (rc=1): workloads-scheduling__03-configmap-secret-env-volume
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__04-hpa-metrics-server
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission workloads-scheduling__04-hpa-metrics-server: SCORE: 0/7
+✗ ref-solution workloads-scheduling__04-hpa-metrics-server: expected 'SCORE: 7/7', got 'SCORE: 0/7'
+✗ case failed (rc=1): workloads-scheduling__04-hpa-metrics-server
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__05-daemonset
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission workloads-scheduling__05-daemonset: SCORE: 0/4
+✓ empty submission workloads-scheduling__05-daemonset: 0 traps recorded
+✗ ref-solution workloads-scheduling__05-daemonset: expected 'SCORE: 4/4', got 'SCORE: 0/4'
+✗ case failed (rc=1): workloads-scheduling__05-daemonset
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__06-static-pod
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ empty submission workloads-scheduling__06-static-pod: SCORE: 0/3
+✗ ref-solution workloads-scheduling__06-static-pod: expected 'SCORE: 3/3', got 'SCORE: 0/3'
+✗ case failed (rc=1): workloads-scheduling__06-static-pod
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__07-native-sidecar
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission workloads-scheduling__07-native-sidecar: expected 'SCORE: 0/3', got 'SCORE: 1/3'
+✗ case failed (rc=1): workloads-scheduling__07-native-sidecar
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ workloads-scheduling__08-nodeselector-affinity-taints
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✗ empty submission workloads-scheduling__08-nodeselector-affinity-taints: expected 'SCORE: 0/5', got 'SCORE: 2/5'
+✗ case failed (rc=1): workloads-scheduling__08-nodeselector-affinity-taints
+
+✗ 43 of 88 case(s) failed

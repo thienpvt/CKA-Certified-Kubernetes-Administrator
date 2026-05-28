@@ -98,7 +98,7 @@ cka_sim::report::compute_total() {
     | map(.pct * weight_for(.domain) / 100)
     | add
     | . + 0.5 | floor
-  ' "$session_json"
+  ' "$session_json" | tr -d '\r'
 }
 
 cka_sim::report::domain_table() {
@@ -134,7 +134,7 @@ EOF
     | sort_by(.pct)
     | .[]
     | "| \(.domain) | \(.score)/\(.max) | \(.pct | . + 0.5 | floor)% | \(.weight)% |"
-  ' "$session_json"
+  ' "$session_json" | tr -d '\r'
 }
 
 cka_sim::report::trap_table() {
@@ -156,7 +156,7 @@ EOF
     | .[0:5]
     | to_entries[]
     | "\(.key + 1)|\(.value.id)|\(.value.count)"
-  ' "$session_json")
+  ' "$session_json" | tr -d '\r')
 
   local catalog="$CKA_SIM_ROOT/traps/catalog.yaml"
 
@@ -192,7 +192,7 @@ cka_sim::report::next_drills() {
     | sort_by(.pct)
     | .[0:3]
     | .[].domain
-  ' "$session_json")
+  ' "$session_json" | tr -d '\r')
 
   if [[ -z "$weak_domains" ]]; then
     cat <<'EOF'
@@ -231,5 +231,5 @@ EOF
   jq -r '
     .questions | to_entries[] |
     "| \(.key + 1) | \(.value.domain // "—") | \(.value.id // "—") | \(.value.score // 0)/\(.value.max_score // 0) | \(.value.status // "—") | \((.value.traps // []) | if length == 0 then "—" else join(", ") end) |"
-  ' "$session_json"
+  ' "$session_json" | tr -d '\r'
 }

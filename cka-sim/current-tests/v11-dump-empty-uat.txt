@@ -1,0 +1,371 @@
+dump cooloo9871 empty-submission UAT
+run_id=20260528203648
+repo=/c/Users/thien/IdeaProjects/CKA-Certified-Kubernetes-Administrator
+
+cleanup-before
+
+=== 01-source-q01-contexts ===
+[setup] namespace/cka-sim-empty-dump-01-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q01-contexts/baseline-empty.json
+[grade] ✗ configmap/q01-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.contexts} on configmap/q01-answer = '' (expected 'current-lab')
+[grade] ✗ field {.data.currentContext} on configmap/q01-answer = '' (expected 'current-lab')
+[grade] ✗ field {.data.noKubectlSource} on configmap/q01-answer = '' (expected 'kubeconfig-current-context')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: kubectl --as used with wrong subject format: kubectl --as expects a username (or system:serviceaccount:<ns>:<name>); a bare ServiceAccount name is rejected.
+PASS 01-source-q01-contexts SCORE: 0/4
+
+=== 02-source-q02-control-plane-scheduling ===
+[setup] namespace/cka-sim-empty-dump-02-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q02-control-plane-scheduling/baseline-empty.json
+[grade] ✗ pod/cp-toolbox does not exist (candidate has not created it)
+[grade] ✗ pod/cp-toolbox missing control-plane node selector
+[grade] ✗ field {.spec.tolerations[0].key} on pod/cp-toolbox = '' (expected 'node-role.kubernetes.io/control-plane')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: Pod stays Pending because nodeSelector matches no Ready node: Pod spec.nodeSelector (or required nodeAffinity matchExpressions) specifies a label that no cluster node carries, so the scheduler cannot place the pod and it stays Pending with a 'didn't match Pod's node affinity/selector' event.
+PASS 02-source-q02-control-plane-scheduling SCORE: 0/3
+
+=== 03-source-q03-statefulset-scale ===
+[setup] namespace/cka-sim-empty-dump-03-20260528203648 created
+[setup] statefulset.apps/queue created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q03-statefulset-scale/baseline-empty.json
+[grade] ✗ statefulset/queue unchanged since setup
+[grade] ✗ field {.spec.replicas} on statefulset/queue = '3' (expected '1')
+[grade] 
+[grade] SCORE: 0/2
+[grade] Trap 1: Deployment containers omit resources.requests: Without resources.requests, HPA cannot compute CPU utilisation and the scheduler treats the pod as best-effort QoS.
+PASS 03-source-q03-statefulset-scale SCORE: 0/2
+
+=== 04-source-q04-readiness-service ===
+[setup] namespace/cka-sim-empty-dump-04-20260528203648 created
+[setup] service/q04-api created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q04-readiness-service/baseline-empty.json
+[grade] ✗ pod/q04-client does not exist (candidate has not created it)
+[grade] ✗ field {.spec.containers[0].readinessProbe.tcpSocket.port} on pod/q04-client = '' (expected '80')
+[grade] 
+[grade] SCORE: 0/2
+[grade] Trap 1: Service selector matches no Ready pods so endpoints are empty: Service.spec.selector labels do not match any Ready pod's labels; Endpoints/EndpointSlices contain no addresses.
+PASS 04-source-q04-readiness-service SCORE: 0/2
+
+=== 05-source-q05-pod-sorting ===
+[setup] namespace/cka-sim-empty-dump-05-20260528203648 created
+[setup] pod/q05-api created
+[setup] pod/q05-batch created
+[setup] pod/q05-worker created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q05-pod-sorting/baseline-empty.json
+[grade] ✗ configmap/q05-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.sortedPods} on configmap/q05-answer = '' (expected 'api,batch,worker')
+[grade] 
+[grade] SCORE: 0/2
+[grade] Trap 1: Pod uses default ServiceAccount with auto-mounted token: Pod has no spec.serviceAccountName (or it is set to the default value), so it inherits the default SA with auto-mounted token.
+PASS 05-source-q05-pod-sorting SCORE: 0/2
+
+=== 06-source-q06-pv-pvc-pod-volume ===
+[setup] namespace/cka-sim-empty-dump-06-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q06-pv-pvc-pod-volume/baseline-empty.json
+[grade] ✗ pv/q06-data-pv does not exist (candidate has not created it)
+[grade] ✗ pvc/q06-data does not exist (candidate has not created it)
+[grade] ✗ pod/q06-reader does not exist (candidate has not created it)
+[grade] ✗ field {.spec.volumes[0].persistentVolumeClaim.claimName} on pod/q06-reader = '' (expected 'q06-data')
+[grade] ✗ field {.spec.containers[0].volumeMounts[0].mountPath} on pod/q06-reader = '' (expected '/data')
+[grade] 
+[grade] SCORE: 0/5
+[grade] Trap 1: hostPath PV without nodeAffinity: hostPath PV declared without spec.nodeAffinity; works on single-node but breaks silently on multi-node clusters.
+PASS 06-source-q06-pv-pvc-pod-volume SCORE: 0/5
+
+=== 07-source-q07-resource-usage ===
+[setup] namespace/cka-sim-empty-dump-07-20260528203648 created
+[setup] configmap/q07-metrics created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q07-resource-usage/baseline-empty.json
+[grade] ✗ configmap/q07-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.largestPodCpu} on configmap/q07-answer = '' (expected 'q07-heavy')
+[grade] ✗ field {.data.largestNodeCpu} on configmap/q07-answer = '' (expected 'worker-a')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: Deployment containers omit resources.requests: Without resources.requests, HPA cannot compute CPU utilisation and the scheduler treats the pod as best-effort QoS.
+PASS 07-source-q07-resource-usage SCORE: 0/3
+
+=== 08-source-q08-control-plane-info ===
+[setup] namespace/cka-sim-empty-dump-08-20260528203648 created
+[setup] configmap/q08-control-plane created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q08-control-plane-info/baseline-empty.json
+[grade] ✗ configmap/q08-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.component} on configmap/q08-answer = '' (expected 'kube-apiserver')
+[grade] ✗ field {.data.namespace} on configmap/q08-answer = '' (expected 'kube-system')
+[grade] ✗ field {.data.securePort} on configmap/q08-answer = '' (expected '6443')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Removed --container-runtime=remote flag: kubelet uses --container-runtime=remote (removed in 1.27); only --container-runtime-endpoint remains in 1.35.
+PASS 08-source-q08-control-plane-info SCORE: 0/4
+
+=== 09-source-q09-manual-scheduling ===
+[setup] namespace/cka-sim-empty-dump-09-20260528203648 created
+[setup] configmap/q09-scheduler-sim created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q09-manual-scheduling/baseline-empty.json
+[grade] ✗ pod/manual-nginx does not exist (candidate has not created it)
+[grade] ✗ field {.spec.nodeName} on pod/manual-nginx = '' (expected 'worker-1')
+[grade] 
+[grade] SCORE: 0/2
+[grade] Trap 1: Pod stays Pending because nodeSelector matches no Ready node: Pod spec.nodeSelector (or required nodeAffinity matchExpressions) specifies a label that no cluster node carries, so the scheduler cannot place the pod and it stays Pending with a 'didn't match Pod's node affinity/selector' event.
+PASS 09-source-q09-manual-scheduling SCORE: 0/2
+
+=== 10-source-q10-rbac-serviceaccount ===
+[setup] namespace/cka-sim-empty-dump-10-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q10-rbac-serviceaccount/baseline-empty.json
+[grade] ✗ serviceaccount/audit-reader does not exist (candidate has not created it)
+[grade] ✗ role/audit-reader does not exist (candidate has not created it)
+[grade] ✗ rolebinding/audit-reader does not exist (candidate has not created it)
+[grade] ✗ can-i list pods (as=system:serviceaccount:cka-sim-empty-dump-10-20260528203648:audit-reader, ns=cka-sim-empty-dump-10-20260528203648) = no
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: RBAC Role or RoleBinding does not grant the required viewer permissions: Candidate created a Role/RoleBinding pair but the Role's rules omit the required verb-resource (e.g., 'list pods') OR the RoleBinding subject does not name the expected ServiceAccount; kubectl auth can-i returns 'no' for the requested impersonation.
+PASS 10-source-q10-rbac-serviceaccount SCORE: 0/4
+
+=== 11-source-q11-daemonset-all-nodes ===
+[setup] namespace/cka-sim-empty-dump-11-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q11-daemonset-all-nodes/baseline-empty.json
+[grade] ✗ daemonset/node-log-agent does not exist (candidate has not created it)
+[grade] ✗ field {.spec.template.spec.tolerations[0].key} on daemonset/node-log-agent = '' (expected 'node-role.kubernetes.io/control-plane')
+[grade] 
+[grade] SCORE: 0/2
+[grade] Trap 1: DaemonSet lacks control-plane NoSchedule toleration: DaemonSet pod template omits a toleration for node-role.kubernetes.io/control-plane:NoSchedule, so the daemon pod is never scheduled onto the control-plane node. The DaemonSet reports fewer Ready nodes than the cluster actually has.
+PASS 11-source-q11-daemonset-all-nodes SCORE: 0/2
+
+=== 12-source-q12-deployment-topology ===
+[setup] namespace/cka-sim-empty-dump-12-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q12-deployment-topology/baseline-empty.json
+[grade] ✗ deployment/spread-web does not exist (candidate has not created it)
+[grade] ✗ field {.spec.replicas} on deployment/spread-web = '' (expected '3')
+[grade] ✗ field {.spec.template.spec.containers[0].resources.requests.cpu} on deployment/spread-web = '' (expected '25m')
+[grade] ✗ field {.spec.template.spec.topologySpreadConstraints[0].topologyKey} on deployment/spread-web = '' (expected 'kubernetes.io/hostname')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Deployment containers omit resources.requests: Without resources.requests, HPA cannot compute CPU utilisation and the scheduler treats the pod as best-effort QoS.
+PASS 12-source-q12-deployment-topology SCORE: 0/4
+
+=== 13-source-q13-multicontainer-volume ===
+[setup] namespace/cka-sim-empty-dump-13-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q13-multicontainer-volume/baseline-empty.json
+[grade] ✗ pod/shared-tools does not exist (candidate has not created it)
+[grade] ✗ field {.spec.containers[0].name} on pod/shared-tools = '' (expected 'writer')
+[grade] ✗ field {.spec.containers[1].name} on pod/shared-tools = '' (expected 'reader')
+[grade] ✗ field {.spec.volumes[0].name} on pod/shared-tools = '' (expected 'shared')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Pod uses default ServiceAccount with auto-mounted token: Pod has no spec.serviceAccountName (or it is set to the default value), so it inherits the default SA with auto-mounted token.
+PASS 13-source-q13-multicontainer-volume SCORE: 0/4
+
+=== 14-source-q14-cluster-info ===
+[setup] namespace/cka-sim-empty-dump-14-20260528203648 created
+[setup] configmap/q14-cluster-facts created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q14-cluster-info/baseline-empty.json
+[grade] ✗ configmap/q14-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.nodeCount} on configmap/q14-answer = '' (expected '3')
+[grade] ✗ field {.data.controlPlaneVersion} on configmap/q14-answer = '' (expected 'v1.35.0')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: Removed --container-runtime=remote flag: kubelet uses --container-runtime=remote (removed in 1.27); only --container-runtime-endpoint remains in 1.35.
+PASS 14-source-q14-cluster-info SCORE: 0/3
+
+=== 15-source-q15-cluster-events ===
+[setup] namespace/cka-sim-empty-dump-15-20260528203648 created
+[setup] pod/q15-pending created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q15-cluster-events/baseline-empty.json
+[grade] ✗ configmap/q15-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.warningReason} on configmap/q15-answer = '' (expected 'FailedScheduling')
+[grade] ✗ field {.data.involvedObject} on configmap/q15-answer = '' (expected 'q15-pending')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: Workload stuck in ImagePullBackOff due to non-existent image tag: A Deployment references an image tag that does not exist, so its Pods cannot pull the container image and remain in ImagePullBackOff or ErrImagePull.
+PASS 15-source-q15-cluster-events SCORE: 0/3
+
+=== 16-source-q16-api-resources ===
+[setup] namespace/cka-sim-empty-dump-16-20260528203648 created
+[setup] configmap/q16-api-inventory created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q16-api-resources/baseline-empty.json
+[grade] ✗ configmap/q16-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.namespace} on configmap/q16-answer = '' (expected 'metadata')
+[grade] ✗ field {.data.namespacedKind} on configmap/q16-answer = '' (expected 'configmaps')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: CustomResourceDefinition omits spec.scope or uses the wrong scope value: CRD manifest has no spec.scope, or sets Cluster when the intended resource should be Namespaced (or vice versa). v1 CRDs require spec.scope; apiserver rejects the manifest on apply. Wrong scope silently changes the access model: a Cluster-scoped CR lives outside namespaces and ignores RBAC RoleBindings, while a Namespaced CR requires a namespace on every query.
+PASS 16-source-q16-api-resources SCORE: 0/3
+
+=== 17-source-q17-container-inspection ===
+[setup] namespace/cka-sim-empty-dump-17-20260528203648 created
+[setup] pod/q17-inspect created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q17-container-inspection/baseline-empty.json
+[grade] ✗ configmap/q17-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.container} on configmap/q17-answer = '' (expected 'sidecar')
+[grade] ✗ field {.data.image} on configmap/q17-answer = '' (expected 'busybox:1.36')
+[grade] ✗ field {.data.command} on configmap/q17-answer = '' (expected 'sleep')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Workload stuck in ImagePullBackOff due to non-existent image tag: A Deployment references an image tag that does not exist, so its Pods cannot pull the container image and remain in ImagePullBackOff or ErrImagePull.
+PASS 17-source-q17-container-inspection SCORE: 0/4
+
+=== 18-source-q18-kubelet-repair ===
+[setup] namespace/cka-sim-empty-dump-18-20260528203648 created
+[setup] configmap/kubelet-flags created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q18-kubelet-repair/baseline-empty.json
+[grade] ✗ configmap/kubelet-flags unchanged since setup
+[grade] ✗ field {.data.runtimeEndpoint} on configmap/kubelet-flags = 'broken' (expected 'unix:///run/containerd/containerd.sock')
+[grade] ✗ field {.data.status} on configmap/kubelet-flags = 'broken' (expected 'repaired')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: kubeadm-flags.env KUBELET_KUBEADM_ARGS value has stray quotes or CRLF line-endings: kubeadm-flags.env KUBELET_KUBEADM_ARGS value has stray quotes, missing quotes, or CRLF line endings, so kubelet refuses to parse it.
+PASS 18-source-q18-kubelet-repair SCORE: 0/3
+
+=== 19-source-q19-secret-mount ===
+[setup] namespace/cka-sim-empty-dump-19-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q19-secret-mount/baseline-empty.json
+[grade] ✗ secret/app-credentials does not exist (candidate has not created it)
+[grade] ✗ pod/secret-reader does not exist (candidate has not created it)
+[grade] ✗ field {.spec.volumes[0].secret.secretName} on pod/secret-reader = '' (expected 'app-credentials')
+[grade] ✗ field {.spec.containers[0].volumeMounts[0].mountPath} on pod/secret-reader = '' (expected '/etc/secret-data')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Pod uses default ServiceAccount with auto-mounted token: Pod has no spec.serviceAccountName (or it is set to the default value), so it inherits the default SA with auto-mounted token.
+PASS 19-source-q19-secret-mount SCORE: 0/4
+
+=== 20-source-q20-upgrade-join-plan ===
+[setup] namespace/cka-sim-empty-dump-20-20260528203648 created
+[setup] configmap/q20-upgrade-constraints created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q20-upgrade-join-plan/baseline-empty.json
+[grade] ✗ configmap/q20-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.firstStep} on configmap/q20-answer = '' (expected 'kubeadm-upgrade-plan')
+[grade] ✗ field {.data.joinMode} on configmap/q20-answer = '' (expected 'dry-run-token-review')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: kubeadm upgrade apply invoked without a prior kubeadm upgrade plan step: Upgrade runbook jumps directly to `kubeadm upgrade apply v<X.Y.Z>` without running `kubeadm upgrade plan` first. Plan output prints the allowable target versions, component version matrix, and migration notices; skipping it risks applying an incompatible minor version or missing a required pre-upgrade action (e.g. drain, etcd snapshot). Safe upgrades always plan -> snapshot -> apply -> uncordon.
+PASS 20-source-q20-upgrade-join-plan SCORE: 0/3
+
+=== 21-source-q21-static-pod-service ===
+[setup] namespace/cka-sim-empty-dump-21-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q21-static-pod-service/baseline-empty.json
+[grade] ✗ configmap/q21-static-manifest does not exist (candidate has not created it)
+[grade] ✗ service/static-web does not exist (candidate has not created it)
+[grade] ✗ field {.data.source} on configmap/q21-static-manifest = '' (expected 'file')
+[grade] ✗ field {.spec.selector.app} on service/static-web = '' (expected 'static-web')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Static Pod manifest submitted via kubectl apply instead of kubelet manifest dir: Candidate ran kubectl apply -f against the static-pod manifest instead of placing it in /etc/kubernetes/manifests/ on the target node. The resulting pod is API-server-managed, not kubelet-managed; no mirror pod is created and kubernetes.io/config.source is api, not file.
+PASS 21-source-q21-static-pod-service SCORE: 0/4
+
+=== 22-source-q22-apiserver-cert ===
+[setup] namespace/cka-sim-empty-dump-22-20260528203648 created
+[setup] configmap/q22-apiserver-cert created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q22-apiserver-cert/baseline-empty.json
+[grade] ✗ configmap/q22-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.certName} on configmap/q22-answer = '' (expected 'kube-apiserver')
+[grade] ✗ field {.data.validUntil} on configmap/q22-answer = '' (expected '2030-05-28')
+[grade] ✗ field {.data.signer} on configmap/q22-answer = '' (expected 'kubernetes')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Audit Policy rule uses invalid level or unknown omitStages value: audit.k8s.io/v1 Policy rule has no level, or level is outside {None, Metadata, Request, RequestResponse}. Equivalent bug: omitStages lists a stage name the apiserver does not recognise (valid stages are RequestReceived, ResponseStarted, ResponseComplete, Panic). Either form causes apiserver to reject the Policy on load, silently disabling audit logging.
+PASS 22-source-q22-apiserver-cert SCORE: 0/4
+
+=== 23-source-q23-kubelet-certs ===
+[setup] namespace/cka-sim-empty-dump-23-20260528203648 created
+[setup] configmap/q23-kubelet-certs created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q23-kubelet-certs/baseline-empty.json
+[grade] ✗ configmap/q23-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.clientIssuer} on configmap/q23-answer = '' (expected 'kubernetes-ca')
+[grade] ✗ field {.data.servingEku} on configmap/q23-answer = '' (expected 'server-auth')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: kubelet --container-runtime-endpoint value omits the unix:// scheme: kubelet --container-runtime-endpoint flag set to a bare filesystem path (e.g. /run/cri-dockerd.sock) instead of a unix:// URI. kubelet requires the scheme; without it the endpoint is treated as a protocol error and the kubelet cannot dial the runtime, producing a cryptic 'connection refused' loop at startup.
+PASS 23-source-q23-kubelet-certs SCORE: 0/3
+
+=== 24-source-q24-networkpolicy ===
+[setup] namespace/cka-sim-empty-dump-24-20260528203648 created
+[setup] pod/frontend created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q24-networkpolicy/baseline-empty.json
+[grade] ✗ networkpolicy/frontend-egress does not exist (candidate has not created it)
+[grade] ✗ field {.spec.podSelector.matchLabels.app} on networkpolicy/frontend-egress = '' (expected 'frontend')
+[grade] ✗ field {.spec.policyTypes[0]} on networkpolicy/frontend-egress = '' (expected 'Egress')
+[grade] ✗ field {.spec.egress[0].ports[0].port} on networkpolicy/frontend-egress = '' (expected '443')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: Default-deny NetworkPolicy with no allow path for required flow: Namespace has default-deny NetworkPolicy plus a policy granting the wrong namespace or port, leaving no allow path for the required flow.
+PASS 24-source-q24-networkpolicy SCORE: 0/4
+
+=== 25-source-q25-etcd-snapshot ===
+[setup] namespace/cka-sim-empty-dump-25-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q25-etcd-snapshot/baseline-empty.json
+[grade] ✗ secret/q25-etcd-snapshot does not exist (candidate has not created it)
+[grade] ✗ configmap/q25-restore-plan does not exist (candidate has not created it)
+[grade] ✗ field {.data.dataDir} on configmap/q25-restore-plan = '' (expected '/tmp/q25-etcd-restore')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: etcdctl snapshot save/restore invoked without ETCDCTL_API=3: Candidate ran etcdctl snapshot save or status without ETCDCTL_API=3 exported. Older etcdctl binaries default to v2 API on some distros; the v3 snapshot subcommand fails or silently operates on v2 data, producing an unusable snapshot file. On v1.35 clusters the boot script exports ETCDCTL_API=3 but the exam drill still marks bare invocations as exam-wrong.
+PASS 25-source-q25-etcd-snapshot SCORE: 0/3
+
+=== 26-extra-q01-eviction-priority ===
+[setup] namespace/cka-sim-empty-dump-26-20260528203648 created
+[setup] configmap/q26-eviction-data created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q26-eviction-priority/baseline-empty.json
+[grade] ✗ configmap/q26-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.firstEvicted} on configmap/q26-answer = '' (expected 'besteffort-low')
+[grade] ✗ field {.data.lastEvicted} on configmap/q26-answer = '' (expected 'guaranteed-critical')
+[grade] 
+[grade] SCORE: 0/3
+[grade] Trap 1: Multiple PriorityClasses declare globalDefault true: Two or more PriorityClass resources have globalDefault: true. Kubernetes admission rejects the second creation at submission time, and if both exist (e.g. applied via separate manifests with Force or during upgrade migration) the scheduler's default-priority resolution becomes non-deterministic — new pods without an explicit priorityClassName may receive an unexpected priority.
+PASS 26-extra-q01-eviction-priority SCORE: 0/3
+
+=== 27-extra-q02-manual-api-access ===
+[setup] namespace/cka-sim-empty-dump-27-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q27-manual-api-access/baseline-empty.json
+[grade] ✗ serviceaccount/api-caller does not exist (candidate has not created it)
+[grade] ✗ pod/api-curl does not exist (candidate has not created it)
+[grade] ✗ configmap/q27-answer does not exist (candidate has not created it)
+[grade] ✗ field {.spec.serviceAccountName} on pod/api-curl = '' (expected 'api-caller')
+[grade] ✗ field {.data.apiPath} on configmap/q27-answer = '' (expected '/api')
+[grade] 
+[grade] SCORE: 0/5
+[grade] Trap 1: kubectl --as used with wrong subject format: kubectl --as expects a username (or system:serviceaccount:<ns>:<name>); a bare ServiceAccount name is rejected.
+PASS 27-extra-q02-manual-api-access SCORE: 0/5
+
+=== 28-preview-q01-etcd-certs ===
+[setup] namespace/cka-sim-empty-dump-28-20260528203648 created
+[setup] configmap/q28-etcd-certs created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q28-etcd-certs/baseline-empty.json
+[grade] ✗ configmap/q28-answer does not exist (candidate has not created it)
+[grade] ✗ field {.data.serverKey} on configmap/q28-answer = '' (expected '/etc/kubernetes/pki/etcd/server.key')
+[grade] ✗ field {.data.clientAuth} on configmap/q28-answer = '' (expected 'true')
+[grade] ✗ field {.data.snapshotPath} on configmap/q28-answer = '' (expected '/tmp/cka-sim-etcd-snapshot.db')
+[grade] 
+[grade] SCORE: 0/4
+[grade] Trap 1: etcdutl snapshot restore targets the live data-dir or omits --data-dir: Candidate ran etcdutl snapshot restore without --data-dir, or pointed --data-dir at the live /var/lib/etcd. The first form restores into the CWD's default path and is brittle; the second is catastrophic — it overwrites the running etcd's state and bricks the control plane. A safe drill always restores into a sandbox path like /tmp/qNN-etcd-*/restored-data.
+PASS 28-preview-q01-etcd-certs SCORE: 0/4
+
+=== 29-preview-q02-kube-proxy-service ===
+[setup] namespace/cka-sim-empty-dump-29-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q29-kube-proxy-service/baseline-empty.json
+[grade] ✗ pod/p2-pod does not exist (candidate has not created it)
+[grade] ✗ service/p2-service does not exist (candidate has not created it)
+[grade] ✗ configmap/q29-answer does not exist (candidate has not created it)
+[grade] ✗ field {.spec.ports[0].port} on service/p2-service = '' (expected '3000')
+[grade] ✗ field {.data.proxyMode} on configmap/q29-answer = '' (expected 'iptables')
+[grade] 
+[grade] SCORE: 0/5
+[grade] Trap 1: Reported kube-proxy mode does not match live kube-system/kube-proxy ConfigMap: Candidate's reported kube-proxy mode does not equal the value of the `mode:` key inside the kube-system/kube-proxy ConfigMap's config.conf entry. Valid Linux values are iptables (kubeadm default), ipvs, and nftables; an empty string means defaults. Oracle is behavioural — read live ConfigMap jsonpath, never shell history.
+PASS 29-preview-q02-kube-proxy-service SCORE: 0/5
+
+=== 30-preview-q03-service-ip-output ===
+[setup] namespace/cka-sim-empty-dump-30-20260528203648 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q30-service-ip-output/baseline-empty.json
+[grade] ✗ pod/check-ip does not exist (candidate has not created it)
+[grade] ✗ service/check-ip-service does not exist (candidate has not created it)
+[grade] ✗ configmap/q30-answer does not exist (candidate has not created it)
+[grade] ✗ field {.spec.selector.app} on service/check-ip-service = '' (expected 'check-ip')
+[grade] ✗ field {.data.serviceName} on configmap/q30-answer = '' (expected 'check-ip-service')
+[grade] 
+[grade] SCORE: 0/5
+[grade] Trap 1: Service selector matches no Ready pods so endpoints are empty: Service.spec.selector labels do not match any Ready pod's labels; Endpoints/EndpointSlices contain no addresses.
+PASS 30-preview-q03-service-ip-output SCORE: 0/5
+
+cleanup-after
+SUMMARY passed=30 failed=0 total=30

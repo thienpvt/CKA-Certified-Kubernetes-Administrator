@@ -1,0 +1,59 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator# ./cka-sim/tests/phase7-uat.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Phase 7 UAT — Exam Mode + Blueprint Alpha + Reporting
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+==================== Phase 7 UAT: Exam Mode + Blueprint Alpha + Reporting (2026-05-13T17:01:27Z) ====================
+  Test 3: Blueprint composition
+✓ PASS: Test 3a: manifest has 17 questions
+[phase7] PASS: Test 3a: manifest has 17 questions
+✓ PASS: Test 3b: lint-packs pass H passes
+[phase7] PASS: Test 3b: lint-packs pass H passes
+  Test 6: Blueprint disclaimer
+✓ PASS: Test 6a: README contains disclaimer
+[phase7] PASS: Test 6a: README contains disclaimer
+✓ PASS: Test 6b: manifest contains disclaimer
+[phase7] PASS: Test 6b: manifest contains disclaimer
+  Test 4: Score report (end-to-end with real graders)
+    Running exam — auto-advancing all 17 questions + submit...
+[phase7] exam exit code: 0
+✓ PASS: Test 4a: report file created at /root/.cka-sim/sessions/20260513T170131Z.md
+[phase7] PASS: Test 4a: report file created at /root/.cka-sim/sessions/20260513T170131Z.md
+✓ PASS: Test 4b: report contains all required sections
+[phase7] PASS: Test 4b: report contains all required sections
+✓ PASS: Test 4c: report has pass/fail verdict vs 66%
+[phase7] PASS: Test 4c: report has pass/fail verdict vs 66%
+[phase7] Report content:
+  Test 5: Score + list commands
+✓ PASS: Test 5a: cka-sim score <ts> displays report
+[phase7] PASS: Test 5a: cka-sim score <ts> displays report
+✓ PASS: Test 5b: cka-sim list history runs
+[phase7] PASS: Test 5b: cka-sim list history runs
+[phase7] list history output:
+Started                Blueprint          Score    Result Status
+──────────────────────────────────────────────────────────────────────────
+2026-05-13T17:01:31Z   blueprint-alpha    11/100   FAIL   complete
+2026-05-13T16:59:15Z   blueprint-alpha    —/100  —    (in-progress)
+2026-05-13T16:59:00Z   blueprint-alpha    —/100  —    (in-progress)
+2026-05-13T16:54:11Z   blueprint-alpha    —/100  —    (in-progress)
+2026-05-13T16:49:36Z   blueprint-alpha    —/100  —    (in-progress)
+2026-05-13T16:48:40Z   blueprint-alpha    —/100  —    (in-progress)
+2026-05-13T16:39:56Z   blueprint-alpha    —/100  —    (in-progress)
+  Test 1 & 2: Timer + Signals (interactive — run manually)
+[phase7] Test 1+2: SKIPPED (interactive — requires manual Ctrl-C/Ctrl-Z verification)
+[phase7]   To verify: bash /root/CKA-Certified-Kubernetes-Administrator/cka-sim/bin/cka-sim exam blueprint-alpha
+[phase7]   1. Timer at bottom updates every second
+[phase7]   2. Ctrl-C flags question (does NOT kill)
+[phase7]   3. Ctrl-Z pauses; fg resumes with correct time
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Phase 7 UAT Results
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Total: 9  Passed: 9  Failed: 0  Skipped (interactive): 2
+
+[phase7] SUMMARY: Total=9 Passed=9 Failed=0 Skipped=2(interactive)
+✓ All automated Phase 7 UAT tests passed!

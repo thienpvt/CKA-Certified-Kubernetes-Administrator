@@ -1,0 +1,11 @@
+question: dump-q17-container-inspection
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: configmap
+    name: q17-answer
+    namespace: ${CKA_SIM_LAB_NS}

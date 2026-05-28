@@ -15,6 +15,12 @@ Desktop.ini
 .project
 .classpath
 .settings/
+.claude/
+.codegraph/
+.cursor/
+
+# Local Kubernetes credentials/cache
+.kube/
 
 # Temp & backup files
 *.tmp

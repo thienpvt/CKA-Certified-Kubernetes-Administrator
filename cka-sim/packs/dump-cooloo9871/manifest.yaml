@@ -1,0 +1,96 @@
+pack:
+  id: dump-cooloo9871
+  domain: cluster-architecture
+  weight: 0
+  description: "Source-derived dump pack with 30 independently authored Kubernetes v1.35 CKA drills."
+questions:
+  - id: dump-q01-contexts
+    path: 01-source-q01-contexts
+    estimatedMinutes: 5
+  - id: dump-q02-control-plane-scheduling
+    path: 02-source-q02-control-plane-scheduling
+    estimatedMinutes: 7
+  - id: dump-q03-statefulset-scale
+    path: 03-source-q03-statefulset-scale
+    estimatedMinutes: 6
+  - id: dump-q04-readiness-service
+    path: 04-source-q04-readiness-service
+    estimatedMinutes: 8
+  - id: dump-q05-pod-sorting
+    path: 05-source-q05-pod-sorting
+    estimatedMinutes: 5
+  - id: dump-q06-pv-pvc-pod-volume
+    path: 06-source-q06-pv-pvc-pod-volume
+    estimatedMinutes: 8
+  - id: dump-q07-resource-usage
+    path: 07-source-q07-resource-usage
+    estimatedMinutes: 6
+  - id: dump-q08-control-plane-info
+    path: 08-source-q08-control-plane-info
+    estimatedMinutes: 6
+  - id: dump-q09-manual-scheduling
+    path: 09-source-q09-manual-scheduling
+    estimatedMinutes: 9
+  - id: dump-q10-rbac-serviceaccount
+    path: 10-source-q10-rbac-serviceaccount
+    estimatedMinutes: 7
+  - id: dump-q11-daemonset-all-nodes
+    path: 11-source-q11-daemonset-all-nodes
+    estimatedMinutes: 7
+  - id: dump-q12-deployment-topology
+    path: 12-source-q12-deployment-topology
+    estimatedMinutes: 8
+  - id: dump-q13-multicontainer-volume
+    path: 13-source-q13-multicontainer-volume
+    estimatedMinutes: 7
+  - id: dump-q14-cluster-info
+    path: 14-source-q14-cluster-info
+    estimatedMinutes: 5
+  - id: dump-q15-cluster-events
+    path: 15-source-q15-cluster-events
+    estimatedMinutes: 5
+  - id: dump-q16-api-resources
+    path: 16-source-q16-api-resources
+    estimatedMinutes: 5
+  - id: dump-q17-container-inspection
+    path: 17-source-q17-container-inspection
+    estimatedMinutes: 6
+  - id: dump-q18-kubelet-repair
+    path: 18-source-q18-kubelet-repair
+    estimatedMinutes: 8
+  - id: dump-q19-secret-mount
+    path: 19-source-q19-secret-mount
+    estimatedMinutes: 7
+  - id: dump-q20-upgrade-join-plan
+    path: 20-source-q20-upgrade-join-plan
+    estimatedMinutes: 9
+  - id: dump-q21-static-pod-service
+    path: 21-source-q21-static-pod-service
+    estimatedMinutes: 8
+  - id: dump-q22-apiserver-cert
+    path: 22-source-q22-apiserver-cert
+    estimatedMinutes: 6
+  - id: dump-q23-kubelet-certs
+    path: 23-source-q23-kubelet-certs
+    estimatedMinutes: 6
+  - id: dump-q24-networkpolicy
+    path: 24-source-q24-networkpolicy
+    estimatedMinutes: 8
+  - id: dump-q25-etcd-snapshot
+    path: 25-source-q25-etcd-snapshot
+    estimatedMinutes: 10
+  - id: dump-q26-eviction-priority
+    path: 26-extra-q01-eviction-priority
+    estimatedMinutes: 6
+  - id: dump-q27-manual-api-access
+    path: 27-extra-q02-manual-api-access
+    estimatedMinutes: 8
+  - id: dump-q28-etcd-certs
+    path: 28-preview-q01-etcd-certs
+    estimatedMinutes: 8
+  - id: dump-q29-kube-proxy-service
+    path: 29-preview-q02-kube-proxy-service
+    estimatedMinutes: 8
+  - id: dump-q30-service-ip-output
+    path: 30-preview-q03-service-ip-output
+    estimatedMinutes: 7

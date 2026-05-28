@@ -1,0 +1,11 @@
+question: dump-q02-control-plane-scheduling
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: pod
+    name: cp-toolbox
+    namespace: ${CKA_SIM_LAB_NS}

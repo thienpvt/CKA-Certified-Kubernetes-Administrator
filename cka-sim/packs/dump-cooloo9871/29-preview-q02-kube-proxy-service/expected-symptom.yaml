@@ -1,0 +1,11 @@
+question: dump-q29-kube-proxy-service
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: svc
+    name: p2-service
+    namespace: ${CKA_SIM_LAB_NS}

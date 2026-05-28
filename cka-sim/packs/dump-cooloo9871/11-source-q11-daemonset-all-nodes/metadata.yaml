@@ -1,0 +1,13 @@
+id: dump-q11-daemonset-all-nodes
+domain: workloads-scheduling
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - daemonset-missing-control-plane-toleration
+references:
+  - kind: blog-post
+    target: https://cooloo9871.github.io/cka/
+    note: Source topic only; exercise wording and solution are independently authored.
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/reference/kubectl/
+    note: Kubernetes command and object reference for this adapted task.

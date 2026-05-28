@@ -1,0 +1,13 @@
+id: dump-q19-secret-mount
+domain: workloads-scheduling
+estimatedMinutes: 7
+verified_against: "1.35"
+traps:
+  - default-sa-used
+references:
+  - kind: blog-post
+    target: https://cooloo9871.github.io/cka/
+    note: Source topic only; exercise wording and solution are independently authored.
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/reference/kubectl/
+    note: Kubernetes command and object reference for this adapted task.

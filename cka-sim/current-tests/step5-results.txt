@@ -1,0 +1,36 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator/cka-sim# bash scripts/uat-phase18-21.sh 2>&1 | tee current-tests/step5-results.txt
+tee: current-tests/step5-results.txt: No such file or directory
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Phase 18-21 UAT: v1.0.2 Forensic Closure (BUG-H07, H08, M11, M12)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── BUG-H07: troubleshooting/05-static-pod-manifest (Phase 19.1) ──
+  ✓ H07.1 setup.sh uses locale-safe 'grep -F $'\t'' (no -P)
+    LC_ALL=C bash setup.sh: rc=0 OK
+  ✓ H07.2 setup.sh exits 0 under LC_ALL=C
+    empty: 0/3 OK
+  ✓ H07.3 empty submission scores 0/N
+    ref:   3/3, 0 trap(s) OK
+  ✓ H07.4 ref-solution scores max/max with 0 traps
+
+── BUG-H08: cluster-architecture/05-audit-policy (Phase 19.2) ──
+    empty: 0/4 OK
+  ✓ H08.1 empty submission scores 0/4 (case-file aligned to 4 assertions)
+    ref:   4/4, 0 trap(s) OK
+  ✓ H08.2 ref-solution scores 4/4 with 0 traps
+
+── BUG-M11: cluster-architecture/04-pss-enforce (Phase 20.1) ──
+    audit: OK —   scope: cluster-architecture/04-pss-enforce, 1 question(s)
+  ✓ M11.1 cka-sim audit cluster-architecture/04-pss-enforce returns PASS (n/n)
+
+── BUG-M12: exam-mode report_golden (Phase 20.2) ──
+    report_golden: OK — ✓ case passed: report_golden
+  ✓ M12.1 unit-test 'report_golden' case passes (LF-only fixture)
+    fixture LF-only: OK
+  ✓ M12.2 expected-report.md is LF-only
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Results: 9 passed, 0 failed, 0 skipped (of 9)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+All BUG-H07, H08, M11, M12 checks green — record in FORENSIC-v102.md
+Closure Status table with closed-by: <commit-sha-of-this-uat-run>.

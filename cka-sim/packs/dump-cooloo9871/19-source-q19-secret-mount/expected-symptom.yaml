@@ -1,0 +1,11 @@
+question: dump-q19-secret-mount
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: secret
+    name: app-credentials
+    namespace: ${CKA_SIM_LAB_NS}

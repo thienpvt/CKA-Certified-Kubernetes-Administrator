@@ -1,0 +1,398 @@
+dump cooloo9871 live UAT
+run_id=20260528203939
+repo=/c/Users/thien/IdeaProjects/CKA-Certified-Kubernetes-Administrator
+kubectl=Client Version: v1.36.1
+Kustomize Version: v5.8.1
+
+cluster-info
+Kubernetes control plane is running at https://35.201.154.225:6443
+CoreDNS is running at https://35.201.154.225:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+nodes
+NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+master     Ready    control-plane   18d   v1.35.4   10.140.0.12   <none>        Ubuntu 22.04.5 LTS   6.8.0-1054-gcp   containerd://2.2.4
+worker-1   Ready    <none>          18d   v1.35.4   10.140.0.13   <none>        Ubuntu 22.04.5 LTS   6.8.0-1054-gcp   containerd://1.7.23
+worker-2   Ready    <none>          18d   v1.35.4   10.140.0.14   <none>        Ubuntu 22.04.5 LTS   6.8.0-1054-gcp   containerd://1.7.23
+
+cleanup-before
+
+=== 01-source-q01-contexts ===
+[setup] namespace/cka-sim-dump-01-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q01-contexts/baseline.json
+[ref] configmap/q01-answer created
+[grade] ✓ configmap/q01-answer created by candidate
+[grade] ✓ field {.data.contexts} on configmap/q01-answer == 'current-lab'
+[grade] ✓ field {.data.currentContext} on configmap/q01-answer == 'current-lab'
+[grade] ✓ field {.data.noKubectlSource} on configmap/q01-answer == 'kubeconfig-current-context'
+[grade] 
+[grade] SCORE: 4/4
+PASS 01-source-q01-contexts SCORE: 4/4
+
+=== 02-source-q02-control-plane-scheduling ===
+[setup] namespace/cka-sim-dump-02-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q02-control-plane-scheduling/baseline.json
+[ref] pod/cp-toolbox created
+[grade] ✓ pod/cp-toolbox created by candidate
+[grade] ✓ pod/cp-toolbox targets control-plane node label
+[grade] ✓ field {.spec.tolerations[0].key} on pod/cp-toolbox == 'node-role.kubernetes.io/control-plane'
+[grade] 
+[grade] SCORE: 3/3
+PASS 02-source-q02-control-plane-scheduling SCORE: 3/3
+
+=== 03-source-q03-statefulset-scale ===
+[setup] namespace/cka-sim-dump-03-20260528203939 created
+[setup] statefulset.apps/queue created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q03-statefulset-scale/baseline.json
+[ref] statefulset.apps/queue scaled
+[grade] ✓ statefulset/queue changed since setup
+[grade] ✓ field {.spec.replicas} on statefulset/queue == '1'
+[grade] 
+[grade] SCORE: 2/2
+PASS 03-source-q03-statefulset-scale SCORE: 2/2
+
+=== 04-source-q04-readiness-service ===
+[setup] namespace/cka-sim-dump-04-20260528203939 created
+[setup] service/q04-api created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q04-readiness-service/baseline.json
+[ref] pod/q04-client created
+[grade] ✓ pod/q04-client created by candidate
+[grade] ✓ field {.spec.containers[0].readinessProbe.tcpSocket.port} on pod/q04-client == '80'
+[grade] 
+[grade] SCORE: 2/2
+PASS 04-source-q04-readiness-service SCORE: 2/2
+
+=== 05-source-q05-pod-sorting ===
+[setup] namespace/cka-sim-dump-05-20260528203939 created
+[setup] pod/q05-api created
+[setup] pod/q05-batch created
+[setup] pod/q05-worker created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q05-pod-sorting/baseline.json
+[ref] configmap/q05-answer created
+[grade] ✓ configmap/q05-answer created by candidate
+[grade] ✓ field {.data.sortedPods} on configmap/q05-answer == 'api,batch,worker'
+[grade] 
+[grade] SCORE: 2/2
+PASS 05-source-q05-pod-sorting SCORE: 2/2
+
+=== 06-source-q06-pv-pvc-pod-volume ===
+[setup] namespace/cka-sim-dump-06-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q06-pv-pvc-pod-volume/baseline.json
+[ref] persistentvolume/q06-data-pv created
+[ref] persistentvolumeclaim/q06-data created
+[ref] pod/q06-reader created
+[grade] ✓ pv/q06-data-pv created by candidate
+[grade] ✓ pvc/q06-data created by candidate
+[grade] ✓ pod/q06-reader created by candidate
+[grade] ✓ field {.spec.volumes[0].persistentVolumeClaim.claimName} on pod/q06-reader == 'q06-data'
+[grade] ✓ field {.spec.containers[0].volumeMounts[0].mountPath} on pod/q06-reader == '/data'
+[grade] 
+[grade] SCORE: 5/5
+PASS 06-source-q06-pv-pvc-pod-volume SCORE: 5/5
+
+=== 07-source-q07-resource-usage ===
+[setup] namespace/cka-sim-dump-07-20260528203939 created
+[setup] configmap/q07-metrics created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q07-resource-usage/baseline.json
+[ref] configmap/q07-answer created
+[grade] ✓ configmap/q07-answer created by candidate
+[grade] ✓ field {.data.largestPodCpu} on configmap/q07-answer == 'q07-heavy'
+[grade] ✓ field {.data.largestNodeCpu} on configmap/q07-answer == 'worker-a'
+[grade] 
+[grade] SCORE: 3/3
+PASS 07-source-q07-resource-usage SCORE: 3/3
+
+=== 08-source-q08-control-plane-info ===
+[setup] namespace/cka-sim-dump-08-20260528203939 created
+[setup] configmap/q08-control-plane created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q08-control-plane-info/baseline.json
+[ref] configmap/q08-answer created
+[grade] ✓ configmap/q08-answer created by candidate
+[grade] ✓ field {.data.component} on configmap/q08-answer == 'kube-apiserver'
+[grade] ✓ field {.data.namespace} on configmap/q08-answer == 'kube-system'
+[grade] ✓ field {.data.securePort} on configmap/q08-answer == '6443'
+[grade] 
+[grade] SCORE: 4/4
+PASS 08-source-q08-control-plane-info SCORE: 4/4
+
+=== 09-source-q09-manual-scheduling ===
+[setup] namespace/cka-sim-dump-09-20260528203939 created
+[setup] configmap/q09-scheduler-sim created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q09-manual-scheduling/baseline.json
+[ref] pod/manual-nginx created
+[grade] ✓ pod/manual-nginx created by candidate
+[grade] ✓ field {.spec.nodeName} on pod/manual-nginx == 'worker-1'
+[grade] 
+[grade] SCORE: 2/2
+PASS 09-source-q09-manual-scheduling SCORE: 2/2
+
+=== 10-source-q10-rbac-serviceaccount ===
+[setup] namespace/cka-sim-dump-10-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q10-rbac-serviceaccount/baseline.json
+[ref] serviceaccount/audit-reader created
+[ref] role.rbac.authorization.k8s.io/audit-reader created
+[ref] rolebinding.rbac.authorization.k8s.io/audit-reader created
+[grade] ✓ serviceaccount/audit-reader created by candidate
+[grade] ✓ role/audit-reader created by candidate
+[grade] ✓ rolebinding/audit-reader created by candidate
+[grade] ✓ can-i list pods (as=system:serviceaccount:cka-sim-dump-10-20260528203939:audit-reader, ns=cka-sim-dump-10-20260528203939) = yes
+[grade] 
+[grade] SCORE: 4/4
+PASS 10-source-q10-rbac-serviceaccount SCORE: 4/4
+
+=== 11-source-q11-daemonset-all-nodes ===
+[setup] namespace/cka-sim-dump-11-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q11-daemonset-all-nodes/baseline.json
+[ref] daemonset.apps/node-log-agent created
+[grade] ✓ daemonset/node-log-agent created by candidate
+[grade] ✓ field {.spec.template.spec.tolerations[0].key} on daemonset/node-log-agent == 'node-role.kubernetes.io/control-plane'
+[grade] 
+[grade] SCORE: 2/2
+PASS 11-source-q11-daemonset-all-nodes SCORE: 2/2
+
+=== 12-source-q12-deployment-topology ===
+[setup] namespace/cka-sim-dump-12-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q12-deployment-topology/baseline.json
+[ref] deployment.apps/spread-web created
+[grade] ✓ deployment/spread-web created by candidate
+[grade] ✓ field {.spec.replicas} on deployment/spread-web == '3'
+[grade] ✓ field {.spec.template.spec.containers[0].resources.requests.cpu} on deployment/spread-web == '25m'
+[grade] ✓ field {.spec.template.spec.topologySpreadConstraints[0].topologyKey} on deployment/spread-web == 'kubernetes.io/hostname'
+[grade] 
+[grade] SCORE: 4/4
+PASS 12-source-q12-deployment-topology SCORE: 4/4
+
+=== 13-source-q13-multicontainer-volume ===
+[setup] namespace/cka-sim-dump-13-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q13-multicontainer-volume/baseline.json
+[ref] pod/shared-tools created
+[grade] ✓ pod/shared-tools created by candidate
+[grade] ✓ field {.spec.containers[0].name} on pod/shared-tools == 'writer'
+[grade] ✓ field {.spec.containers[1].name} on pod/shared-tools == 'reader'
+[grade] ✓ field {.spec.volumes[0].name} on pod/shared-tools == 'shared'
+[grade] 
+[grade] SCORE: 4/4
+PASS 13-source-q13-multicontainer-volume SCORE: 4/4
+
+=== 14-source-q14-cluster-info ===
+[setup] namespace/cka-sim-dump-14-20260528203939 created
+[setup] configmap/q14-cluster-facts created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q14-cluster-info/baseline.json
+[ref] configmap/q14-answer created
+[grade] ✓ configmap/q14-answer created by candidate
+[grade] ✓ field {.data.nodeCount} on configmap/q14-answer == '3'
+[grade] ✓ field {.data.controlPlaneVersion} on configmap/q14-answer == 'v1.35.0'
+[grade] 
+[grade] SCORE: 3/3
+PASS 14-source-q14-cluster-info SCORE: 3/3
+
+=== 15-source-q15-cluster-events ===
+[setup] namespace/cka-sim-dump-15-20260528203939 created
+[setup] pod/q15-pending created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q15-cluster-events/baseline.json
+[ref] configmap/q15-answer created
+[grade] ✓ configmap/q15-answer created by candidate
+[grade] ✓ field {.data.warningReason} on configmap/q15-answer == 'FailedScheduling'
+[grade] ✓ field {.data.involvedObject} on configmap/q15-answer == 'q15-pending'
+[grade] 
+[grade] SCORE: 3/3
+PASS 15-source-q15-cluster-events SCORE: 3/3
+
+=== 16-source-q16-api-resources ===
+[setup] namespace/cka-sim-dump-16-20260528203939 created
+[setup] configmap/q16-api-inventory created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q16-api-resources/baseline.json
+[ref] configmap/q16-answer created
+[grade] ✓ configmap/q16-answer created by candidate
+[grade] ✓ field {.data.namespace} on configmap/q16-answer == 'metadata'
+[grade] ✓ field {.data.namespacedKind} on configmap/q16-answer == 'configmaps'
+[grade] 
+[grade] SCORE: 3/3
+PASS 16-source-q16-api-resources SCORE: 3/3
+
+=== 17-source-q17-container-inspection ===
+[setup] namespace/cka-sim-dump-17-20260528203939 created
+[setup] pod/q17-inspect created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q17-container-inspection/baseline.json
+[ref] configmap/q17-answer created
+[grade] ✓ configmap/q17-answer created by candidate
+[grade] ✓ field {.data.container} on configmap/q17-answer == 'sidecar'
+[grade] ✓ field {.data.image} on configmap/q17-answer == 'busybox:1.36'
+[grade] ✓ field {.data.command} on configmap/q17-answer == 'sleep'
+[grade] 
+[grade] SCORE: 4/4
+PASS 17-source-q17-container-inspection SCORE: 4/4
+
+=== 18-source-q18-kubelet-repair ===
+[setup] namespace/cka-sim-dump-18-20260528203939 created
+[setup] configmap/kubelet-flags created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q18-kubelet-repair/baseline.json
+[ref] configmap/kubelet-flags configured
+[grade] ✓ configmap/kubelet-flags changed since setup
+[grade] ✓ field {.data.runtimeEndpoint} on configmap/kubelet-flags == 'unix:///run/containerd/containerd.sock'
+[grade] ✓ field {.data.status} on configmap/kubelet-flags == 'repaired'
+[grade] 
+[grade] SCORE: 3/3
+PASS 18-source-q18-kubelet-repair SCORE: 3/3
+
+=== 19-source-q19-secret-mount ===
+[setup] namespace/cka-sim-dump-19-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q19-secret-mount/baseline.json
+[ref] secret/app-credentials created
+[ref] pod/secret-reader created
+[grade] ✓ secret/app-credentials created by candidate
+[grade] ✓ pod/secret-reader created by candidate
+[grade] ✓ field {.spec.volumes[0].secret.secretName} on pod/secret-reader == 'app-credentials'
+[grade] ✓ field {.spec.containers[0].volumeMounts[0].mountPath} on pod/secret-reader == '/etc/secret-data'
+[grade] 
+[grade] SCORE: 4/4
+PASS 19-source-q19-secret-mount SCORE: 4/4
+
+=== 20-source-q20-upgrade-join-plan ===
+[setup] namespace/cka-sim-dump-20-20260528203939 created
+[setup] configmap/q20-upgrade-constraints created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q20-upgrade-join-plan/baseline.json
+[ref] configmap/q20-answer created
+[grade] ✓ configmap/q20-answer created by candidate
+[grade] ✓ field {.data.firstStep} on configmap/q20-answer == 'kubeadm-upgrade-plan'
+[grade] ✓ field {.data.joinMode} on configmap/q20-answer == 'dry-run-token-review'
+[grade] 
+[grade] SCORE: 3/3
+PASS 20-source-q20-upgrade-join-plan SCORE: 3/3
+
+=== 21-source-q21-static-pod-service ===
+[setup] namespace/cka-sim-dump-21-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q21-static-pod-service/baseline.json
+[ref] configmap/q21-static-manifest created
+[ref] service/static-web created
+[grade] ✓ configmap/q21-static-manifest created by candidate
+[grade] ✓ service/static-web created by candidate
+[grade] ✓ field {.data.source} on configmap/q21-static-manifest == 'file'
+[grade] ✓ field {.spec.selector.app} on service/static-web == 'static-web'
+[grade] 
+[grade] SCORE: 4/4
+PASS 21-source-q21-static-pod-service SCORE: 4/4
+
+=== 22-source-q22-apiserver-cert ===
+[setup] namespace/cka-sim-dump-22-20260528203939 created
+[setup] configmap/q22-apiserver-cert created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q22-apiserver-cert/baseline.json
+[ref] configmap/q22-answer created
+[grade] ✓ configmap/q22-answer created by candidate
+[grade] ✓ field {.data.certName} on configmap/q22-answer == 'kube-apiserver'
+[grade] ✓ field {.data.validUntil} on configmap/q22-answer == '2030-05-28'
+[grade] ✓ field {.data.signer} on configmap/q22-answer == 'kubernetes'
+[grade] 
+[grade] SCORE: 4/4
+PASS 22-source-q22-apiserver-cert SCORE: 4/4
+
+=== 23-source-q23-kubelet-certs ===
+[setup] namespace/cka-sim-dump-23-20260528203939 created
+[setup] configmap/q23-kubelet-certs created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q23-kubelet-certs/baseline.json
+[ref] configmap/q23-answer created
+[grade] ✓ configmap/q23-answer created by candidate
+[grade] ✓ field {.data.clientIssuer} on configmap/q23-answer == 'kubernetes-ca'
+[grade] ✓ field {.data.servingEku} on configmap/q23-answer == 'server-auth'
+[grade] 
+[grade] SCORE: 3/3
+PASS 23-source-q23-kubelet-certs SCORE: 3/3
+
+=== 24-source-q24-networkpolicy ===
+[setup] namespace/cka-sim-dump-24-20260528203939 created
+[setup] pod/frontend created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q24-networkpolicy/baseline.json
+[ref] networkpolicy.networking.k8s.io/frontend-egress created
+[grade] ✓ networkpolicy/frontend-egress created by candidate
+[grade] ✓ field {.spec.podSelector.matchLabels.app} on networkpolicy/frontend-egress == 'frontend'
+[grade] ✓ field {.spec.policyTypes[0]} on networkpolicy/frontend-egress == 'Egress'
+[grade] ✓ field {.spec.egress[0].ports[0].port} on networkpolicy/frontend-egress == '443'
+[grade] 
+[grade] SCORE: 4/4
+PASS 24-source-q24-networkpolicy SCORE: 4/4
+
+=== 25-source-q25-etcd-snapshot ===
+[setup] namespace/cka-sim-dump-25-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q25-etcd-snapshot/baseline.json
+[ref] secret/q25-etcd-snapshot created
+[ref] configmap/q25-restore-plan created
+[grade] ✓ secret/q25-etcd-snapshot created by candidate
+[grade] ✓ configmap/q25-restore-plan created by candidate
+[grade] ✓ field {.data.dataDir} on configmap/q25-restore-plan == '/tmp/q25-etcd-restore'
+[grade] 
+[grade] SCORE: 3/3
+PASS 25-source-q25-etcd-snapshot SCORE: 3/3
+
+=== 26-extra-q01-eviction-priority ===
+[setup] namespace/cka-sim-dump-26-20260528203939 created
+[setup] configmap/q26-eviction-data created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q26-eviction-priority/baseline.json
+[ref] configmap/q26-answer created
+[grade] ✓ configmap/q26-answer created by candidate
+[grade] ✓ field {.data.firstEvicted} on configmap/q26-answer == 'besteffort-low'
+[grade] ✓ field {.data.lastEvicted} on configmap/q26-answer == 'guaranteed-critical'
+[grade] 
+[grade] SCORE: 3/3
+PASS 26-extra-q01-eviction-priority SCORE: 3/3
+
+=== 27-extra-q02-manual-api-access ===
+[setup] namespace/cka-sim-dump-27-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q27-manual-api-access/baseline.json
+[ref] serviceaccount/api-caller created
+[ref] pod/api-curl created
+[ref] configmap/q27-answer created
+[grade] ✓ serviceaccount/api-caller created by candidate
+[grade] ✓ pod/api-curl created by candidate
+[grade] ✓ configmap/q27-answer created by candidate
+[grade] ✓ field {.spec.serviceAccountName} on pod/api-curl == 'api-caller'
+[grade] ✓ field {.data.apiPath} on configmap/q27-answer == '/api'
+[grade] 
+[grade] SCORE: 5/5
+PASS 27-extra-q02-manual-api-access SCORE: 5/5
+
+=== 28-preview-q01-etcd-certs ===
+[setup] namespace/cka-sim-dump-28-20260528203939 created
+[setup] configmap/q28-etcd-certs created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q28-etcd-certs/baseline.json
+[ref] configmap/q28-answer created
+[grade] ✓ configmap/q28-answer created by candidate
+[grade] ✓ field {.data.serverKey} on configmap/q28-answer == '/etc/kubernetes/pki/etcd/server.key'
+[grade] ✓ field {.data.clientAuth} on configmap/q28-answer == 'true'
+[grade] ✓ field {.data.snapshotPath} on configmap/q28-answer == '/tmp/cka-sim-etcd-snapshot.db'
+[grade] 
+[grade] SCORE: 4/4
+PASS 28-preview-q01-etcd-certs SCORE: 4/4
+
+=== 29-preview-q02-kube-proxy-service ===
+[setup] namespace/cka-sim-dump-29-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q29-kube-proxy-service/baseline.json
+[ref] pod/p2-pod created
+[ref] service/p2-service created
+[ref] configmap/q29-answer created
+[grade] ✓ pod/p2-pod created by candidate
+[grade] ✓ service/p2-service created by candidate
+[grade] ✓ configmap/q29-answer created by candidate
+[grade] ✓ field {.spec.ports[0].port} on service/p2-service == '3000'
+[grade] ✓ field {.data.proxyMode} on configmap/q29-answer == 'iptables'
+[grade] 
+[grade] SCORE: 5/5
+PASS 29-preview-q02-kube-proxy-service SCORE: 5/5
+
+=== 30-preview-q03-service-ip-output ===
+[setup] namespace/cka-sim-dump-30-20260528203939 created
+[baseline] ✓ baseline captured: /tmp/cka-sim/dump-q30-service-ip-output/baseline.json
+[ref] pod/check-ip created
+[ref] service/check-ip-service created
+[ref] configmap/q30-answer created
+[grade] ✓ pod/check-ip created by candidate
+[grade] ✓ service/check-ip-service created by candidate
+[grade] ✓ configmap/q30-answer created by candidate
+[grade] ✓ field {.spec.selector.app} on service/check-ip-service == 'check-ip'
+[grade] ✓ field {.data.serviceName} on configmap/q30-answer == 'check-ip-service'
+[grade] 
+[grade] SCORE: 5/5
+PASS 30-preview-q03-service-ip-output SCORE: 5/5
+
+cleanup-after
+SUMMARY passed=30 failed=0 total=30

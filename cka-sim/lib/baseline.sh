@@ -220,9 +220,9 @@ cka_sim::baseline::is_candidate_modified() {
   local in_baseline
   in_baseline=$(jq -r --arg key "$lookup_key" \
     '(.resource_list // []) | if index($key) != null then "true" else "false" end' \
-    "$CKA_SIM_BASELINE_PATH" 2>/dev/null) || {
+    < "$CKA_SIM_BASELINE_PATH" 2>/dev/null) || {
     err "baseline.json malformed: $CKA_SIM_BASELINE_PATH"
-    return 0
+    return 1
   }
 
   if [[ "$in_baseline" != "true" ]]; then
@@ -234,10 +234,16 @@ cka_sim::baseline::is_candidate_modified() {
   local baseline_gen baseline_rv
   baseline_gen=$(jq -r --arg key "$lookup_key" \
     '[.resources[] | select(("\(.kind | ascii_downcase)/\(.name)" == $key))] | .[0].generation // ""' \
-    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+    < "$CKA_SIM_BASELINE_PATH" 2>/dev/null) || {
+    err "baseline.json malformed: $CKA_SIM_BASELINE_PATH"
+    return 1
+  }
   baseline_rv=$(jq -r --arg key "$lookup_key" \
     '[.resources[] | select(("\(.kind | ascii_downcase)/\(.name)" == $key))] | .[0].resourceVersion // ""' \
-    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+    < "$CKA_SIM_BASELINE_PATH" 2>/dev/null) || {
+    err "baseline.json malformed: $CKA_SIM_BASELINE_PATH"
+    return 1
+  }
 
   # GENERATION-FIRST check
   # Phase 07.1 D-26 — when generation is available on BOTH sides, treat it as authoritative.

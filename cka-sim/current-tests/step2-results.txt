@@ -1,0 +1,50 @@
+i've removed "unsupported-on-kind" on 3 questions and run audit
+
+root@master:~/CKA-Certified-Kubernetes-Administrator/cka-sim# bash bin/cka-sim audit --report /tmp/v102-live-audit.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ cka-sim audit
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  scope: all, 34 question(s)
+✓ cluster-architecture/01-rbac-viewer: PASS (0/0 expectations met)
+✓ cluster-architecture/02-etcd-backup-restore: PASS (1/1 expectations met)
+✓ cluster-architecture/03-kubeadm-upgrade: PASS (1/1 expectations met)
+✓ cluster-architecture/04-pss-enforce: PASS (3/3 expectations met)
+✓ cluster-architecture/05-audit-policy: PASS (1/1 expectations met)
+✓ cluster-architecture/06-crd-basics: PASS (1/1 expectations met)
+✓ cluster-architecture/07-cri-dockerd-endpoint: PASS (1/1 expectations met)
+✓ cluster-architecture/08-priorityclass: PASS (0/0 expectations met)
+✓ services-networking/01-networkpolicy-egress: PASS (1/1 expectations met)
+✓ services-networking/02-service-core: PASS (1/1 expectations met)
+✓ services-networking/03-coredns-resolution: PASS (2/2 expectations met)
+✓ services-networking/04-ingress-path-host: PASS (0/0 expectations met)
+✓ services-networking/05-kube-proxy-mode: PASS (1/1 expectations met)
+✓ services-networking/06-netpol-endport: PASS (2/2 expectations met)
+✓ storage/01-pvc-binding: PASS (5/5 expectations met)
+✓ storage/02-storageclass-dynamic: PASS (2/2 expectations met)
+✓ storage/03-access-modes-reclaim: PASS (4/4 expectations met)
+✓ storage/04-csi-volumesnapshot: PASS (2/2 expectations met)
+✓ storage/05-wait-for-first-consumer: PASS (5/5 expectations met)
+✓ storage/06-pvc-mount-pod: PASS (2/2 expectations met)
+✓ troubleshooting/01-deploy-svc-mismatch: PASS (1/1 expectations met)
+✓ troubleshooting/02-netpol-dns-egress: PASS (2/2 expectations met)
+^[[B^[[B✓ troubleshooting/03-coredns-resolution: PASS (2/2 expectations met)
+✓ troubleshooting/04-debug-node: PASS (1/1 expectations met)
+✓ troubleshooting/05-static-pod-manifest: PASS (1/1 expectations met)
+✓ troubleshooting/06-broken-kubelet: PASS (1/1 expectations met)
+✓ workloads-scheduling/01-deployment-requests: PASS (2/2 expectations met)
+✓ workloads-scheduling/02-rolling-update-rollback: PASS (2/2 expectations met)
+✓ workloads-scheduling/03-configmap-secret-env-volume: PASS (0/0 expectations met)
+✓ workloads-scheduling/04-hpa-metrics-server: PASS (1/1 expectations met)
+✓ workloads-scheduling/05-daemonset: PASS (1/1 expectations met)
+✗ workloads-scheduling/06-static-pod: FAIL (0 expectation(s) failed of 1)
+kind | name                               | jsonpath | claimed | actual                                                                | verdict
+-----+------------------------------------+----------+---------+-----------------------------------------------------------------------+--------
+     | workloads-scheduling/06-static-pod |          |         | setup.sh failed (ns=cka-sim-audit-workloads-scheduling-06-static-pod) | !
+✓ workloads-scheduling/07-native-sidecar: PASS (3/3 expectations met)
+✓ workloads-scheduling/08-nodeselector-affinity-taints: PASS (1/1 expectations met)
+
+─── audit summary ───
+33/34 PASS, 0 FAIL, 1 errors, 0 skipped
+  report: /tmp/v102-live-audit.md

@@ -322,14 +322,19 @@ cka_sim::grade::assert_generation_delta_ge() {
   fi
 
   # Canonical lookup key
-  local lookup_key
-  lookup_key="$(printf '%s' "$kind" | tr '[:upper:]' '[:lower:]')/$name"
+  local canonical_kind lookup_key
+  canonical_kind="$(cka_sim::baseline::canonical_kind "$kind")"
+  lookup_key="$canonical_kind/$name"
 
   # Check resource is in baseline
   local in_baseline
   in_baseline=$(jq -r --arg key "$lookup_key" \
     '(.resource_list // []) | if index($key) != null then "true" else "false" end' \
-    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+    < "$CKA_SIM_BASELINE_PATH" 2>/dev/null) || {
+    CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (baseline unreadable)")
+    err "$kind/$name generation delta undefined (baseline unreadable)"
+    return 1
+  }
 
   if [[ "$in_baseline" != "true" ]]; then
     CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (not in baseline)")
@@ -341,7 +346,11 @@ cka_sim::grade::assert_generation_delta_ge() {
   local baseline_gen
   baseline_gen=$(jq -r --arg key "$lookup_key" \
     '[.resources[] | select(("\(.kind | ascii_downcase)/\(.name)" == $key))] | .[0].generation // ""' \
-    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+    < "$CKA_SIM_BASELINE_PATH" 2>/dev/null) || {
+    CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (baseline unreadable)")
+    err "$kind/$name generation delta undefined (baseline unreadable)"
+    return 1
+  }
 
   if [[ -z "$baseline_gen" ]] || [[ "$baseline_gen" == "null" ]]; then
     CKA_SIM_GRADE_FAILS+=("$kind/$name generation delta undefined (baseline generation is null)")
@@ -408,14 +417,19 @@ cka_sim::grade::assert_resource_candidate_authored() {
   fi
 
   # Canonical lookup key
-  local lookup_key
-  lookup_key="$(printf '%s' "$kind" | tr '[:upper:]' '[:lower:]')/$name"
+  local canonical_kind lookup_key
+  canonical_kind="$(cka_sim::baseline::canonical_kind "$kind")"
+  lookup_key="$canonical_kind/$name"
 
   # Check if resource was in baseline
   local in_baseline
   in_baseline=$(jq -r --arg key "$lookup_key" \
     '(.resource_list // []) | if index($key) != null then "true" else "false" end' \
-    "$CKA_SIM_BASELINE_PATH" 2>/dev/null)
+    < "$CKA_SIM_BASELINE_PATH" 2>/dev/null) || {
+    CKA_SIM_GRADE_FAILS+=("$kind/$name candidate-authored check failed (baseline unreadable)")
+    err "$kind/$name candidate-authored check failed (baseline unreadable)"
+    return 1
+  }
 
   if [[ "$in_baseline" == "true" ]]; then
     CKA_SIM_GRADE_FAILS+=("$kind/$name pre-existed in baseline (not candidate-authored)")

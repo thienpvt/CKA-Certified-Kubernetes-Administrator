@@ -1,0 +1,33 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator# bash cka-sim/scripts/uat-v103.sh
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Phase 24 UAT: v1.0.3 Sign-Off (DRILL-NS-01, AUDIT-W&S06, LINT-01, BLG-06, BLG-07)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── DRILL-NS-01: storage/01 namespace placeholder expansion ──
+  ✓ DRILL-NS-01 namespace render (no literal ${CKA_SIM_LAB_NS})
+
+── AUDIT-W&S06: workloads-scheduling/06-static-pod audit skip ──
+  ✓ AUDIT-W&S06 audit emits SKIPPED + exits 0
+
+── LINT-01: symptom-diff-regression.sh fires on live cluster ──
+    FAIL: symptom-diff-regression.sh exited 1 (expected 0 = lint caught drift)
+    Output: [symptom-diff regression] FAIL: lint exited 0 with mutated YAML; expected 1
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ live-cluster symptom diff
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ==> storage/01-pvc-binding
+✓ symptom diff: 1 question(s) passed
+    FAIL: neither citation nor PASS found in output
+  ✗ LINT-01 regression test passes (lint detects drift)
+
+── BLG-06: GHA validate-local job ──
+  ⊘ BLG-06 — GHA confirmation — verify via git push + validate.yml run ID in step6-results.txt
+
+── BLG-07: GHA bash-tests job ──
+  ⊘ BLG-07 — GHA confirmation — verify via git push + bash-tests job in step6-results.txt
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Results: 2 passed, 1 failed, 2 skipped (of 5)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

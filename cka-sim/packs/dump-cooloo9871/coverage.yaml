@@ -1,0 +1,123 @@
+# cka-sim/packs/dump-cooloo9871/coverage.yaml
+domain: dump-cooloo9871
+tracker:
+  dump-q01-contexts:
+    label: "Contexts and current context"
+    questions:
+      - dump-q01-contexts
+  dump-q02-control-plane-scheduling:
+    label: "Schedule a pod onto a control-plane node safely"
+    questions:
+      - dump-q02-control-plane-scheduling
+  dump-q03-statefulset-scale:
+    label: "Scale a StatefulSet down"
+    questions:
+      - dump-q03-statefulset-scale
+  dump-q04-readiness-service:
+    label: "Gate readiness on service reachability"
+    questions:
+      - dump-q04-readiness-service
+  dump-q05-pod-sorting:
+    label: "Sort pods with kubectl output"
+    questions:
+      - dump-q05-pod-sorting
+  dump-q06-pv-pvc-pod-volume:
+    label: "Create PV, PVC, and mounted pod"
+    questions:
+      - dump-q06-pv-pvc-pod-volume
+  dump-q07-resource-usage:
+    label: "Report node and pod resource requests"
+    questions:
+      - dump-q07-resource-usage
+  dump-q08-control-plane-info:
+    label: "Inspect control-plane component information"
+    questions:
+      - dump-q08-control-plane-info
+  dump-q09-manual-scheduling:
+    label: "Manually bind a pod without stopping scheduler"
+    questions:
+      - dump-q09-manual-scheduling
+  dump-q10-rbac-serviceaccount:
+    label: "Create ServiceAccount, Role, and RoleBinding"
+    questions:
+      - dump-q10-rbac-serviceaccount
+  dump-q11-daemonset-all-nodes:
+    label: "Run a DaemonSet on every node"
+    questions:
+      - dump-q11-daemonset-all-nodes
+  dump-q12-deployment-topology:
+    label: "Create a topology-aware Deployment"
+    questions:
+      - dump-q12-deployment-topology
+  dump-q13-multicontainer-volume:
+    label: "Create a multi-container pod with shared volume"
+    questions:
+      - dump-q13-multicontainer-volume
+  dump-q14-cluster-info:
+    label: "Report cluster node and version information"
+    questions:
+      - dump-q14-cluster-info
+  dump-q15-cluster-events:
+    label: "Find recent cluster events"
+    questions:
+      - dump-q15-cluster-events
+  dump-q16-api-resources:
+    label: "Identify namespaces and namespaced API resources"
+    questions:
+      - dump-q16-api-resources
+  dump-q17-container-inspection:
+    label: "Inspect a pod container detail"
+    questions:
+      - dump-q17-container-inspection
+  dump-q18-kubelet-repair:
+    label: "Repair a simulated kubelet flag file"
+    questions:
+      - dump-q18-kubelet-repair
+  dump-q19-secret-mount:
+    label: "Create a Secret and mount it into a pod"
+    questions:
+      - dump-q19-secret-mount
+  dump-q20-upgrade-join-plan:
+    label: "Write a safe upgrade and join runbook"
+    questions:
+      - dump-q20-upgrade-join-plan
+  dump-q21-static-pod-service:
+    label: "Create a static-pod manifest model and service"
+    questions:
+      - dump-q21-static-pod-service
+  dump-q22-apiserver-cert:
+    label: "Inspect simulated apiserver certificate validity"
+    questions:
+      - dump-q22-apiserver-cert
+  dump-q23-kubelet-certs:
+    label: "Inspect simulated kubelet client and serving certs"
+    questions:
+      - dump-q23-kubelet-certs
+  dump-q24-networkpolicy:
+    label: "Create a NetworkPolicy containment rule"
+    questions:
+      - dump-q24-networkpolicy
+  dump-q25-etcd-snapshot:
+    label: "Save and verify a simulated etcd snapshot"
+    questions:
+      - dump-q25-etcd-snapshot
+  dump-q26-eviction-priority:
+    label: "Identify pods first to be evicted"
+    questions:
+      - dump-q26-eviction-priority
+  dump-q27-manual-api-access:
+    label: "Contact the Kubernetes API manually from a pod"
+    questions:
+      - dump-q27-manual-api-access
+  dump-q28-etcd-certs:
+    label: "Inspect simulated etcd certificate and key metadata"
+    questions:
+      - dump-q28-etcd-certs
+  dump-q29-kube-proxy-service:
+    label: "Create a pod and service for kube-proxy inspection"
+    questions:
+      - dump-q29-kube-proxy-service
+  dump-q30-service-ip-output:
+    label: "Create pod/service and record service IPs"
+    questions:
+      - dump-q30-service-ip-output

@@ -1,0 +1,53 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator# export CKA_SIM_ROOT=~/CKA-Certified-Kubernetes-Administrator/cka-sim
+  export CKA_SIM_LAB_NS=cka-sim-workloads-scheduling-05
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/05-daemonset/reset.sh; sleep 3
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/05-daemonset/setup.sh
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/05-daemonset/ref-solution.sh
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/05-daemonset/grade.sh
+
+  # Q08
+  export CKA_SIM_LAB_NS=cka-sim-workloads-scheduling-08
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/08-nodeselector-affinity-taints/reset.sh; sleep 3
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/08-nodeselector-affinity-taints/setup.sh
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/08-nodeselector-affinity-taints/ref-solution.sh
+  bash $CKA_SIM_ROOT/packs/workloads-scheduling/08-nodeselector-affinity-taints/grade.sh
+namespace/cka-sim-workloads-scheduling-05 created
+serviceaccount/q05-node-agent-sa created
+daemonset.apps/q05-node-agent created
+Waiting for daemon set "q05-node-agent" rollout to finish: 0 of 3 updated pods are available...
+Waiting for daemon set "q05-node-agent" rollout to finish: 1 of 3 updated pods are available...
+Waiting for daemon set "q05-node-agent" rollout to finish: 2 of 3 updated pods are available...
+daemon set "q05-node-agent" successfully rolled out
+daemon set "q05-node-agent" successfully rolled out
+✓ resource daemonset/q05-node-agent exists
+✓ field {.status.desiredNumberScheduled} on daemonset/q05-node-agent == '3'
+✓ CP toleration operator contains 'Exists'
+✓ container[0].resources.requests.cpu = '25m'
+
+SCORE: 4/4
+label "gpu" not found.
+node/worker-1 not labeled
+namespace/cka-sim-workloads-scheduling-08 created
+node/worker-1 modified
+deployment.apps/q08-gpu-sim created
+node/worker-1 labeled
+deployment.apps/q08-gpu-sim patched
+Waiting for deployment "q08-gpu-sim" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "q08-gpu-sim" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "q08-gpu-sim" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "q08-gpu-sim" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "q08-gpu-sim" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "q08-gpu-sim" rollout to finish: 1 old replicas are pending termination...
+deployment "q08-gpu-sim" successfully rolled out
+deployment.apps/q08-gpu-sim condition met
+deployment "q08-gpu-sim" successfully rolled out
+pod/q08-gpu-sim-665d678c88-hvcvc condition met
+pod/q08-gpu-sim-665d678c88-pbwgn condition met
+pod/q08-gpu-sim-fcf94d774-2frq4 condition met
+pod/q08-gpu-sim-fcf94d774-lh4j2 condition met
+✓ field {.spec.template.spec.tolerations[?(@.key=="gpu")].effect} on deployment/q08-gpu-sim == 'NoSchedule'
+✓ field {.spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[?(@.key=="gpu")].operator} on deployment/q08-gpu-sim == 'In'
+✗ replicas are on nodes 'worker-1 worker-1 worker-2 worker-2' (expected only 'worker-1')
+✓ worker-1 has label gpu=true
+
+SCORE: 3/4

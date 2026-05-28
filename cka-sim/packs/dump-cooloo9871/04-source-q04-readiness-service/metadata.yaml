@@ -1,0 +1,13 @@
+id: dump-q04-readiness-service
+domain: services-networking
+estimatedMinutes: 8
+verified_against: "1.35"
+traps:
+  - service-selector-empty-endpoints
+references:
+  - kind: blog-post
+    target: https://cooloo9871.github.io/cka/
+    note: Source topic only; exercise wording and solution are independently authored.
+  - kind: k8s-doc
+    target: https://kubernetes.io/docs/reference/kubectl/
+    note: Kubernetes command and object reference for this adapted task.

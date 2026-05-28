@@ -1,0 +1,11 @@
+question: dump-q10-rbac-serviceaccount
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: serviceaccount
+    name: audit-reader
+    namespace: ${CKA_SIM_LAB_NS}

@@ -20,6 +20,8 @@ slug="06-netpol-endport"
 qdir="$CKA_SIM_ROOT/packs/$pack/$slug"
 test_id="${pack}__${slug}"
 
+rm -rf /tmp/q06-netpol-endport
+
 # ----- empty submission test -----
 export CKA_SIM_TEST_CURRENT="grading-honesty/${test_id}/post-setup"
 export CKA_SIM_BASELINE_PATH="$CKA_SIM_TEST_FIXTURES_DIR/grading-honesty/${test_id}/post-setup/baseline.json"

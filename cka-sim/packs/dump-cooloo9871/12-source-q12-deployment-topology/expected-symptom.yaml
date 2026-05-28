@@ -1,0 +1,11 @@
+question: dump-q12-deployment-topology
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: deploy
+    name: spread-web
+    namespace: ${CKA_SIM_LAB_NS}

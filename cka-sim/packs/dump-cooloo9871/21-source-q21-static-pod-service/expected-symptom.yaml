@@ -1,0 +1,11 @@
+question: dump-q21-static-pod-service
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: configmap
+    name: q21-static-manifest
+    namespace: ${CKA_SIM_LAB_NS}

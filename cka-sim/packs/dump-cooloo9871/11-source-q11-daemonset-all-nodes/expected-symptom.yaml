@@ -1,0 +1,11 @@
+question: dump-q11-daemonset-all-nodes
+namespace: ${CKA_SIM_LAB_NS}
+resources:
+  - kind: namespace
+    name: ${CKA_SIM_LAB_NS}
+    expect:
+      status.phase: Active
+absent_resources:
+  - kind: daemonset
+    name: node-log-agent
+    namespace: ${CKA_SIM_LAB_NS}

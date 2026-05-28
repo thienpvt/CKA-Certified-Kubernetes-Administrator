@@ -1,0 +1,22 @@
+root@master:~/CKA-Certified-Kubernetes-Administrator/cka-sim# LC_ALL=C bash packs/troubleshooting/05-static-pod-manifest/setup.sh
+packs/troubleshooting/05-static-pod-manifest/setup.sh: line 3: CKA_SIM_LAB_NS: CKA_SIM_LAB_NS must be set
+root@master:~/CKA-Certified-Kubernetes-Administrator/cka-sim# CKA_SIM_LAB_NS=05-static-pod-manifest LC_ALL=C bash packs/troubleshooting/05-static-pod-manifest/setup.sh
+namespace/05-static-pod-manifest created
+root@master:~/CKA-Certified-Kubernetes-Administrator/cka-sim# CKA_SIM_LAB_NS=cka-sim-drill-ca-05 CKA_SIM_ROOT="$(pwd)" \
+    bash packs/cluster-architecture/05-audit-policy/setup.sh
+  CKA_SIM_LAB_NS=cka-sim-drill-ca-05 CKA_SIM_ROOT="$(pwd)" \
+    bash packs/cluster-architecture/05-audit-policy/ref-solution.sh
+  CKA_SIM_LAB_NS=cka-sim-drill-ca-05 CKA_SIM_ROOT="$(pwd)" \
+    bash packs/cluster-architecture/05-audit-policy/grade.sh
+namespace/cka-sim-drill-ca-05 created
+✓ policy.yaml exists [weight=0 setup-state]
+✓ Secrets logged at level=Metadata
+✓ ConfigMaps logged at level=Request
+✓ Events logged at level=None
+✓ omitStages contains RequestReceived
+✓ policy has at least one rule [weight=0 setup-state]
+
+SCORE: 4/4
+root@master:~/CKA-Certified-Kubernetes-Administrator/cka-sim# bash scripts/test.sh 2>&1 | grep report_golden
+ report_golden
+✓ case passed: report_golden
