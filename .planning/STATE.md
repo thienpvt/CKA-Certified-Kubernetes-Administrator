@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Dump Cooloo9871 Pack
 status: planning
-last_updated: "2026-05-28T08:35:43.136Z"
-last_activity: 2026-05-28
+last_updated: "2026-05-28T09:02:08.218Z"
+last_activity: 2026-05-28 — v1.1 roadmap drafted
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,10 +17,21 @@ progress:
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 25 — Source Inventory + Pack Scaffold + Command Exercises
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-28 — Milestone v1.1 started
+Status: Roadmap drafted, awaiting approval
+Last activity: 2026-05-28 — Milestone v1.1 roadmap drafted
+
+### v1.1 Roadmap Snapshot (draft — awaiting approval)
+
+- Phase 25: Source Inventory + Pack Scaffold + Command Exercises — SRC-01..03, PACK-01..04, CMD-01..10 (17 reqs) — Pending
+- Phase 26: Core Object Exercise Batch — OBJ-01..10 (10 reqs) — Pending
+- Phase 27: Operational Exercise Batch — OPS-01..10 (10 reqs) — Pending
+- Phase 28: v1.1 Verification + Live UAT Batch — VER-01..05 (5 reqs) — Pending
+
+Dependency chain: 25 → 26 → 27 → 28.
+
+Coverage: 42/42 v1.1 requirements mapped (no orphans, no duplicates).
 
 ### v1.0.3 Roadmap Snapshot (archived — milestone shipped)
 

@@ -91,54 +91,54 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SRC-01 | TBD | Pending |
-| SRC-02 | TBD | Pending |
-| SRC-03 | TBD | Pending |
-| PACK-01 | TBD | Pending |
-| PACK-02 | TBD | Pending |
-| PACK-03 | TBD | Pending |
-| PACK-04 | TBD | Pending |
-| CMD-01 | TBD | Pending |
-| CMD-02 | TBD | Pending |
-| CMD-03 | TBD | Pending |
-| CMD-04 | TBD | Pending |
-| CMD-05 | TBD | Pending |
-| CMD-06 | TBD | Pending |
-| CMD-07 | TBD | Pending |
-| CMD-08 | TBD | Pending |
-| CMD-09 | TBD | Pending |
-| CMD-10 | TBD | Pending |
-| OBJ-01 | TBD | Pending |
-| OBJ-02 | TBD | Pending |
-| OBJ-03 | TBD | Pending |
-| OBJ-04 | TBD | Pending |
-| OBJ-05 | TBD | Pending |
-| OBJ-06 | TBD | Pending |
-| OBJ-07 | TBD | Pending |
-| OBJ-08 | TBD | Pending |
-| OBJ-09 | TBD | Pending |
-| OBJ-10 | TBD | Pending |
-| OPS-01 | TBD | Pending |
-| OPS-02 | TBD | Pending |
-| OPS-03 | TBD | Pending |
-| OPS-04 | TBD | Pending |
-| OPS-05 | TBD | Pending |
-| OPS-06 | TBD | Pending |
-| OPS-07 | TBD | Pending |
-| OPS-08 | TBD | Pending |
-| OPS-09 | TBD | Pending |
-| OPS-10 | TBD | Pending |
-| VER-01 | TBD | Pending |
-| VER-02 | TBD | Pending |
-| VER-03 | TBD | Pending |
-| VER-04 | TBD | Pending |
-| VER-05 | TBD | Pending |
+| SRC-01 | Phase 25 | Pending |
+| SRC-02 | Phase 25 | Pending |
+| SRC-03 | Phase 25 | Pending |
+| PACK-01 | Phase 25 | Pending |
+| PACK-02 | Phase 25 | Pending |
+| PACK-03 | Phase 25 | Pending |
+| PACK-04 | Phase 25 | Pending |
+| CMD-01 | Phase 25 | Pending |
+| CMD-02 | Phase 25 | Pending |
+| CMD-03 | Phase 25 | Pending |
+| CMD-04 | Phase 25 | Pending |
+| CMD-05 | Phase 25 | Pending |
+| CMD-06 | Phase 25 | Pending |
+| CMD-07 | Phase 25 | Pending |
+| CMD-08 | Phase 25 | Pending |
+| CMD-09 | Phase 25 | Pending |
+| CMD-10 | Phase 25 | Pending |
+| OBJ-01 | Phase 26 | Pending |
+| OBJ-02 | Phase 26 | Pending |
+| OBJ-03 | Phase 26 | Pending |
+| OBJ-04 | Phase 26 | Pending |
+| OBJ-05 | Phase 26 | Pending |
+| OBJ-06 | Phase 26 | Pending |
+| OBJ-07 | Phase 26 | Pending |
+| OBJ-08 | Phase 26 | Pending |
+| OBJ-09 | Phase 26 | Pending |
+| OBJ-10 | Phase 26 | Pending |
+| OPS-01 | Phase 27 | Pending |
+| OPS-02 | Phase 27 | Pending |
+| OPS-03 | Phase 27 | Pending |
+| OPS-04 | Phase 27 | Pending |
+| OPS-05 | Phase 27 | Pending |
+| OPS-06 | Phase 27 | Pending |
+| OPS-07 | Phase 27 | Pending |
+| OPS-08 | Phase 27 | Pending |
+| OPS-09 | Phase 27 | Pending |
+| OPS-10 | Phase 27 | Pending |
+| VER-01 | Phase 28 | Pending |
+| VER-02 | Phase 28 | Pending |
+| VER-03 | Phase 28 | Pending |
+| VER-04 | Phase 28 | Pending |
+| VER-05 | Phase 28 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 42 total
-- Mapped to phases: 0
-- Unmapped: 42
+- Mapped to phases: 42
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-28*
-*Last updated: 2026-05-28 after v1.1 requirements definition*
+*Last updated: 2026-05-28 after v1.1 roadmap creation*

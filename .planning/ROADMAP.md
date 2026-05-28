@@ -6,7 +6,7 @@
 - ✅ **v1.0.1 Full Audit Remediation** — Phases 10-15 (shipped 2026-05-18, tech_debt; live UAT closed 2026-05-19)
 - ✅ **v1.0.2 Question Correctness Audit + Backlog Cleanup** — Phases 16-21 + 19.1/19.2/20.1/20.2 (shipped 2026-05-20, tech_debt; live UAT closed 2026-05-20; GHA bash-tests env reds + BLG-06 lint triage routed to v1.0.3)
 - ✅ **v1.0.3 Tech Debt + Drill UX Fixes** — Phases 22-24 (shipped 2026-05-21; lab UAT + GHA validate.yml green)
-- 📋 **Next milestone** — Not yet planned (`/gsd-new-milestone` to start)
+- 📋 **v1.1 Dump Cooloo9871 Pack** — Phases 25-28 (planned 2026-05-28; 42 requirements)
 
 ## Phases
 
@@ -78,9 +78,69 @@ Full archive: [milestones/v1.0.3-MILESTONE-AUDIT.md](milestones/v1.0.3-MILESTONE
 
 </details>
 
+### 📋 v1.1 Dump Cooloo9871 Pack — PLANNED
+
+Add a new `dump-cooloo9871` drill pack with 30 original, v1.35-compatible exercises derived from the cooloo9871 CKA source topics. The milestone keeps source usage to topic inventory only and preserves existing simulator contracts: bash-only runtime, idempotent setup/reset, trap-aware grading, grading honesty, and lint/UAT evidence.
+
+- [ ] Phase 25: Source Inventory + Pack Scaffold + Command Exercises — SRC-01..03, PACK-01..04, CMD-01..10
+- [ ] Phase 26: Core Object Exercise Batch — OBJ-01..10
+- [ ] Phase 27: Operational Exercise Batch — OPS-01..10
+- [ ] Phase 28: v1.1 Verification + Live UAT Batch — VER-01..05
+
 ## Phase Details
 
-(Per-phase details for shipped milestones live in their archived ROADMAP.md files.)
+### Phase 25: Source Inventory + Pack Scaffold + Command Exercises
+
+**Goal:** Establish `dump-cooloo9871` pack structure, adaptation ledger, and all lower-risk command/inspection exercises.
+
+**Requirements:** SRC-01, SRC-02, SRC-03, PACK-01, PACK-02, PACK-03, PACK-04, CMD-01, CMD-02, CMD-03, CMD-04, CMD-05, CMD-06, CMD-07, CMD-08, CMD-09, CMD-10
+
+**Success criteria:**
+1. `cka-sim/packs/dump-cooloo9871` exists with README, manifest, coverage map, and 30 planned entries.
+2. Source inventory maps all 30 approved topics with v1.35 adaptation notes and prior-art metadata references.
+3. Q01/Q05/Q07/Q08/Q14/Q15/Q16/Q22/Q23/Q28 command/inspection exercises have complete seven-file runtime directories.
+4. Pack discovery and static lint gates pass for scaffold plus command/inspection questions.
+
+### Phase 26: Core Object Exercise Batch
+
+**Goal:** Add the standard Kubernetes object-authoring exercises for stateful workloads, storage, RBAC, scheduling objects, secrets, policy, and service traffic.
+
+**Requirements:** OBJ-01, OBJ-02, OBJ-03, OBJ-04, OBJ-05, OBJ-06, OBJ-07, OBJ-08, OBJ-09, OBJ-10
+
+**Success criteria:**
+1. Q03/Q06/Q10/Q11/Q12/Q13/Q19/Q24/Q29/Q30 exercises have complete runtime directories.
+2. Empty-submission paths fail scored assertions because required candidate object state is absent or wrong.
+3. Reference solutions reach max score in static/unit fixture paths where offline fixture coverage exists.
+4. Pack, coverage, trap, and question-symptom lint remain green after the object batch.
+
+### Phase 27: Operational Exercise Batch
+
+**Goal:** Add the high-risk scheduling, node, control-plane, API, and etcd exercises with reversible lab-safe setup/reset behavior.
+
+**Requirements:** OPS-01, OPS-02, OPS-03, OPS-04, OPS-05, OPS-06, OPS-07, OPS-08, OPS-09, OPS-10
+
+**Success criteria:**
+1. Q02/Q04/Q09/Q17/Q18/Q20/Q21/Q25/Q26/Q27 exercises have complete runtime directories.
+2. Host/control-plane tasks avoid hard-coded node names and use existing topology discovery or safe simulation.
+3. Scheduler, kubelet, static-pod, upgrade/join, and etcd tasks document audit limitations when live-only behavior is required.
+4. Reset scripts restore lab state for repeated drills without requiring cluster reprovisioning.
+
+### Phase 28: v1.1 Verification + Live UAT Batch
+
+**Goal:** Prove the full pack is honest, discoverable, lint-clean, and usable on the live lab cluster.
+
+**Requirements:** VER-01, VER-02, VER-03, VER-04, VER-05
+
+**Success criteria:**
+1. Empty-submission verification records 0 scored points for all `dump-cooloo9871` exercises.
+2. Reference-solution verification records max score for all `dump-cooloo9871` exercises.
+3. Static gates pass: pack, coverage, trap, trap-coverage, question-symptom, and unit checks.
+4. Live drill UAT covers every high-risk host/control-plane exercise and records setup, grade, reference, and reset evidence.
+5. v1.1 milestone audit records requirement coverage, verification evidence, known limitations, and next-step recommendation.
+
+Dependency chain: Phase 25 → Phase 26 → Phase 27 → Phase 28.
+
+Coverage: 42/42 v1.1 requirements mapped, no orphans, no duplicates.
 
 ## Progress
 
@@ -92,3 +152,4 @@ Full archive: [milestones/v1.0.3-MILESTONE-AUDIT.md](milestones/v1.0.3-MILESTONE
 | 10-15                                              | v1.0.1    | 25/25 | Complete    | 2026-05-18  |
 | 16-21 + 19.1/19.2/20.1/20.2                        | v1.0.2    | —     | Complete    | 2026-05-20  |
 | 22-24                                              | v1.0.3    | 7/7   | Complete    | 2026-05-21  |
+| 25-28                                              | v1.1      | 0/0   | Planned     | —           |
