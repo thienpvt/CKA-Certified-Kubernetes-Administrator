@@ -1,26 +1,26 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0.3
-milestone_name: Tech Debt + Drill UX Fixes
-status: Awaiting next milestone
-last_updated: "2026-05-21T12:48:52.550Z"
-last_activity: 2026-05-21 — Milestone v1.0.3 completed and archived
+milestone: v1.1
+milestone_name: Dump Cooloo9871 Pack
+status: planning
+last_updated: "2026-05-28T08:35:43.136Z"
+last_activity: 2026-05-28
 progress:
-  total_phases: 13
-  completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # State
 
 ## Current Position
 
-Phase: Milestone v1.0.3 complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-05-21 — Milestone v1.0.3 completed and archived
+Status: Defining requirements
+Last activity: 2026-05-28 — Milestone v1.1 started
 
 ### v1.0.3 Roadmap Snapshot (archived — milestone shipped)
 

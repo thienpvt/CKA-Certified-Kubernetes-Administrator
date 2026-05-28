@@ -2,13 +2,15 @@
 
 ## What This Is
 
-A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simulator that runs against a learner's own 1-control-plane + 2-worker kubeadm cluster. Ships two timed 17-question mock exams (blueprint-alpha and blueprint-bravo), five domain packs (Storage, Workloads & Scheduling, Services & Networking, Cluster Architecture, Troubleshooting) with 34 total questions, a trap-aware grading framework that distinguishes setup state from candidate work, and CLI subcommands (`drill`, `exam`, `score`, `list`, `bootstrap`, `doctor`). Built for one CKA candidate preparing for the real v1.35 exam; verified end-to-end on a live 1+2 GCP Ubuntu cluster.
+A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simulator that runs against a learner's own 1-control-plane + 2-worker kubeadm cluster. Ships two timed 17-question mock exams (blueprint-alpha and blueprint-bravo), five domain packs (Storage, Workloads & Scheduling, Services & Networking, Cluster Architecture, Troubleshooting) with 34 total questions, a trap-aware grading framework that distinguishes setup state from candidate work, and CLI subcommands (`drill`, `exam`, `score`, `list`, `bootstrap`, `doctor`). Built for one CKA candidate preparing for the real v1.35 exam; v1.1 is adding a new `dump-cooloo9871` drill pack with source-derived, original exercises adapted to this simulator's runtime.
 
 ## Core Value
 
 **A candidate can take a 2-hour timed mock exam against their own cluster and get an honest, trap-aware score telling them exactly which CKA domains and which classes of mistake they need to drill before sitting the real exam.** v1.0 delivered this end-to-end with grading honesty verified: empty submission scores 0/100, reference solutions score max/max.
 
 ## Current State
+
+**Shipped v1.0.3 (2026-05-21; lab UAT + GHA closed 2026-05-21):** Tech Debt + Drill UX Fixes. 3 phases (22-24), 7 plans, 5/5 requirements satisfied. Closed drill namespace rendering, symptom-diff lint regression, static-pod audit drift, shellcheck/yamllint triage, and ubuntu-latest bash-test environmental reds.
 
 **Shipped v1.0.2 (2026-05-20, tech_debt; live UAT closed 2026-05-20):** Question correctness audit + backlog cleanup. 6 phases (16-21) plus 4 inserted sub-phases (19.1, 19.2, 20.1, 20.2). All 4 forensic findings (BUG-H07/H08/M11/M12) closed in code (`0424b64`) + verified on lab cluster via `uat-phase18-21.sh` (9/9 PASS, commit `e2f7546`). FORENSIC-v102.md ledger locked with `closed-by` references. Audit re-run on real cluster: 33/34 PASS (1 setup-drift in workloads-scheduling/06-static-pod routed to v1.0.3).
 
@@ -56,24 +58,31 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 - GHA `symptom-diff` job first run on merge PR (CI-01 end-to-end proof)
 - Regen 2 fixtures: `services-networking__06-netpol-endport` and `workloads-scheduling__04-hpa-metrics-server` (Phase 13 strengthened-grader totals)
 
-## Current Milestone: v1.0.3 Tech Debt + Drill UX Fixes
+## Current Milestone: v1.1 Dump Cooloo9871 Pack
 
-**Goal:** Close v1.0.2 carry-overs (BLG-06 lint triage, BLG-07 GHA bash-tests env reds), fix the drill-mode namespace-display UX bug (candidates see literal `${CKA_SIM_LAB_NS}` instead of resolved namespace), close the workloads-scheduling/06-static-pod lab-cluster setup drift surfaced during v1.0.2 closure UAT, and fix the silent symptom-diff lint regression that masks Phase 15's quality gate.
+**Goal:** Add a new `dump-cooloo9871` CKA practice pack with 30 original, v1.35-compatible exercises derived from the cooloo9871 source topics and implemented in the same runtime shape as the existing five domain packs.
 
 **Target features:**
-- DRILL-NS-01 — drill mode renders question.md with `${CKA_SIM_LAB_NS}` resolved to the actual namespace (mirrors exam-mode quick task 260517-hvo)
-- BLG-06 — per-finding shellcheck/yamllint triage (carry-over, scaffolded with `continue-on-error: true` in P17)
-- BLG-07 — GHA bash-tests environmental reds: 9 unit-test cases fail on `ubuntu-latest` runners but pass on Docker Ubuntu 22/24 + MSYS (cascades through 4 `traps_*` cases via `is_candidate_modified` ownership gate)
-- AUDIT-W&S06 — workloads-scheduling/06-static-pod setup.sh fails on lab cluster during audit (real-cluster setup-drift, not kind-skip)
-- LINT-01 — symptom-diff regression test masked by `Bad file descriptor` on `lib/symptom-diff.sh:94`; lint silently exits 0 on mutated YAML, breaking Phase 15's quality gate
+- Source inventory for all 25 main simulator questions plus 2 extra and 3 preview questions from `cooloo9871/cooloo9871.github.io`
+- New `cka-sim/packs/dump-cooloo9871` pack manifest, coverage map, README, and 30 question directories
+- Per-question runtime triplet and fixtures: `setup.sh`, `grade.sh`, `reset.sh`, `ref-solution.sh`, `question.md`, `metadata.yaml`, `expected-symptom.yaml`
+- Original wording and solutions adapted to Kubernetes v1.35, repo trap catalog, grading-honesty contract, and 1 CP + 2 worker kubeadm lab
+- Validation coverage via pack lint, trap lint, coverage lint, unit fixtures where applicable, and batched live drill UAT
 
-**Verification model:** Unit + lint + GHA `validate.yml` (kind+Calico) during phases. Live drill UATs batched at milestone close — same pattern as v1.0.1/v1.0.2.
+**Verification model:** Static lint and unit fixture checks during phases. Live drill UATs batched at milestone close, with empty-submission and reference-solution score checks preserving grading honesty.
 
-## Previous Milestone: v1.0.2 Question Correctness Audit + Backlog Cleanup (Shipped)
+## Previous Milestone: v1.0.3 Tech Debt + Drill UX Fixes (Shipped)
 
-**Shipped:** 2026-05-20 (tech_debt; live UAT closed 2026-05-20).
+**Shipped:** 2026-05-21 (lab UAT + GHA validation closed 2026-05-21).
 
-### Active (v2.0 — not yet planned)
+### Active (v1.1)
+
+- Build `dump-cooloo9871` as a new pack, not as replacements for existing domain packs
+- Cover all 30 approved source topics: 25 main, 2 extra, and 3 preview
+- Keep exercises original and v1.35-compatible; do not copy source wording or answers verbatim
+- Preserve established simulator contracts: bash-only, idempotent setup/reset, trap-aware grading, grading honesty, RFC 1123 names, and existing lint gates
+
+### Future (v2.0 — not yet planned)
 
 Carried forward from v1.0:
 
@@ -133,6 +142,7 @@ Carried forward from v1.0:
 | Decimal-version phase insertion (07.1) for urgent gap closure | Avoid renumbering 08; preserve audit trail | ✓ Good — pattern works, archived as Phase 07.1 |
 | Distinguish setup state from candidate work via baseline capture | Original graders leaked points (10/100 on empty); honest scoring required for exam fidelity | ✓ Good — verified 0/100 on empty, 17/17 on ref-solution |
 | `assert_changed_since_setup` uses generation-first comparison | rv comparison flaky for status-updating resources (Deployment status, PV binding) | ✓ Good — verified during 07.1 UAT |
+| Derive `dump-cooloo9871` from source topics, not copied text | Avoid licensing ambiguity and keep exercises aligned with v1.35/runtime contracts | — Pending |
 
 ## Evolution
 
@@ -152,4 +162,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-21 — v1.0.3 milestone opened: Tech Debt + Drill UX Fixes*
+*Last updated: 2026-05-28 — v1.1 milestone opened: Dump Cooloo9871 Pack*
