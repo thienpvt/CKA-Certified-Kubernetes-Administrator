@@ -6,7 +6,7 @@
 - ✅ **v1.0.1 Full Audit Remediation** — Phases 10-15 (shipped 2026-05-18, tech_debt; live UAT closed 2026-05-19)
 - ✅ **v1.0.2 Question Correctness Audit + Backlog Cleanup** — Phases 16-21 + 19.1/19.2/20.1/20.2 (shipped 2026-05-20, tech_debt; live UAT closed 2026-05-20; GHA bash-tests env reds + BLG-06 lint triage routed to v1.0.3)
 - ✅ **v1.0.3 Tech Debt + Drill UX Fixes** — Phases 22-24 (shipped 2026-05-21; lab UAT + GHA validate.yml green)
-- 📋 **v1.1 Dump Cooloo9871 Pack** — Phases 25-28 (planned 2026-05-28; 42 requirements)
+- ✅ **v1.1 Dump Cooloo9871 Pack** — Phases 25-28 complete (2026-05-28; audit passed)
 
 ## Phases
 
@@ -78,14 +78,14 @@ Full archive: [milestones/v1.0.3-MILESTONE-AUDIT.md](milestones/v1.0.3-MILESTONE
 
 </details>
 
-### 📋 v1.1 Dump Cooloo9871 Pack — PLANNED
+### ✅ v1.1 Dump Cooloo9871 Pack — COMPLETE, AUDIT PASSED
 
 Add a new `dump-cooloo9871` drill pack with 30 original, v1.35-compatible exercises derived from the cooloo9871 CKA source topics. The milestone keeps source usage to topic inventory only and preserves existing simulator contracts: bash-only runtime, idempotent setup/reset, trap-aware grading, grading honesty, and lint/UAT evidence.
 
-- [ ] Phase 25: Source Inventory + Pack Scaffold + Command Exercises — SRC-01..03, PACK-01..04, CMD-01..10
-- [ ] Phase 26: Core Object Exercise Batch — OBJ-01..10
-- [ ] Phase 27: Operational Exercise Batch — OPS-01..10
-- [ ] Phase 28: v1.1 Verification + Live UAT Batch — VER-01..05
+- [x] Phase 25: Source Inventory + Pack Scaffold + Command Exercises — SRC-01..03, PACK-01..04, CMD-01..10 (completed 2026-05-28)
+- [x] Phase 26: Core Object Exercise Batch — OBJ-01..10 (completed 2026-05-28)
+- [x] Phase 27: Operational Exercise Batch — OPS-01..10 (completed 2026-05-28)
+- [x] Phase 28: v1.1 Verification + Live UAT Batch — VER-01..05 (completed 2026-05-28)
 
 ## Phase Details
 
@@ -152,4 +152,4 @@ Coverage: 42/42 v1.1 requirements mapped, no orphans, no duplicates.
 | 10-15                                              | v1.0.1    | 25/25 | Complete    | 2026-05-18  |
 | 16-21 + 19.1/19.2/20.1/20.2                        | v1.0.2    | —     | Complete    | 2026-05-20  |
 | 22-24                                              | v1.0.3    | 7/7   | Complete    | 2026-05-21  |
-| 25-28                                              | v1.1      | 0/0   | Planned     | —           |
+| 25-28                                              | v1.1      | 4/4   | Complete    | 2026-05-28  |
