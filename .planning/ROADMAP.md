@@ -7,6 +7,7 @@
 - ✅ **v1.0.2 Question Correctness Audit + Backlog Cleanup** — Phases 16-21 + 19.1/19.2/20.1/20.2 (shipped 2026-05-20, tech_debt; live UAT closed 2026-05-20; GHA bash-tests env reds + BLG-06 lint triage routed to v1.0.3)
 - ✅ **v1.0.3 Tech Debt + Drill UX Fixes** — Phases 22-24 (shipped 2026-05-21; lab UAT + GHA validate.yml green)
 - ✅ **v1.1 Dump Cooloo9871 Pack** — Phases 25-28 complete (2026-05-28; audit passed)
+- ◆ **v1.2 CKA-PREP-2025-v2 Pack** — Phases 29-33 planned (source-derived 17-question pack)
 
 ## Phases
 
@@ -142,6 +143,81 @@ Dependency chain: Phase 25 → Phase 26 → Phase 27 → Phase 28.
 
 Coverage: 42/42 v1.1 requirements mapped, no orphans, no duplicates.
 
+### ◆ v1.2 CKA-PREP-2025-v2 Pack — PLANNED
+
+Add a new `cka-prep-2025-v2` drill pack with 17 original, v1.35-compatible exercises derived from the cloned `vj2201/CKA-PREP-2025-v2` source folders. Source clone: `D:\git\CKA-PREP-2025-v2` at commit `38c2a0e3ed3eb93baac4fc7423f082b136a2141f`.
+
+- [ ] Phase 29: Source Inventory + Pack Scaffold + Storage/Manifest Exercises — SRC-04..06, PACK-05..08, VJQ-01, VJQ-02, VJQ-06, VJQ-14
+- [ ] Phase 30: Workloads + Scheduling Exercise Batch — VJQ-03, VJQ-04, VJQ-05, VJQ-07, VJQ-10
+- [ ] Phase 31: Networking + Add-On Exercise Batch — VJQ-08, VJQ-11, VJQ-12, VJQ-13, VJQ-16, VJQ-17
+- [ ] Phase 32: Runtime + Control-Plane Safety Exercises — VJQ-09, VJQ-15
+- [ ] Phase 33: v1.2 Verification + Live UAT Batch — VER-06..10
+
+Dependency chain: Phase 29 -> Phases 30/31/32 -> Phase 33.
+
+Coverage: 29/29 v1.2 requirements mapped, no orphans, no duplicates.
+
+### Phase 29: Source Inventory + Pack Scaffold + Storage/Manifest Exercises
+
+**Goal:** Establish `cka-prep-2025-v2` pack structure, source inventory, adaptation taxonomy, and lower-risk storage/manifest exercises.
+
+**Requirements:** SRC-04, SRC-05, SRC-06, PACK-05, PACK-06, PACK-07, PACK-08, VJQ-01, VJQ-02, VJQ-06, VJQ-14
+
+**Success criteria:**
+1. `cka-sim/packs/cka-prep-2025-v2` exists with README, manifest, coverage map, source inventory, and 17 planned entries.
+2. Source inventory maps every cloned `Question-*` folder to one simulator question and records v1.35/lab-safety adaptation notes.
+3. MariaDB/PV, Argo CD manifest rendering, cert-manager CRD inspection, and StorageClass exercises have complete seven-file runtime directories.
+4. Pack discovery and static lint gates pass for the scaffold plus Phase 29 exercises.
+
+### Phase 30: Workloads + Scheduling Exercise Batch
+
+**Goal:** Add workload and scheduling exercises for sidecars, resource allocation, HPA, PriorityClass, and taints/tolerations.
+
+**Requirements:** VJQ-03, VJQ-04, VJQ-05, VJQ-07, VJQ-10
+
+**Success criteria:**
+1. Sidecar, resource-allocation, HPA, PriorityClass, and taints/tolerations exercises have complete runtime directories.
+2. Empty-submission paths fail because required candidate-authored state is absent or wrong.
+3. Reference solutions reach max score in static/unit fixture paths where offline fixture coverage exists.
+4. Taint/toleration handling uses dynamic node discovery and reset-safe cleanup.
+
+### Phase 31: Networking + Add-On Exercise Batch
+
+**Goal:** Add networking and add-on-adjacent exercises while avoiding unsafe cluster-wide CNI or host configuration mutation.
+
+**Requirements:** VJQ-08, VJQ-11, VJQ-12, VJQ-13, VJQ-16, VJQ-17
+
+**Success criteria:**
+1. CNI capability, Gateway API, Ingress, NetworkPolicy, NodePort, and TLS ConfigMap exercises have complete runtime directories.
+2. Gateway API and Ingress exercises handle clusters without optional CRDs/controllers through deterministic adaptation or explicit live-only limits.
+3. TLS and Ingress tasks do not require persistent `/etc/hosts` edits during drill execution.
+4. NetworkPolicy and NodePort graders verify observable Kubernetes API/service state and preserve grading honesty.
+
+### Phase 32: Runtime + Control-Plane Safety Exercises
+
+**Goal:** Add high-risk runtime/control-plane source topics using reversible simulator-safe models.
+
+**Requirements:** VJQ-09, VJQ-15
+
+**Success criteria:**
+1. cri-dockerd/runtime configuration and etcd endpoint repair exercises have complete runtime directories.
+2. Exercises preserve the operational skill being practiced without restarting or corrupting host services or the real control plane.
+3. Reset scripts restore all simulator-managed state for repeated drills.
+4. Known live-only assumptions are documented in metadata and expected-symptom files.
+
+### Phase 33: v1.2 Verification + Live UAT Batch
+
+**Goal:** Prove the full `cka-prep-2025-v2` pack is honest, discoverable, lint-clean, and usable on the live lab cluster.
+
+**Requirements:** VER-06, VER-07, VER-08, VER-09, VER-10
+
+**Success criteria:**
+1. Static gates pass: pack, coverage, trap, trap-coverage, question-symptom, and unit checks.
+2. Empty-submission verification records 0 scored points for all `cka-prep-2025-v2` exercises.
+3. Reference-solution verification records max score for all `cka-prep-2025-v2` exercises.
+4. Live drill UAT covers high-risk host/control-plane/networking exercises and records setup, grade, reference, reset, and cleanup evidence.
+5. v1.2 milestone audit records requirement coverage, verification evidence, known limitations, and next-step recommendation.
+
 ## Progress
 
 **Verification model:** Unit (`cka-sim/scripts/test.sh`) + lint (`lint-packs.sh`, `lint-traps.sh`, `lint-coverage.sh`, `lint-trap-coverage.sh`, `lint-question-symptom.sh`) + GHA `validate.yml` (kind+Calico) during phases. Live drill UATs batched at milestone close (same pattern as v1.0.1 / v1.0.2 / v1.0.3). No local kubectl required during phase execution.
@@ -153,3 +229,4 @@ Coverage: 42/42 v1.1 requirements mapped, no orphans, no duplicates.
 | 16-21 + 19.1/19.2/20.1/20.2                        | v1.0.2    | —     | Complete    | 2026-05-20  |
 | 22-24                                              | v1.0.3    | 7/7   | Complete    | 2026-05-21  |
 | 25-28                                              | v1.1      | 4/4   | Complete    | 2026-05-28  |
+| 29-33                                              | v1.2      | 0/5   | Planned     | —           |

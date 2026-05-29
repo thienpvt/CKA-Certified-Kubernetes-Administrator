@@ -1,89 +1,72 @@
-# Requirements: CKA Exam Simulator v1.1 Dump Cooloo9871 Pack
+# Requirements: CKA Exam Simulator v1.2
 
-**Defined:** 2026-05-28
+**Defined:** 2026-05-29
 **Core Value:** A candidate can take a 2-hour timed mock exam against their own cluster and get an honest, trap-aware score telling them exactly which CKA domains and which classes of mistake they need to drill before sitting the real exam.
 
-## v1.1 Requirements
+## v1.2 Requirements
 
-### Source Adaptation
+Requirements for the `cka-prep-2025-v2` source-derived drill pack. Each requirement maps to exactly one roadmap phase.
 
-- [x] **SRC-01**: Maintainer can review an inventory covering all 30 approved source topics from the cooloo9871 CKA page: 25 main, 2 extra, and 3 preview questions.
-- [x] **SRC-02**: Maintainer can see v1.35 adaptation notes for every source-derived topic, including any replacement for stale multi-cluster, node-name, image, or Kubernetes-version assumptions.
-- [x] **SRC-03**: Maintainer can verify that `dump-cooloo9871` uses original exercise wording, setup, grading, and reference solutions while metadata cites the source page only as prior-art topic context.
+### Source Inventory
+
+- [ ] **SRC-04**: Maintainer can see the cloned `vj2201/CKA-PREP-2025-v2` source commit, local path, and all included `Question-*` folders in a pack source inventory.
+- [ ] **SRC-05**: Maintainer can trace each of the 17 source topics to one new simulator question without relying on copied source wording or copied answer text.
+- [ ] **SRC-06**: Maintainer can see adaptation notes for unsafe or environment-specific source assumptions, including Helm, Gateway API, CNI install, cri-dockerd, etcd, TLS host edits, node taints, and control-plane mutation.
 
 ### Pack Scaffold
 
-- [x] **PACK-01**: Candidate can list a new `dump-cooloo9871` pack whose `manifest.yaml` contains all 30 questions in stable source-derived order.
-- [x] **PACK-02**: Maintainer can run coverage lint and see every `dump-cooloo9871` question mapped in `coverage.yaml`.
-- [x] **PACK-03**: Candidate can read the pack README and understand scope, source-derived nature, v1.35 adaptations, and drill usage.
-- [x] **PACK-04**: Maintainer can inspect each `dump-cooloo9871` question directory and find the full runtime set: `question.md`, `metadata.yaml`, `setup.sh`, `grade.sh`, `reset.sh`, `ref-solution.sh`, and `expected-symptom.yaml`.
+- [ ] **PACK-05**: User can discover a new `cka-prep-2025-v2` pack through existing pack listing and drill selection behavior.
+- [ ] **PACK-06**: Maintainer can inspect `cka-sim/packs/cka-prep-2025-v2/manifest.yaml`, `coverage.yaml`, `README.md`, and `SOURCE-INVENTORY.md`.
+- [ ] **PACK-07**: Every new question directory follows the standard seven-file shape: `question.md`, `metadata.yaml`, `setup.sh`, `grade.sh`, `reset.sh`, `ref-solution.sh`, and `expected-symptom.yaml`.
+- [ ] **PACK-08**: New pack content does not modify existing domain packs or the completed `dump-cooloo9871` pack.
 
-### Command And Inspection Exercises
+### Source-Derived Exercises
 
-- [x] **CMD-01**: Candidate can complete a context/current-context exercise derived from source Q01.
-- [x] **CMD-02**: Candidate can complete a pod sorting command exercise derived from source Q05.
-- [x] **CMD-03**: Candidate can complete a node and pod resource usage command exercise derived from source Q07.
-- [x] **CMD-04**: Candidate can complete a control-plane component inspection exercise derived from source Q08.
-- [x] **CMD-05**: Candidate can complete a cluster node and version reporting exercise derived from source Q14.
-- [x] **CMD-06**: Candidate can complete a cluster events command exercise derived from source Q15.
-- [x] **CMD-07**: Candidate can complete a namespace and namespaced API resources exercise derived from source Q16.
-- [x] **CMD-08**: Candidate can complete a kube-apiserver certificate validity exercise derived from source Q22.
-- [x] **CMD-09**: Candidate can complete a kubelet certificate issuer and extended-key-usage exercise derived from source Q23.
-- [x] **CMD-10**: Candidate can complete an etcd certificate/key inspection exercise derived from preview Q01.
-
-### Core Object Exercises
-
-- [x] **OBJ-01**: Candidate can complete a StatefulSet scale-down exercise derived from source Q03.
-- [x] **OBJ-02**: Candidate can complete a PV, PVC, and pod volume exercise derived from source Q06.
-- [x] **OBJ-03**: Candidate can complete a ServiceAccount, Role, and RoleBinding exercise derived from source Q10.
-- [x] **OBJ-04**: Candidate can complete a DaemonSet-on-all-nodes exercise derived from source Q11.
-- [x] **OBJ-05**: Candidate can complete a Deployment topology and scheduling exercise derived from source Q12.
-- [x] **OBJ-06**: Candidate can complete a multi-container pod with shared volume exercise derived from source Q13.
-- [x] **OBJ-07**: Candidate can complete a Secret creation and pod mount exercise derived from source Q19.
-- [x] **OBJ-08**: Candidate can complete a NetworkPolicy containment exercise derived from source Q24.
-- [x] **OBJ-09**: Candidate can complete a kube-proxy service traffic exercise derived from preview Q02.
-- [x] **OBJ-10**: Candidate can complete a pod/service IP output exercise derived from preview Q03.
-
-### Operational Exercises
-
-- [x] **OPS-01**: Candidate can complete a control-plane scheduling exercise derived from source Q02 without relying on hard-coded node names.
-- [x] **OPS-02**: Candidate can complete a readiness-dependent-on-service-reachability exercise derived from source Q04.
-- [x] **OPS-03**: Candidate can complete a scheduler stop and manual pod binding exercise derived from source Q09 using reversible lab-safe setup and reset.
-- [x] **OPS-04**: Candidate can complete a pod container detail extraction exercise derived from source Q17.
-- [x] **OPS-05**: Candidate can complete a kubelet repair exercise derived from source Q18 using the existing lab SSH/topology assumptions.
-- [x] **OPS-06**: Candidate can complete a node upgrade/join adaptation exercise derived from source Q20 without requiring an extra real cluster.
-- [x] **OPS-07**: Candidate can complete a static pod plus service exercise derived from source Q21.
-- [x] **OPS-08**: Candidate can complete an etcd snapshot save/restore exercise derived from source Q25.
-- [x] **OPS-09**: Candidate can complete an eviction-priority analysis exercise derived from extra Q01.
-- [x] **OPS-10**: Candidate can complete a manual Kubernetes API access exercise from a pod using a ServiceAccount token, derived from extra Q02.
+- [ ] **VJQ-01**: User can restore a MariaDB Deployment using a retained PersistentVolume and a newly created PVC without losing persistent state.
+- [ ] **VJQ-02**: User can produce an Argo CD Helm-rendered manifest with CRDs excluded, adapted so grading remains deterministic in this simulator.
+- [ ] **VJQ-03**: User can add a sidecar container to an existing WordPress Deployment with a shared log volume.
+- [ ] **VJQ-04**: User can rebalance resource requests and limits across a scaled WordPress Deployment and restore the intended replica count.
+- [ ] **VJQ-05**: User can create an HPA targeting an existing Deployment with CPU utilization, replica bounds, and downscale stabilization settings.
+- [ ] **VJQ-06**: User can inspect cert-manager CRDs and capture the requested Certificate subject documentation in a grader-visible resource.
+- [ ] **VJQ-07**: User can create a PriorityClass one less than the highest existing user-defined PriorityClass and patch a Deployment to use it.
+- [ ] **VJQ-08**: User can validate or model CNI capabilities needed for pod connectivity and NetworkPolicy enforcement without unsafe cluster CNI replacement during drill execution.
+- [ ] **VJQ-09**: User can repair a simulated cri-dockerd/runtime configuration and sysctl state without mutating the host operating system.
+- [ ] **VJQ-10**: User can taint a discovered worker node and schedule a tolerated pod onto that node with reset-safe cleanup.
+- [ ] **VJQ-11**: User can migrate an existing Ingress-shaped route to Gateway API resources while handling clusters that may not ship Gateway CRDs by default.
+- [ ] **VJQ-12**: User can expose an existing Deployment with a NodePort Service and an Ingress resource without requiring persistent `/etc/hosts` changes.
+- [ ] **VJQ-13**: User can choose and apply the least-permissive NetworkPolicy that permits frontend-to-backend traffic.
+- [ ] **VJQ-14**: User can create, patch, and verify a `local-storage` StorageClass as the only default class.
+- [ ] **VJQ-15**: User can repair a simulated kube-apiserver etcd endpoint misconfiguration without breaking the real control plane.
+- [ ] **VJQ-16**: User can expose a Deployment through a fixed NodePort Service on port 30080.
+- [ ] **VJQ-17**: User can restrict an nginx TLS ConfigMap to TLSv1.3 and verify the service path through simulator-safe checks.
 
 ### Verification
 
-- [x] **VER-01**: Maintainer can verify every scored `dump-cooloo9871` grader gives empty submission 0 scored points.
-- [x] **VER-02**: Maintainer can verify every `dump-cooloo9871` reference solution reaches max score.
-- [x] **VER-03**: Maintainer can run pack, coverage, trap, trap-coverage, question-symptom, and unit lint gates successfully after the pack lands.
-- [x] **VER-04**: Maintainer can run live drill UAT for high-risk host/control-plane exercises and see setup, empty-submission, reference-solution, and reset behavior recorded.
-- [x] **VER-05**: Maintainer can inspect a v1.1 milestone audit that records requirement coverage, verification evidence, and any deferred limitations.
+- [ ] **VER-06**: Static gates pass for the new pack: pack lint, coverage lint, trap lint, trap-coverage lint, question-symptom lint, and bash unit tests.
+- [ ] **VER-07**: Empty-submission verification records zero scored points for every new `cka-prep-2025-v2` exercise.
+- [ ] **VER-08**: Reference-solution verification records max score and no unexpected traps for every new `cka-prep-2025-v2` exercise.
+- [ ] **VER-09**: Live drill UAT covers high-risk host/control-plane/networking exercises and records setup, grade, reference, reset, and cleanup evidence.
+- [ ] **VER-10**: Milestone audit records requirement coverage, verification evidence, known limitations, and readiness for milestone completion.
 
 ## Future Requirements
 
-### Exam Blueprints
+Deferred to future releases. Tracked but not in current roadmap.
 
-- **EXAM-01**: Candidate can take a timed blueprint that draws from `dump-cooloo9871`.
+### Source-Derived Packs
 
-### Cross-Pack Analytics
-
-- **ANALYTICS-01**: Candidate can compare performance between curated domain packs and the source-derived dump pack.
+- **FUT-01**: User can combine source-derived packs into a timed mixed exam blueprint.
+- **FUT-02**: Maintainer can auto-generate a source inventory skeleton from cloned `Question-*` folders.
+- **FUT-03**: Maintainer can tag non-CKA-adjacent source topics with a stable adaptation taxonomy across packs.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Copying source question prose or answers verbatim | Source repo exposes no visible license file; v1.1 uses source topics only. |
-| Adding extra real clusters or contexts | Project runtime is a single learner cluster with existing kubeadm topology. |
-| Replacing existing five domain packs | `dump-cooloo9871` is additive drill content. |
-| New runtime language or new simulator CLI surface | Existing bash and pack contracts are sufficient. |
-| CKAD/CKS content | Project scope remains CKA. |
+| Replacing existing domain packs | v1.2 adds a separate pack; existing packs remain validated baseline content. |
+| Copying source question text or solution text verbatim | Source repo is topic inventory only; simulator content must be original and v1.35-adapted. |
+| Mutating the learner host permanently | Drills must reset cleanly and avoid persistent host edits such as `/etc/hosts`, runtime service changes, or CNI replacement. |
+| Requiring live internet during drill execution | Runtime should work from the repo and cluster; source clone is for authoring context, not learner execution. |
+| Guaranteeing external add-ons are installed | Helm, Gateway API, ingress controllers, and metrics-server must be handled through deterministic adaptation or explicit live-only limits. |
 
 ## Traceability
 
@@ -91,54 +74,41 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SRC-01 | Phase 25 | Complete |
-| SRC-02 | Phase 25 | Complete |
-| SRC-03 | Phase 25 | Complete |
-| PACK-01 | Phase 25 | Complete |
-| PACK-02 | Phase 25 | Complete |
-| PACK-03 | Phase 25 | Complete |
-| PACK-04 | Phase 25 | Complete |
-| CMD-01 | Phase 25 | Complete |
-| CMD-02 | Phase 25 | Complete |
-| CMD-03 | Phase 25 | Complete |
-| CMD-04 | Phase 25 | Complete |
-| CMD-05 | Phase 25 | Complete |
-| CMD-06 | Phase 25 | Complete |
-| CMD-07 | Phase 25 | Complete |
-| CMD-08 | Phase 25 | Complete |
-| CMD-09 | Phase 25 | Complete |
-| CMD-10 | Phase 25 | Complete |
-| OBJ-01 | Phase 26 | Complete |
-| OBJ-02 | Phase 26 | Complete |
-| OBJ-03 | Phase 26 | Complete |
-| OBJ-04 | Phase 26 | Complete |
-| OBJ-05 | Phase 26 | Complete |
-| OBJ-06 | Phase 26 | Complete |
-| OBJ-07 | Phase 26 | Complete |
-| OBJ-08 | Phase 26 | Complete |
-| OBJ-09 | Phase 26 | Complete |
-| OBJ-10 | Phase 26 | Complete |
-| OPS-01 | Phase 27 | Complete |
-| OPS-02 | Phase 27 | Complete |
-| OPS-03 | Phase 27 | Complete |
-| OPS-04 | Phase 27 | Complete |
-| OPS-05 | Phase 27 | Complete |
-| OPS-06 | Phase 27 | Complete |
-| OPS-07 | Phase 27 | Complete |
-| OPS-08 | Phase 27 | Complete |
-| OPS-09 | Phase 27 | Complete |
-| OPS-10 | Phase 27 | Complete |
-| VER-01 | Phase 28 | Complete |
-| VER-02 | Phase 28 | Complete |
-| VER-03 | Phase 28 | Complete |
-| VER-04 | Phase 28 | Complete |
-| VER-05 | Phase 28 | Complete |
+| SRC-04 | Phase 29 | Pending |
+| SRC-05 | Phase 29 | Pending |
+| SRC-06 | Phase 29 | Pending |
+| PACK-05 | Phase 29 | Pending |
+| PACK-06 | Phase 29 | Pending |
+| PACK-07 | Phase 29 | Pending |
+| PACK-08 | Phase 29 | Pending |
+| VJQ-01 | Phase 29 | Pending |
+| VJQ-02 | Phase 29 | Pending |
+| VJQ-06 | Phase 29 | Pending |
+| VJQ-14 | Phase 29 | Pending |
+| VJQ-03 | Phase 30 | Pending |
+| VJQ-04 | Phase 30 | Pending |
+| VJQ-05 | Phase 30 | Pending |
+| VJQ-07 | Phase 30 | Pending |
+| VJQ-10 | Phase 30 | Pending |
+| VJQ-08 | Phase 31 | Pending |
+| VJQ-11 | Phase 31 | Pending |
+| VJQ-12 | Phase 31 | Pending |
+| VJQ-13 | Phase 31 | Pending |
+| VJQ-16 | Phase 31 | Pending |
+| VJQ-17 | Phase 31 | Pending |
+| VJQ-09 | Phase 32 | Pending |
+| VJQ-15 | Phase 32 | Pending |
+| VER-06 | Phase 33 | Pending |
+| VER-07 | Phase 33 | Pending |
+| VER-08 | Phase 33 | Pending |
+| VER-09 | Phase 33 | Pending |
+| VER-10 | Phase 33 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 42 total
-- Mapped to phases: 42
+- v1.2 requirements: 29 total
+- Mapped to phases: 29
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-05-28*
-*Last updated: 2026-05-28 after v1.1 live validation and milestone audit*
+*Requirements defined: 2026-05-29*
+*Last updated: 2026-05-29 after v1.2 milestone definition*

@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-05-29T03:55:59.358Z"
 last_activity: 2026-05-29
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,8 +19,20 @@ progress:
 
 Phase: Not started (defining requirements)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-29 — Milestone v1.2 started
+Status: Roadmap approved; ready to start Phase 29
+Last activity: 2026-05-29 — Milestone v1.2 requirements and roadmap approved
+
+### v1.2 Roadmap Snapshot (approved)
+
+- Phase 29: Source Inventory + Pack Scaffold + Storage/Manifest Exercises — SRC-04..06, PACK-05..08, VJQ-01, VJQ-02, VJQ-06, VJQ-14 (11 reqs) — Pending
+- Phase 30: Workloads + Scheduling Exercise Batch — VJQ-03, VJQ-04, VJQ-05, VJQ-07, VJQ-10 (5 reqs) — Pending
+- Phase 31: Networking + Add-On Exercise Batch — VJQ-08, VJQ-11, VJQ-12, VJQ-13, VJQ-16, VJQ-17 (6 reqs) — Pending
+- Phase 32: Runtime + Control-Plane Safety Exercises — VJQ-09, VJQ-15 (2 reqs) — Pending
+- Phase 33: v1.2 Verification + Live UAT Batch — VER-06..10 (5 reqs) — Pending
+
+Dependency chain: 29 -> 30/31/32 -> 33.
+
+Coverage: 29/29 v1.2 requirements mapped (no orphans, no duplicates).
 
 ### v1.1 Roadmap Snapshot (complete; audit passed)
 
