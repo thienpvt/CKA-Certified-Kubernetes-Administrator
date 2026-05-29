@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simulator that runs against a learner's own 1-control-plane + 2-worker kubeadm cluster. Ships two timed 17-question mock exams (blueprint-alpha and blueprint-bravo), five domain packs (Storage, Workloads & Scheduling, Services & Networking, Cluster Architecture, Troubleshooting) with 34 total questions, a trap-aware grading framework that distinguishes setup state from candidate work, and CLI subcommands (`drill`, `exam`, `score`, `list`, `bootstrap`, `doctor`). Built for one CKA candidate preparing for the real v1.35 exam; v1.1 is adding a new `dump-cooloo9871` drill pack with source-derived, original exercises adapted to this simulator's runtime.
+A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simulator that runs against a learner's own 1-control-plane + 2-worker kubeadm cluster. Ships two timed 17-question mock exams (blueprint-alpha and blueprint-bravo), five domain packs (Storage, Workloads & Scheduling, Services & Networking, Cluster Architecture, Troubleshooting), the completed `dump-cooloo9871` pack, a trap-aware grading framework that distinguishes setup state from candidate work, and CLI subcommands (`drill`, `exam`, `score`, `list`, `bootstrap`, `doctor`). Built for one CKA candidate preparing for the real v1.35 exam; v1.2 adds a new `cka-prep-2025-v2` drill pack derived from `vj2201/CKA-PREP-2025-v2`.
 
 ## Core Value
 
@@ -58,27 +58,29 @@ A bash-only, kubectl-driven CKA (Certified Kubernetes Administrator) exam simula
 - GHA `symptom-diff` job first run on merge PR (CI-01 end-to-end proof)
 - Regen 2 fixtures: `services-networking__06-netpol-endport` and `workloads-scheduling__04-hpa-metrics-server` (Phase 13 strengthened-grader totals)
 
-## Current Milestone: v1.1 Dump Cooloo9871 Pack
+## Current Milestone: v1.2 CKA-PREP-2025-v2 Pack
 
-**Goal:** Add a new `dump-cooloo9871` CKA practice pack with 30 original, v1.35-compatible exercises derived from the cooloo9871 source topics and implemented in the same runtime shape as the existing five domain packs.
+**Goal:** Add a new `cka-prep-2025-v2` CKA practice pack with 17 original, v1.35-compatible exercises derived from the cloned `vj2201/CKA-PREP-2025-v2` source topics and implemented in the same runtime shape as `cka-sim/packs/dump-cooloo9871`.
 
 **Target features:**
-- Source inventory for all 25 main simulator questions plus 2 extra and 3 preview questions from `cooloo9871/cooloo9871.github.io`
-- New `cka-sim/packs/dump-cooloo9871` pack manifest, coverage map, README, and 30 question directories
+- Local source clone at `D:\git\CKA-PREP-2025-v2` pinned to commit `38c2a0e3ed3eb93baac4fc7423f082b136a2141f`
+- Source inventory for all 17 `Question-*` folders from `CKA-PREP-2025-v2`
+- New `cka-sim/packs/cka-prep-2025-v2` pack manifest, coverage map, README, source inventory, and 17 question directories
 - Per-question runtime triplet and fixtures: `setup.sh`, `grade.sh`, `reset.sh`, `ref-solution.sh`, `question.md`, `metadata.yaml`, `expected-symptom.yaml`
 - Original wording and solutions adapted to Kubernetes v1.35, repo trap catalog, grading-honesty contract, and 1 CP + 2 worker kubeadm lab
+- Lab-safe adaptations for source topics that assume host mutation, external add-ons, Helm/Gateway APIs, CNI installation, or `/etc/hosts` edits
 - Validation coverage via pack lint, trap lint, coverage lint, unit fixtures where applicable, and batched live drill UAT
 
 **Verification model:** Static lint and unit fixture checks during phases. Live drill UATs batched at milestone close, with empty-submission and reference-solution score checks preserving grading honesty.
 
-## Previous Milestone: v1.0.3 Tech Debt + Drill UX Fixes (Shipped)
+## Previous Milestone: v1.1 Dump Cooloo9871 Pack (Complete, Audit Passed)
 
-**Shipped:** 2026-05-21 (lab UAT + GHA validation closed 2026-05-21).
+**Completed:** 2026-05-28 (audit passed). 30 source-derived exercises implemented under `cka-sim/packs/dump-cooloo9871` across Phases 25-28 with 42/42 requirements mapped and satisfied.
 
-### Active (v1.1)
+### Active (v1.2)
 
-- Build `dump-cooloo9871` as a new pack, not as replacements for existing domain packs
-- Cover all 30 approved source topics: 25 main, 2 extra, and 3 preview
+- Build `cka-prep-2025-v2` as a new pack, not as replacements for existing domain packs or `dump-cooloo9871`
+- Cover all 17 cloned source folders, including topics that require lab-safe adaptation
 - Keep exercises original and v1.35-compatible; do not copy source wording or answers verbatim
 - Preserve established simulator contracts: bash-only, idempotent setup/reset, trap-aware grading, grading honesty, RFC 1123 names, and existing lint gates
 
@@ -143,6 +145,7 @@ Carried forward from v1.0:
 | Distinguish setup state from candidate work via baseline capture | Original graders leaked points (10/100 on empty); honest scoring required for exam fidelity | ✓ Good — verified 0/100 on empty, 17/17 on ref-solution |
 | `assert_changed_since_setup` uses generation-first comparison | rv comparison flaky for status-updating resources (Deployment status, PV binding) | ✓ Good — verified during 07.1 UAT |
 | Derive `dump-cooloo9871` from source topics, not copied text | Avoid licensing ambiguity and keep exercises aligned with v1.35/runtime contracts | — Pending |
+| Derive `cka-prep-2025-v2` from cloned source topics, not copied text | Preserve source as topic inventory while avoiding verbatim reuse and adapting unsafe/non-CKA assumptions to simulator contracts | — Pending |
 
 ## Evolution
 
@@ -162,4 +165,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-28 — v1.1 milestone opened: Dump Cooloo9871 Pack*
+*Last updated: 2026-05-29 — v1.2 milestone opened: CKA-PREP-2025-v2 Pack*

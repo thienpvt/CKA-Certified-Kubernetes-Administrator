@@ -1,26 +1,26 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Dump Cooloo9871 Pack
-status: milestone_complete
-last_updated: "2026-05-28T09:02:08.218Z"
-last_activity: 2026-05-28 — v1.1 validation and milestone audit passed
+milestone: v1.2
+milestone_name: CKA-PREP-2025-v2 Pack
+status: planning
+last_updated: "2026-05-29T03:55:59.358Z"
+last_activity: 2026-05-29
 progress:
-  total_phases: 4
-  completed_phases: 4
+  total_phases: 0
+  completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 100
+  percent: 0
 ---
 
 # State
 
 ## Current Position
 
-Phase: 28
-Plan: Not started
-Status: Milestone complete; audit passed
-Last activity: 2026-05-28
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-29 — Milestone v1.2 started
 
 ### v1.1 Roadmap Snapshot (complete; audit passed)
 
